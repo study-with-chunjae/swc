@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Entity
@@ -17,9 +18,11 @@ public class ThumbUp {
 
     @ManyToOne
     @JoinColumn(name = "memberId")
+    @ToString.Exclude
     private Member member; //누른사람
 
     @ManyToOne
     @JoinColumn(name = "postId")
+    @ToString.Exclude
     private Post post; //좋아요 받은 게시글
 }

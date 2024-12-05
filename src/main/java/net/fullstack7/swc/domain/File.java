@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Entity
@@ -19,5 +20,6 @@ public class File {
 
     @ManyToOne
     @JoinColumn(name = "postId")
+    @ToString.Exclude
     private Post post;
 }

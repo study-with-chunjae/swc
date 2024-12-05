@@ -3,6 +3,7 @@ package net.fullstack7.swc.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +12,8 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "roleSet")
-public class Member extends BaseEntity {
+@ToString
+public class Member {
     @Id
     @Column(name = "memberId", nullable = false, length = 50)//회원 id
     private String memberId;
@@ -24,9 +25,17 @@ public class Member extends BaseEntity {
     private String phone;
     private boolean isDeleted;
     private boolean social;
+    private LocalDateTime createdAt; //회원 생성일
+    private LocalDateTime updatedAt; //회원 수정일
+    private LocalDateTime deletedAt; //회원삭제일
+    private LocalDateTime lastLoginAt; //마지막 로그인한 날
+    @OneToOne(mappedBy = "member")
+    @ToString.Exclude
+    private MemberProfile memberProfile;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
+    @ToString.Exclude
     private Set<MemberRole> roleSet = new HashSet<>();
 
     public void modifyPassword(String newPwd) {

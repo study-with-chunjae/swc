@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Entity
@@ -21,9 +22,11 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "chatRoomId")
+    @ToString.Exclude
     private ChatRoom chatRoom; //채팅방
 
     @ManyToOne
     @JoinColumn(name = "senderId")
+    @ToString.Exclude
     private Member sender; //보낸사람
 }

@@ -3,6 +3,7 @@ package net.fullstack7.swc.domain;
 import jakarta.persistence.*;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Entity
@@ -19,5 +20,6 @@ public class Qna {
 
     @ManyToOne
     @JoinColumn(name = "questionerId")
+    @ToString.Exclude
     private Member questioner;
 }
