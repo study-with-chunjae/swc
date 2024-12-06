@@ -31,11 +31,13 @@ public class Member {
     private String phone;
     @Column(name="status", nullable = false, length = 1, columnDefinition = "CHAR(1) default 'Y'")
     private String status; // 맴버 상태 <- 기본값 Y : 활성화, N : 비활성화(관리자 비활성화 포함), O : 6개월 이상 로그인 이력X, P : 5회 이상 로그인 실패 비활성화, D : 탈퇴
+    @Column(name="social", nullable = true, length = 20)
     private String social;
     private LocalDateTime createdAt; //회원 생성일
     private LocalDateTime updatedAt; //회원 수정일
     private LocalDateTime deletedAt; //회원삭제일
-    private LocalDateTime lastLoginAt; //마지막 로그인한 날
+    private LocalDateTime lastLoginAt; // 마지막 로그인
+
     @OneToOne(mappedBy = "member")
     @ToString.Exclude
     private MemberProfile memberProfile;
@@ -56,5 +58,8 @@ public class Member {
     }
     public void clearRoles(){
         this.roleSet.clear();
+    }
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 }

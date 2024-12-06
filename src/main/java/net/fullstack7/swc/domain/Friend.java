@@ -29,4 +29,16 @@ public class Friend {
     private Member requester; //친구요청한사람 아이디
 
     private Integer status; //수락아직안함 0 수락 1
+
+    public Friend() {}
+
+    public Friend(final Member receiver, final Member requester, final Integer status) {
+        this.receiver = receiver;
+        this.requester = requester;
+        this.status = status;
+    }
+
+    public void allow(){
+        this.status = 1;
+    }
 }

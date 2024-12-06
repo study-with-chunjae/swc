@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{main/header.html}"
+>
+<head>
+    <link th:href="@{/assets/css/main.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/css/header.css}" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .all {
+            max-width: 1280px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .content {
+            max-width: 1280px;
+            margin: auto;
+            padding: 20px;
+            /*background-image: url('/assets/public/mainback.png'); !* Removed trailing slash *!*/
+            /*background-size: cover; !* Ensures the image covers the container *!*/
+            /*background-position: center; !* Centers the image *!*/
+            /*background-repeat: no-repeat; !* Prevents the image from repeating *!*/
+
+            background-color: white;
+        }
+
+        .content2 {
+            max-width: 1280px;
+            margin: 30px;
+            padding: 20px;
+            background-color: rgba(133, 129, 129, 0.06);
+            height: 600px;
+            border-radius: 8px;
+        }
+
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .info-table th {
+            background-color: #f5f5f5;
+            width: 25%;
+        }
+
+        .info-table td {
+            width: 25%;
+        }
+
+        .content-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .image-section img {
+            width: 200px;
+            height: 350px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .text-section {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            height: 350px;
+            background-color: #f9f9f9;
+        }
+
+        .text-section p {
+            margin-bottom: 10px;
+        }
+
+        .shared-info, .tags {
+            margin-bottom: 20px;
+        }
+
+        .shared-info button {
+            background-color: #ff5c5c;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .shared-info button:hover {
+            background-color: #ff1c1c;
+        }
+
+        .button-section {
+            text-align: center;
+        }
+
+        .button-section button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(66, 66, 66, 0.66);
+            color: #fff;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-section button:hover {
+            background-color: rgba(66, 66, 66, 0.52);
+        }
+
+
+    </style>
+</head>
+<div class="all">
+    <div class="content" style="height: 840px;" layout:fragment="maincontent">
+        <div class="content2">
+
+                <h2>학습 정보</h2>
+                <table class="info-table">
+                    <tr>
+                        <th>제목</th>
+                        <td colspan="3">오늘 학습 내용은 블라블라~~~</td>
+                    </tr>
+                    <tr>
+                        <th>등록일</th>
+                        <td>20xx-01-01 오후 1:49:36</td>
+                        <th>오늘의 학습 노출 여부</th>
+                        <td>Y</td>
+                    </tr>
+                    <tr>
+                        <th>좋아요</th>
+                        <td>0</td>
+                        <th>오늘의 학습 노출 기간</th>
+                        <td>20xx-01-01 ~ 2024-05-13</td>
+                    </tr>
+                </table>
+
+                <div class="content-section">
+                    <div class="image-section">
+                        <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
+                    </div>
+                    <div class="text-section">
+                        <p>오늘의 학습 내용은</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                        <p>블라블라~~~</p>
+                    </div>
+                </div>
+
+                <div class="shared-info">
+                    <p><strong>공유한 사람:</strong> 김개똥 (20xx-01-01 오후 13:00:30) </p>
+                </div>
+
+                <div class="tags">
+                    <p><strong>분야:</strong> 한식, 학교</p>
+                    <p><strong>해시태그:</strong> #맛집, #학교</p>
+                </div>
+
+                <div class="button-section">
+                    <button>목록</button>
+                    <button>등록</button>
+                    <button>수정</button>
+                    <button>삭제</button>
+                </div>
+
+        </div>
+    </div>
+</div>
