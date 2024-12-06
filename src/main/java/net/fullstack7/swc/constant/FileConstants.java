@@ -5,6 +5,6 @@ public class FileConstants {
       "pdf", "ppt", "pptx", "xls", "xlsx", "doc", "docx", "txt", "md"
   };
   public static final String[] ALLOWED_IMAGE_EXTENSIONS = {
-      "jpg", "jpeg", "png", "gif"
+      "jpg", "jpeg", "png"
   };
 }

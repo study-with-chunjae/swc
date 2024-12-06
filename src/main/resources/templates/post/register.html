@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Register</title>
+</head>
+<body>
+<h1>Post Register</h1>
+<form action="/post/register" method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <td><label for="title">제목</label></td>
+            <td><input type="text" name="title" id="title" th:maxlength="100"></td>
+        </tr>
+        <tr>
+            <td><label for="content">내용</label></td>
+            <td><textarea name="content" id="content" th:maxlength="2000"
+            ></textarea></td>
+        </tr>
+        <tr>
+            <td><label for="file">이미지</label></td>
+            <td><input type="file" name="file" id="file">파일선택</td>
+        </tr>
+        <tr>
+            <td>오늘의 학습 노출여부</td>
+            <td>
+                <input id="todayType_1" type="radio" name="todayType" value="1"><label for="todayType_1">노출</label>
+                <input id="todayType_0" type="radio" name="todayType" value="0"><label for="todayType_0">노출안함</label>
+            </td>
+        </tr>
+        <tr>
+            <td>오늘의 학습 노출기간</td>
+            <td>
+                <input id="displayAt" type="date" name="displayAt">
+                 &nbsp;~&nbsp;
+                <input id="displayEnd" type="date" name="displayEnd">
+            </td>
+        </tr>
+        <tr>
+            <td>분야</td>
+            <td><input type="text" name="topics" id="topics" th:maxlength="100"></td>
+        </tr>
+        <tr>
+            <td>해쉬태그</td>
+            <td><input type="text" name="hashtag" id="hashtag" th:maxlength="100"></td>
+        </tr>
+        <tr>
+            <td th:colspan="2">
+                <button type="submit" id="btnSubmit">등록</button>
+                <button type="reset" id="btnReset">초기화</button>
+                <button type="button" id="btnBack">목록으로</button>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

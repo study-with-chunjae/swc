@@ -7,11 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.ToString;
 
-@Getter
+import lombok.*;
+
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

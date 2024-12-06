@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -59,9 +62,9 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PageDTO<E> {
-    private static final String DEFAULT_SORT_FIELD = "idx";
-    private static final String DEFAULT_SORT_ORDER = "desc";
     private static final String EMPTY = "";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final LocalDateTime NOW = LocalDateTime.now();
     @Builder.Default
     @Min(value = 1)
     @Max(value = 100000)
@@ -86,6 +89,8 @@ public class PageDTO<E> {
     private String searchField;
     @Size(max = 100)
     private String searchValue;
+    private String searchDateBegin;
+    private String searchDateEnd;
     //@Pattern(regexp = "^(idx|title|regDate)$", message = "싫은데요")
     private String sortField;
     //@Pattern(regexp = "^(asc|desc)$", message = "싫은데요")
@@ -97,7 +102,7 @@ public class PageDTO<E> {
      * 필수 Field 값들을 활용해 PageDTO 의 다른 Field 값들을 초기화함
      * 필수 값 : pageNo, pageSize
      */
-    public void initialize() {
+    public void initialize(String DEFAULT_SORT_FIELD, String DEFAULT_SORT_ORDER) {
         this.offset = (pageNo - 1) * pageSize;
         this.blockStart = ((pageNo - 1) / pageSize) * pageSize + 1;
         this.blockEnd = blockStart + blockSize - 1;
@@ -107,6 +112,8 @@ public class PageDTO<E> {
         if (this.sortDirection == null || this.sortDirection.isEmpty()) this.sortDirection = DEFAULT_SORT_ORDER;
         if (this.searchField == null || this.searchField.isEmpty()) this.searchField = EMPTY;
         if (this.searchValue == null || this.searchValue.isEmpty()) this.searchValue = EMPTY;
+        if (this.searchDateBegin == null || this.searchDateBegin.isEmpty()) this.searchDateBegin = FORMATTER.format(NOW.minusDays(7));
+        if (this.searchDateEnd == null || this.searchDateEnd.isEmpty()) this.searchDateEnd = FORMATTER.format(NOW);
         this.queryString = URLEncoder.encode(
                 String.format("searchField=%s&searchValue=%s&sortField=%s&sortDirection=%s",
                         this.searchField, this.searchValue, this.sortField, this.sortDirection)

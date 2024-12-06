@@ -28,5 +28,5 @@ public class Friend {
     @ToString.Exclude
     private Member requester; //친구요청한사람 아이디
 
-    private Integer status; //수락아직안함 N 수락 Y
+    private Integer status; //수락아직안함 0 수락 1
 }
