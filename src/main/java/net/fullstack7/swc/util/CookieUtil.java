@@ -4,9 +4,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
-
+@Component
 public class CookieUtil {
     public int getStringToInt(String str, int defaultValue) {
         return(StringUtils.isNumeric(str) ? Integer.parseInt(str) : defaultValue);

@@ -5,12 +5,16 @@ import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.dto.PostRegisterDTO;
+import net.fullstack7.swc.dto.PostViewDTO;
 import net.fullstack7.swc.repository.PostRepository;
 import net.fullstack7.swc.util.FileUploadUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ import java.io.IOException;
 public class PostServiceImpl implements PostServiceIf {
     private final PostRepository postRepository;
     private final FileUploadUtil fileUploadUtil;
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
@@ -28,9 +33,9 @@ public class PostServiceImpl implements PostServiceIf {
                     .content(postRegisterDTO.getContent())
                     .todayType(postRegisterDTO.getTodayType())
                     .createdAt(postRegisterDTO.getCreatedAt())
-                    .displayEnd(postRegisterDTO.getDisplayEnd())
+                    .displayEnd(LocalDate.parse(postRegisterDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
                     .topics(postRegisterDTO.getTopics())
-                    .displayAt(postRegisterDTO.getDisplayAt())
+                    .displayAt(LocalDate.parse(postRegisterDTO.getDisplayAt(),FORMATTER).atStartOfDay())
                     .hashtag(postRegisterDTO.getHashtag())
                     .image(imageFilePath.replace("\\","/"))
                     .member(Member.builder().memberId(memberId).build())
@@ -40,5 +45,10 @@ public class PostServiceImpl implements PostServiceIf {
             log.error(e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public PostViewDTO viewPost(int postId) {
+        return null;
     }
 }
