@@ -52,8 +52,7 @@ public class PostController {
         if(createdAt.isEmpty()){
             createdAt = NOW_STRING;
         }
-        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
-        String memberId = memberService.getMemberInfo(accessToken).get("memberId");
+        String memberId = getMemberIdInJwt(req);
         List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
         if(postMainDTOList==null){
             model.addAttribute("error","조회 중 일시적인 에러가 발생했습니다.");
@@ -72,8 +71,7 @@ public class PostController {
     public String view(@RequestParam(required = false, defaultValue="-1") int postId,
                        HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "view");
-        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
-        String memberId = memberService.getMemberInfo(accessToken).get("memberId");
+        String memberId = getMemberIdInJwt(req);
 
         return "post/view";
     }
@@ -104,9 +102,8 @@ public class PostController {
         if(bindingResult.hasErrors()){
             return errorUtil.redirectWithError(DEFAULT_REDIRECT,redirectAttributes,bindingResult);
         }
-        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
-        Map<String,String> memberInfo = memberService.getMemberInfo(accessToken);
-        Post post = postService.registerPost(postRegisterDTO, memberInfo.get("memberId"));
+        String memberId = getMemberIdInJwt(req);
+        Post post = postService.registerPost(postRegisterDTO, memberId);
         if(post==null){
             return errorUtil.redirectWithError("게시글등록 실패",DEFAULT_REDIRECT,redirectAttributes);
         }
@@ -122,5 +119,10 @@ public class PostController {
     public String modifyPost(){
         LogUtil.logLine(CONTROLLER_NAME + "modify post");
         return "post/view";
+    }
+
+    private String getMemberIdInJwt(HttpServletRequest req){
+        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
+        return memberService.getMemberInfo(accessToken).get("memberId");
     }
 }
