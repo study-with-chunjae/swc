@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{main/header.html}"
+>
+<head>
+    <link th:href="@{/assets/css/main.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/css/header.css}" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .all {
+            max-width: 1280px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .content {
+            max-width: 1280px;
+            margin: auto;
+            padding: 20px;
+            /*background-image: url('/assets/public/mainback.png'); !* Removed trailing slash *!*/
+            /*background-size: cover; !* Ensures the image covers the container *!*/
+            /*background-position: center; !* Centers the image *!*/
+            /*background-repeat: no-repeat; !* Prevents the image from repeating *!*/
+
+            background-color: white;
+        }
+
+        .content2 {
+            max-width: 1280px;
+            margin: 30px;
+            padding: 20px;
+            background-color: rgba(133, 129, 129, 0.06);
+            height: 600px;
+            border-radius: 8px;
+        }
+
+
+
+        .notice-board {
+            max-width: 1024px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        .search-btn {
+            padding: 5px 15px;
+            background-color: seagreen;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background-color: darkgreen;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead th {
+            background-color: #f5f5f5;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            color: #fff;
+            background-color: #FF5722;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .new-badge {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 2px 6px;
+            color: #fff;
+            background-color: #007BFF;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .pagination button {
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+
+        .page-number {
+            padding: 5px 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+
+        .button-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .sort-btn {
+            padding: 5px 15px;
+            border: 1px solid #007BFF;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .sort-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .view-count-select {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+
+    </style>
+</head>
+<div class="all">
+    <div class="content" style="height: 840px;" layout:fragment="maincontent">
+        <div class="content2">
+                <h1>나의 학습</h1>
+
+                <!-- Date and Search Filter -->
+                <div class="filter-section">
+                    <input type="date" class="date-input">
+                    <span>~</span>
+                    <input type="date" class="date-input">
+                    <select class="view-count-select">
+                        <option value="title" selected>제목 + 내용</option>
+                        <option value="title">제목</option>
+                        <option value="content">내용</option>
+                    </select>
+                    <input type="text" class="search-input" placeholder="검색어를 입력하세요">
+                    <button class="search-btn">검색</button>
+                </div>
+
+            <div class="button-section">
+                <button class="sort-btn" onclick="sortBy('등록순')">등록순</button>
+                <button class="sort-btn" onclick="sortBy('좋아요순')">좋아요순</button>
+                <select class="view-count-select">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30" selected>30</option>
+                    <option value="50">50</option>
+                </select>
+                <span>개씩 보기</span>
+            </div>
+                <!-- Notice Table -->
+                <table>
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>등록일</th>
+                        <th>좋아요</th>
+                        <th>오늘의 학습 노출 여부</th>
+                        <th>오늘의 학습 노출 기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>물리와 탐구 <span class="new-badge">N</span></td>
+                        <td>2018.05.04 14:16</td>
+                        <td>4</td>
+                        <td>Y</td>
+                        <td>2018.05.04 14:16</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>탐구 사회 공부 <span class="new-badge">N</span></td>
+                        <td>2018.05.04 14:16</td>
+                        <td>7</td>
+                        <td>N</td>
+                        <td>2018.05.04 15:31</td>
+                    </tr>
+                    <!-- Additional rows as needed -->
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button>&lt;</button>
+                    <span class="page-number">1</span>
+                    <button>&gt;</button>
+                </div>
+            </div>
+
+
+
+    </div>
+</div>

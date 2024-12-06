@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{main/header.html}"
+>
+<head>
+  <link th:href="@{/assets/css/main.css}" rel="stylesheet"/>
+  <link th:href="@{/assets/css/header.css}" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    .all {
+      max-width: 1280px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    .content {
+      max-width: 1280px;
+      margin: auto;
+      padding: 50px;
+      background-image: url('/assets/public/mainback.png'); /* Removed trailing slash */
+      background-size: cover; /* Ensures the image covers the container */
+      background-position: center; /* Centers the image */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
+    }
+
+    .content1 {
+      width: 60%;
+      margin: 6px;
+      float: left;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: white;
+    }
+    .content2 {
+      width:20%;
+      margin: 6px;
+      float: left;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: white;
+    }
+    .content3 {
+      width: 16%;
+      margin: 6px;
+      float: left;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: white;
+    }
+
+    .category{
+      width: 150px;
+      background-color: white;
+      margin: 15px;
+      border-radius: 3px;
+    }
+
+  </style>
+</head>
+<div class="all">
+
+  <div class="content" style="height: 840px;" layout:fragment="maincontent">
+    <section class="content3">
+    <aside class="calendar">
+      <div class="month">
+        <button>월</button>
+        <button>화</button>
+        <button>수</button>
+        <button>목</button>
+        <button>금</button>
+        <button>토</button>
+        <button>일</button>
+      </div>
+      <div class="date">
+        <button class="today">5.11 화</button>
+        <span>오늘의 일정</span>
+      </div>
+    </aside>
+    </section>
+
+    <section class="content1">
+      <article class="learning-card">
+        <div class="thumbnail">
+        <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
+          <p class="category">분야</p>
+          <p class="category">#태그1 #테그2</p>
+        </div>
+        <div class="info">
+          <h3 class="title">제목</h3>
+          <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ... 트림하여 표시합니다.</p>
+          <div class="shared-by">
+            공유한 사람1<br>
+            공유한 사람2<br>
+            공유한 사람3
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="content2">
+      <h3 style="text-align: center">공유 학습</h3>
+
+      <aside class="shared-learning">
+        <div class="thumbnail-group">
+          <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
+        </div>
+        <div class="likes">
+          ❤️ 1,000 이전재님
+        </div>
+      </aside>
+
+      <aside class="shared-learning">
+        <div class="thumbnail-group">
+          <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
+        </div>
+        <div class="likes">
+          ❤️ 1,000 이전재님
+        </div>
+      </aside>
+
+    </section>
+  </div>
+</div>

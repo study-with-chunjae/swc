@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{main/header.html}"
+>
+<head>
+    <link th:href="@{/assets/css/main.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/css/header.css}" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .all {
+            max-width: 1280px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .content {
+            max-width: 1280px;
+            margin: auto;
+            padding: 20px;
+            /*background-image: url('/assets/public/mainback.png'); !* Removed trailing slash *!*/
+            /*background-size: cover; !* Ensures the image covers the container *!*/
+            /*background-position: center; !* Centers the image *!*/
+            /*background-repeat: no-repeat; !* Prevents the image from repeating *!*/
+
+            background-color: white;
+        }
+
+        .content2 {
+            max-width: 1280px;
+            margin: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            height: 600px;
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+<div class="all">
+    <div class="content" style="height: 840px;" layout:fragment="maincontent">
+        <div class="content2">
+
+
+        </div>
+    </div>
+</div>
