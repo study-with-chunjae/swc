@@ -14,6 +14,10 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 public class Member {
+
+    public Member(String memberId){
+        this.memberId = memberId;
+    }
     @Id
     @Column(name = "memberId", nullable = false, length = 50)//회원 id
     private String memberId;

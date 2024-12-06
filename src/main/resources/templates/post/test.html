@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>$Title$</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .toast {
+            background-color: #444;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            animation: fadeInUp 0.5s forwards;
+        }
+        .toast-message {
+            flex: 1;
+        }
+        .toast-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .toast-btn {
+            border: none;
+            padding: 5px 12px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .toast-btn.close-btn {
+            background-color: #aaa;
+            color: #000;
+        }
+        .toast-btn.close-btn:hover {
+            background-color: #888;
+        }
+        .toast-btn.move-btn {
+            background-color: #28a745; /* 녹색 버튼 */
+            color: #fff;
+        }
+        .toast-btn.move-btn:hover {
+            background-color: #218838; /* 어두운 녹색 */
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<script>
+
+</script>
+
+<!-- 예시: 메시지와 URL을 함께 전달 -->
+
+
+<div id="toast-container"></div>
+
+<script>
+    function showToast(message, url) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+
+        // 알림 메시지 표시 부분
+        const messageText = document.createElement('span');
+        messageText.className = 'toast-message';
+        messageText.textContent = message;
+
+        // 버튼 래퍼
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'toast-buttons';
+
+        // 닫기 버튼 (X)
+        const closeButton = document.createElement('button');
+        closeButton.className = 'toast-btn close-btn';
+        closeButton.textContent = 'X';
+        closeButton.onclick = () => toast.remove();
+
+        // 이동하기 버튼
+        const moveButton = document.createElement('button');
+        moveButton.className = 'toast-btn move-btn';
+        moveButton.textContent = '이동하기';
+        moveButton.onclick = () => {
+            if (url) {
+                window.location.href = url;
+            }
+        };
+
+        buttonWrapper.appendChild(moveButton);
+        buttonWrapper.appendChild(closeButton);
+
+        toast.appendChild(messageText);
+        toast.appendChild(buttonWrapper);
+        toastContainer.appendChild(toast);
+    }
+    showToast('This is a toast notification!', '/post/list');
+</script>
+</body>
+</html>

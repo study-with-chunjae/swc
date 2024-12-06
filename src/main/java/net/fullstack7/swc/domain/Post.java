@@ -6,11 +6,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +26,10 @@ public class Post {
     private LocalDateTime displayAt; //오늘의 학습노출시작일
     private LocalDateTime displayEnd; //오늘의 학습노출시작일
     private LocalDateTime createdAt; //게시글 생성일
-    @OneToMany
-    @ToString.Exclude
-    private Set<Topic> topics; //분야
+    private String topics; //분야
     private String hashtag; //해시태그
+    @Column(columnDefinition = "VARCHAR(300)")
+    private String image; //이미지 파일 경로
 
     @ManyToOne
     @JoinColumn(name = "userId")
@@ -36,4 +39,12 @@ public class Post {
     @OneToMany
     @ToString.Exclude
     private List<ThumbUp> thumbUps;
+
+    @OneToMany
+    @ToString.Exclude
+    private List<Share> shares;
+
+    @OneToMany
+    @ToString.Exclude
+    private List<File> files;
 }

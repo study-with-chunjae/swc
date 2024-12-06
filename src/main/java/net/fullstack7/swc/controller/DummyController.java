@@ -1,5 +1,4 @@
 package net.fullstack7.swc.controller;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/dummy")
 public class DummyController {
 
+    @GetMapping("/toast")
+    public String toast() {
+        return "post/test";
+    }
+  
     @GetMapping("/main/main")
     public String main() {
         return "main/main";
