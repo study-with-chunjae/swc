@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
+import net.fullstack7.swc.dto.PostMainDTO;
 import net.fullstack7.swc.dto.PostRegisterDTO;
 import net.fullstack7.swc.dto.PostViewDTO;
 import net.fullstack7.swc.repository.PostRepository;
 import net.fullstack7.swc.util.FileUploadUtil;
+import net.fullstack7.swc.util.LogUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 public class PostServiceImpl implements PostServiceIf {
     private final PostRepository postRepository;
     private final FileUploadUtil fileUploadUtil;
+    private final ModelMapper modelMapper;
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
@@ -50,5 +55,19 @@ public class PostServiceImpl implements PostServiceIf {
     @Override
     public PostViewDTO viewPost(int postId) {
         return null;
+    }
+
+    @Override
+    public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType) {
+        LogUtil.logLine("PostService -> mainPost");
+        try {
+            Member member = Member.builder().memberId(memberId).build();
+            List<Post> postList = postRepository.findByMemberAndTodayTypeAndCreatedAtBetween(member, todayType, createdAt, createdAt.plusDays(1));
+            LogUtil.log("list", postList);
+            return postList.stream().map(post -> modelMapper.map(post, PostMainDTO.class)).toList();
+        }catch(Exception e){
+            log.error("mainPost 에러 발생 : {}",e.getMessage());
+            return null;
+        }
     }
 }

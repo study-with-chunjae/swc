@@ -92,7 +92,7 @@ public class CheckJwtAspect {
             return "redirect:" + redirectUrl;
         }
 
-        // 위 두 경우 다 안 되는 경우 기본적으로 쿼리 파라미터로 전달
+        // 위 두 경우 다 안 되는 경우 쿼리 스트링으로 전달
         String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
         return "redirect:" + redirectUrl + "?error=" + encodedMessage;
     }

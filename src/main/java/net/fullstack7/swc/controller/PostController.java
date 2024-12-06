@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.dto.MemberDTO;
+import net.fullstack7.swc.dto.PostMainDTO;
 import net.fullstack7.swc.dto.PostRegisterDTO;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.PostServiceIf;
@@ -22,6 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -31,13 +36,29 @@ import java.util.Map;
 public class PostController {
     private static final String CONTROLLER_NAME = "PostController";
     private static final String DEFAULT_REDIRECT = "/post/list";
+    private static final Integer TYPE_SHARE = 1;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final String NOW_STRING = FORMATTER.format(LocalDate.now());
     private final MemberServiceIf memberService;
     private final PostServiceIf postService;
     private final ErrorUtil errorUtil;
     private final CookieUtil cookieUtil;
+
+    @CheckJwtToken
     @GetMapping("/main")
-    public String postMain(){
+    public String postMain(@RequestParam(required = false, defaultValue = "") String createdAt,
+                           HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "main");
+        if(createdAt.isEmpty()){
+            createdAt = NOW_STRING;
+        }
+        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
+        String memberId = memberService.getMemberInfo(accessToken).get("memberId");
+        List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
+        if(postMainDTOList==null){
+            model.addAttribute("error","조회 중 일시적인 에러가 발생했습니다.");
+        }
+        model.addAttribute("postMainDTOList",postMainDTOList);
         return "post/main";
     }
     @GetMapping("/list")
@@ -86,7 +107,9 @@ public class PostController {
         String accessToken = cookieUtil.getCookieValue(req,"accessToken");
         Map<String,String> memberInfo = memberService.getMemberInfo(accessToken);
         Post post = postService.registerPost(postRegisterDTO, memberInfo.get("memberId"));
-
+        if(post==null){
+            return errorUtil.redirectWithError("게시글등록 실패",DEFAULT_REDIRECT,redirectAttributes);
+        }
         return "redirect:post/list";
     }
 
