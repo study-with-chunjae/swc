@@ -17,14 +17,17 @@ public class Member {
     @Id
     @Column(name = "memberId", nullable = false, length = 50)//회원 id
     private String memberId;
-    @Column(name = "pwd", nullable = false, length = 200)//비밀번호
+    @Column(name = "pwd", nullable = false, length = 300)//비밀번호
     private String pwd;
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
     @Column(name = "email", nullable = false, length = 100, unique = true)//이메일 (고유)
     private String email;
     @Column(name = "phone", nullable = false, length = 11, columnDefinition = "CHAR(11)")//핸드폰 번호
     private String phone;
-    private boolean isDeleted;
-    private boolean social;
+    @Column(name="status", nullable = false, length = 1, columnDefinition = "CHAR(1) default 'Y'")
+    private String status; // 맴버 상태 <- 기본값 Y : 활성화, N : 비활성화(관리자 비활성화 포함), O : 6개월 이상 로그인 이력X, P : 5회 이상 로그인 실패 비활성화, D : 탈퇴
+    private String social;
     private LocalDateTime createdAt; //회원 생성일
     private LocalDateTime updatedAt; //회원 수정일
     private LocalDateTime deletedAt; //회원삭제일
@@ -49,8 +52,5 @@ public class Member {
     }
     public void clearRoles(){
         this.roleSet.clear();
-    }
-    public void modifySocial(boolean newSocial) {
-        this.social = newSocial;
     }
 }
