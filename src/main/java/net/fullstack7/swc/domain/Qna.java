@@ -23,3 +23,5 @@ public class Qna {
     @ToString.Exclude
     private Member questioner;
 }
+
+
