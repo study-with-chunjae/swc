@@ -48,4 +48,14 @@ public class DummyController {
     public String regist() {
         return "todo/regist";
     }
+
+    @GetMapping("/todo/modify")
+    public String modify() {
+        return "todo/modify";
+    }
+
+    @GetMapping("/todo/share")
+    public String share() {
+        return "todo/share";
+    }
 }
