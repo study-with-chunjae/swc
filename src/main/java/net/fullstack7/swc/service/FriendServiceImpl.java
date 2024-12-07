@@ -153,8 +153,8 @@ public class FriendServiceImpl implements FriendServiceIf {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Member> searchFriends(String keyword, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
+    public List<Member> searchFriends(String keyword, int limit, int page) {
+        Pageable pageable = PageRequest.of(page, limit);
         return memberRepository.findById(keyword, pageable);
     }
 
