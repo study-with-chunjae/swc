@@ -2,8 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{main/header.html}"
->
+      layout:decorate="~{main/header.html}">
 <head>
   <link th:href="@{/assets/css/main.css}" rel="stylesheet"/>
   <link th:href="@{/assets/css/header.css}" rel="stylesheet"/>
@@ -20,10 +19,11 @@
       background-color: #f9f9f9;
       color: #333;
     }
+
     .all {
       max-width: 1280px;
       margin: 50px auto;
-      padding: 20px;
+      padding: 60px;
       background-color: #fff;
       border-radius: 8px;
     }
@@ -31,115 +31,127 @@
     .content {
       max-width: 1280px;
       margin: auto;
-      /*padding: 50px;*/
-      /*background-image: url('/assets/public/mainback.png'); !* Removed trailing slash *!*/
-      /*background-size: cover; !* Ensures the image covers the container *!*/
-      /*background-position: center; !* Centers the image *!*/
-      /*background-repeat: no-repeat; !* Prevents the image from repeating *!*/
-      background-color: #dcedea;
+      background-image: url('/assets/public/mainback.png'); /* Removed trailing slash */
+      background-size: cover; /* Ensures the image covers the container */
+      background-position: center; /* Centers the image */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
     }
 
     .content1 {
       width: 78%;
-      margin: 6px;
       float: left;
       padding: 35px;
       border-radius: 15px;
       background-color: white;
-      height: 800px;
+      height: 700px;
+      margin-top: 30px;
+      margin-left: 15px;
     }
+
     .content2 {
-      width:20%;
-      margin: 6px;
+      width: 20%;
+      margin-top: 30px;
       float: left;
       padding: 20px;
       border-radius: 15px;
       background-color: white;
-      height: 800px;
+      height: 700px;
     }
+
     .content3 {
       width: 15%;
-      height: 95%;
       float: left;
       border-radius: 15px;
       background-color: white;
     }
 
-    .category{
-      width: 150px;
-      background-color: white;
-      margin: 15px;
-      border-radius: 3px;
-    }
-
-    .button{
-      background-color: white;
-      padding: 3px;
-      border-radius: 3px;
-      margin-top: 10px;
-    }
-
   </style>
 </head>
+<body>
 <div class="all">
-
   <div class="content" style="height: 840px;" layout:fragment="maincontent">
 
-    <section class="content2">
+    <section class="content2" >
       <h3 style="text-align: center">프로필</h3>
-
       <aside class="shared-learning">
         <div class="thumbnail-group">
-          <img th:src="@{/assets/public/human.png}" alt="Thumbnail" >
+          <img th:src="@{/assets/public/human.png}" alt="Thumbnail">
         </div>
         <div class="likes">
           이전재님
         </div>
-
-        <button class="button"> ➕ 친구 추가</button>
-        <button class="button"> ✉️ 쪽지 보내기</button>
+        <button class="button">➕ 친구 추가</button>
+        <button class="button">✉️ 쪽지 보내기</button>
       </aside>
-
     </section>
 
-    <section class="content1">
-      <h2>오늘의 학습</h2>
+    <section class="content1" >
 
-      <section class="content3">
-        <aside class="calendar">
-          <div class="month">
-            <button>월</button>
-            <button>화</button>
-            <button>수</button>
-            <button>목</button>
-            <button>금</button>
-            <button>토</button>
-            <button>일</button>
-          </div>
-          <div class="date">
-<!--            <button class="today">5.11 화</button>-->
-            <span>오늘의 일정</span>
-          </div>
-        </aside>
+      <h2>오늘의 학습</h2>
+      <section class="content3" style="margin-top: 23px">
+
+        <div class="weekday-container">
+          <button class="arrow up">▲</button>
+          <ul id="weekday-list" class="weekday-list">
+            <!-- Days will be dynamically injected here -->
+          </ul>
+          <button class="arrow down">▼</button>
+
+          <p id="today" style="margin-top: 10px; font-size: 16px; text-align: center;"></p>
+        </div>
+
+        <div id="calendar-modal" class="calendar-modal hidden">
+          <input type="date" id="date-picker">
+          <button id="close-calendar">닫기</button>
+        </div>
+        <div><script th:src="@{/assets/js/main.js}" layout:fragment="mainscript"  th:inline="javascript"></script></div>
       </section>
 
-      <article class="learning-card">
-        <div class="thumbnail">
-        <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
-          <p class="category">분야</p>
-          <p class="category">#태그1 #테그2</p>
-        </div>
-        <div class="info">
-          <h3 class="title">제목</h3>
-          <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ...</p>
-          <div class="shared-by">
-            공유한 사람1<br>
-            공유한 사람2<br>
-            공유한 사람3
+
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <div class="slider">
+            <article class="learning-card">
+              <div class="thumbnail">
+                <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail">
+                <p class="category">분야</p>
+                <p class="category">#태그1 #태그2</p>
+              </div>
+              <div class="info">
+                <h3 class="title">제목1</h3>
+                <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ...</p>
+                <div class="shared-by">
+                  공유한 사람1<br>공유한 사람2<br>공유한 사람3
+                </div>
+              </div>
+            </article>
+            <article class="learning-card">
+              <div class="thumbnail">
+                <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail">
+                <p class="category">분야</p>
+                <p class="category">#태그3 #태그4</p>
+              </div>
+              <div class="info">
+                <h3 class="title">제목2</h3>
+                <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ...</p>
+                <div class="shared-by">
+                  공유한 사람4<br>공유한 사람5<br>공유한 사람6
+                </div>
+              </div>
+            </article>
+            <!-- 추가적으로 더 많은 <article> 요소를 등록 -->
           </div>
         </div>
-      </article>
-    </section>
+        <div class="slider-indicators">
+          <!-- Dots will be dynamically added here -->
+        </div>
+      </div>
 
+
+
+    </section>
   </div>
 </div>
+
+</body>
+</html>
