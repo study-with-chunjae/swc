@@ -50,7 +50,7 @@ public class CheckJwtAspect {
                 request.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 //String accessToken = request.getParameter("accessToken");
                 String accessToken = cookieUtil.getCookieValue(request,"accessToken");
-                if(accessToken!=null){
+                if(accessToken!=null && !accessToken.isEmpty()){
                     log.debug("accessToken is not null");
                     request.setAttribute("accessToken", accessToken);
                     return accessToken;

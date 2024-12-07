@@ -4,10 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.fullstack7.swc.constant.PostPageConstants;
 import net.fullstack7.swc.domain.Post;
-import net.fullstack7.swc.dto.MemberDTO;
-import net.fullstack7.swc.dto.PostMainDTO;
-import net.fullstack7.swc.dto.PostRegisterDTO;
+import net.fullstack7.swc.dto.*;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.PostServiceIf;
 import net.fullstack7.swc.util.CheckJwtToken;
@@ -60,9 +59,18 @@ public class PostController {
         model.addAttribute("postMainDTOList",postMainDTOList);
         return "post/main";
     }
+
+    @CheckJwtToken
     @GetMapping("/list")
-    public String list() {
+    public String list(@Valid PageDTO<PostDTO> pageDTO, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes, HttpServletRequest req) {
         LogUtil.logLine(CONTROLLER_NAME + "list");
+        if(bindingResult.hasErrors()){
+            pageDTO = PageDTO.<PostDTO>builder().build();
+        }
+        pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
+        String memberId = getMemberIdInJwt(req);
+        pageDTO = postService.sortAndSearch(pageDTO,memberId);
+        model.addAttribute("pageDTO",pageDTO);
         return "post/list";
     }
 
