@@ -43,8 +43,4 @@ public class Post {
     @OneToMany
     @ToString.Exclude
     private List<Share> shares;
-
-    @OneToMany
-    @ToString.Exclude
-    private List<File> files;
 }

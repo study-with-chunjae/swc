@@ -33,8 +33,8 @@ public class PostRegisterDTO {
     @Min(-1)
     private Integer todayType=-1; //오늘의 학습노출여부(0:비공개 1:공개)
 
-    private LocalDateTime displayAt; //오늘의 학습노출시작일
-    private LocalDateTime displayEnd; //오늘의 학습노출시작일
+    private String displayAt; //오늘의 학습노출시작일
+    private String displayEnd; //오늘의 학습노출시작일
     @Builder.Default
     private LocalDateTime createdAt=LocalDateTime.now(); //게시글 생성일
 

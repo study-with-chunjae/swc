@@ -71,7 +71,7 @@ public class PageDTO<E> {
     private int pageNo = 1;
     @Builder.Default
     @Min(value = 1)
-    @Max(value = 20)
+    @Max(value = 100)
     private int pageSize = 10;
     private int offset;
     private int totalCount;
@@ -104,7 +104,7 @@ public class PageDTO<E> {
      */
     public void initialize(String DEFAULT_SORT_FIELD, String DEFAULT_SORT_ORDER) {
         this.offset = (pageNo - 1) * pageSize;
-        this.blockStart = ((pageNo - 1) / pageSize) * pageSize + 1;
+        this.blockStart = ((pageNo - 1) / blockSize) * blockSize + 1;
         this.blockEnd = blockStart + blockSize - 1;
         this.prev = this.blockStart > 1;
         this.next = this.blockEnd < totalPage;
@@ -116,8 +116,13 @@ public class PageDTO<E> {
         if (this.searchDateEnd == null || this.searchDateEnd.isEmpty()) this.searchDateEnd = FORMATTER.format(NOW);
         this.queryString = URLEncoder.encode(
                 String.format("searchField=%s&searchValue=%s&sortField=%s&sortDirection=%s",
-                        this.searchField, this.searchValue, this.sortField, this.sortDirection)
-                , StandardCharsets.UTF_8);
+                        this.searchField,
+                        this.searchValue,
+                        this.sortField,
+                        this.sortDirection
+                ),
+                StandardCharsets.UTF_8
+        );
     }
 
     public void setSearchField(String searchField) {
@@ -147,7 +152,7 @@ public class PageDTO<E> {
         this.totalCount = totalCount;
         this.totalPage = (totalCount - 1) / pageSize + 1;
         this.pageNo = pageNo > totalPage ? totalPage : pageNo;
-        this.blockStart = ((pageNo - 1) / pageSize) * pageSize + 1;
+        this.blockStart = ((pageNo - 1) / blockSize) * blockSize + 1;
         this.blockEnd = Math.min(blockEnd, this.totalPage);
         this.prev = this.blockStart > 1;
         this.next = this.blockEnd < totalPage;

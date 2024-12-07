@@ -5,6 +5,96 @@
     <title>Post List</title>
 </head>
 <body>
+<script th:inline="javascript">
+    const error = [[${error}]];
+    if(error){
+        alert(error);
+    }
+</script>
 <h1>Post List</h1>
+<form action="/post/list" method="get">
+    <table border="1">
+        <tr>
+            <td>기간</td>
+            <td><input type="date" name="searchDateBegin" id="searchDateBegin"> ~ <input type="date" name="searchDateEnd" id="searchDateEnd"></td>
+        </tr>
+        <tr>
+            <td>
+                <select name="searchField" id="searchField">
+                    <option value="">검색조건</option>
+                    <option value="title">제목</option>
+                    <option value="content">내용</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" th:maxlength="100" name="searchValue" id="searchValue">
+                <input type="submit" value="검색">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="radio" name="sortField" value="createdAt">등록순
+                <input type="radio" name="sortField" value="thumbUp">좋아요순
+            </td>
+            <td>
+                <select name="pageSize" id="pageSize">
+                    <option value="5" th:selected="${pageDTO == 5}">5개씩보기</option>
+                    <option value="10" th:selected="${pageDTO == 10}">10개씩보기</option>
+                    <option value="30" th:selected="${pageDTO == 30}">30개씩보기</option>
+                    <option value="50" th:selected="${pageDTO == 50}">50개씩보기</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</form>
+<table border="1">
+    <tr>
+        <td>No</td>
+        <td>제목</td>
+        <td>등록일</td>
+        <td>좋아요</td>
+        <td>메인노출여부</td>
+        <td>노출기간</td>
+    </tr>
+    <tr th:if="${pageDTO.dtoList == null}">
+        <td colspan="6">
+            작성된 학습이 존재하지 않습니다.
+        </td>
+    </tr>
+    <tr th:if="${pageDTO.dtoList != null}" th:each="post, status:${pageDTO.dtoList}">
+        <td th:text="${post.postId}"></td>
+        <td th:text="${post.title}"></td>
+        <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
+        <td th:text="${post.thumbUps.size()}"></td>
+        <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
+        <td th:text="${post.displayAt + ' ~ ' + post.displayEnd}"></td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <div class="pagination">
+                <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+                <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+                    <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+                </th:block>
+                <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
+            </div>
+
+            <script th:inline="javascript">
+                let pageBtn = document.querySelectorAll(".page-btn");
+
+                for(let i of pageBtn){
+                    i.addEventListener("click",(e)=>{
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const num = e.target.getAttribute("data-num");
+                        const formObj = document.querySelector("form");
+                        formObj.innerHTML += `<input type='hidden' name='pageNo' value='${num}'>`;
+                        formObj.submit();
+                    });
+                }
+            </script>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

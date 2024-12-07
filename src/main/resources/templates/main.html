@@ -42,6 +42,15 @@
   </head>
   <body>
     <div class="container1234">
+
+  <!-- 강감찬 추가 로그인안되어있으면 에러 메시지 알럿 띄우기 -->
+  <script th:inline="javascript">
+    const error = [[${error}]];
+    if(error){
+      alert(error);
+    }
+  </script>
+      
       <h2>회원가입</h2>
       <form id="signupForm">
         <div class="form-group">

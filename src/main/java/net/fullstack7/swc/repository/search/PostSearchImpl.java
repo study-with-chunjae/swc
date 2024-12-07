@@ -2,9 +2,11 @@ package net.fullstack7.swc.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
+import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.domain.QPost;
 import net.fullstack7.swc.dto.PageDTO;
+import net.fullstack7.swc.util.LogUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+@Log4j2
 public class PostSearchImpl extends QuerydslRepositorySupport implements PostSearch {
     public PostSearchImpl() {
         super(Post.class);
@@ -26,6 +29,7 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
     @Override
     public Page<Post> searchAndSort(Pageable pageable, String searchField, String searchValue, String sortField,
                                     String sortDirection, String searchDateBegin, String searchDateEnd, String memberId) {
+        LogUtil.logLine("PostRepository -> searchAndSort");
         QPost qPost = QPost.post;
         JPQLQuery<Post> query = from(qPost);
         BooleanBuilder bb = new BooleanBuilder();
@@ -44,6 +48,8 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                 LocalDate.parse(searchDateEnd, FORMATTER).atStartOfDay().plusDays(1))
         );
         bb.and(qPost.member.memberId.eq(memberId));
+        log.info("searchField : {}, searchValue : {}, sortField : {}, sortDirection : {}, searchDateBegin : {}, searchDateEnd : {}"
+        ,searchField, searchValue,sortField,sortDirection,searchDateBegin,searchDateEnd);
         query.where(bb);
         //정렬
         if(sortField!=null) {
@@ -58,9 +64,11 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
             }
         }
         //페이징
+        log.info("fetchCount before pagination : {}",query.fetchCount());
         Objects.requireNonNull(this.getQuerydsl()).applyPagination(pageable, query);
         List<Post> posts = query.fetch();
         int total = (int) query.fetchCount();
+        log.info("fetchCount after pagination : {}",query.fetchCount());
         return new PageImpl<>(posts, pageable, total);
     }
 }
