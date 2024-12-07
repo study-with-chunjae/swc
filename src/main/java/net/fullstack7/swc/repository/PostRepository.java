@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Integer>, PostSearch {
-    List<Post> findByMemberAndTodayTypeAndCreatedAtBetween(Member member, Integer todayType, LocalDateTime from, LocalDateTime to);
+    List<Post> findByMemberAndTodayTypeAndCreatedAtBetweenAndDisplayAtBeforeAndDisplayEndAfter(Member member, Integer todayType, LocalDateTime createdAt, LocalDateTime createdAt2, LocalDateTime displayAt, LocalDateTime displayEnd);
     Page<Post> searchAndSort(Pageable pageable, String searchField, String searchValue, String sortField,
                              String sortDirection, String searchDateBegin, String searchDateEnd, String memberId);
 }
