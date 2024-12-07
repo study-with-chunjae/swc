@@ -57,6 +57,7 @@ public class MemberController {
         }
     }
 
+    // 없어질 예정
     @PostMapping("/cookie-test")
     public ResponseEntity<Map<String, String>> cookieTest(@RequestParam String accessToken) {
         try {
@@ -79,7 +80,8 @@ public class MemberController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-
+    // 없어질 예정
+    
     @GetMapping("/check/{memberId}")
     public ResponseEntity<Map<String, Object>> checkMemberIdDuplicate(@PathVariable String memberId) {
         Map<String, Object> response = new HashMap<>();
@@ -92,6 +94,29 @@ public class MemberController {
             log.error("아이디 중복 체크 실패: " + e.getMessage());
             response.put("error", "아이디 중복 체크에 실패했습니다.");
             return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/send-verification-email")
+    public ResponseEntity<?> sendVerificationEmail(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            memberService.sendVerificationEmail(email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            String code = request.get("code");
+            boolean isValid = memberService.verifyEmailCode(email, code);
+            return ResponseEntity.ok().body(Map.of("verified", isValid));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 } 
