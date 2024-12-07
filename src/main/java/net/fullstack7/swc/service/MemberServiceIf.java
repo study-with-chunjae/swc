@@ -1,8 +1,13 @@
 package net.fullstack7.swc.service;
 
+import java.util.Map;
 import net.fullstack7.swc.dto.MemberDTO;
 
 public interface MemberServiceIf{
-    public void signUp(MemberDTO memberDTO);
-    public String signIn(MemberDTO memberDTO);
+    void signUp(MemberDTO memberDTO);
+    String signIn(MemberDTO memberDTO);
+    Map<String, String> getMemberInfo(String token);
+    boolean checkMemberIdDuplicate(String memberId);
+    void sendVerificationEmail(String email);
+    boolean verifyEmailCode(String email, String code);
 }
