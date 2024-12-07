@@ -6,7 +6,9 @@ import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
 import net.fullstack7.swc.service.FriendServiceIf;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +22,14 @@ import java.util.List;
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/friend")
-public class FriendController {
+public class FriendRestController {
     private final FriendServiceIf friendService;
 
     @GetMapping("/search")
     public ResponseEntity<List<Member>> searchFriends(@RequestParam String keyword,
-                                                      @RequestParam(defaultValue = "5") int limit) {
-        List<Member> results = friendService.searchFriends(keyword, limit);
+                                                      @RequestParam(defaultValue = "5") int limit,
+                                                      @RequestParam(defaultValue = "0") int page) {
+        List<Member> results = friendService.searchFriends(keyword, limit, page);
         return ResponseEntity.ok(results);
     }
 
@@ -90,7 +93,6 @@ public class FriendController {
         List<FriendDTO> friends = friendService.getFriends(memberId);
         return ResponseEntity.ok(friends);
     }
-
 
 
 }

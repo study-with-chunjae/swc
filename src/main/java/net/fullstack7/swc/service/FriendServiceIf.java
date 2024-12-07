@@ -13,5 +13,5 @@ public interface FriendServiceIf {
     void deleteFriend(Integer friendId, String memberId);
     List<FriendDTO> getFriendRequests(String receiverId);
     List<FriendDTO> getFriends(String memberId);
-    List<Member> searchFriends(String keyword, int limit);
+    List<Member> searchFriends(String keyword, int limit, int page);
 }
