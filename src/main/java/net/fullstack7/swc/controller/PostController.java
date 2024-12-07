@@ -51,6 +51,7 @@ public class PostController {
         if(createdAt.isEmpty()){
             createdAt = NOW_STRING;
         }
+        LogUtil.log("now", createdAt);
         String memberId = getMemberIdInJwt(req);
         List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
         if(postMainDTOList==null){
@@ -79,8 +80,13 @@ public class PostController {
     public String view(@RequestParam(required = false, defaultValue="-1") int postId,
                        HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "view");
+        if(postId < 0){
+            return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.", DEFAULT_REDIRECT,redirectAttributes);
+        }
         String memberId = getMemberIdInJwt(req);
-
+        PostDTO postDTO = postService.viewPost(postId);
+        model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
+        model.addAttribute("postDTO",postDTO);
         return "post/view";
     }
 
@@ -115,18 +121,46 @@ public class PostController {
         if(post==null){
             return errorUtil.redirectWithError("게시글등록 실패",DEFAULT_REDIRECT,redirectAttributes);
         }
-        return "redirect:post/list";
+        return "redirect:/post/list";
     }
 
+    @CheckJwtToken
     @GetMapping("/modify")
-    public String modifyGet() {
+    public String modifyGet(@RequestParam(required = false, defaultValue = "-1") int postId,
+                            HttpServletRequest req,
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
         LogUtil.logLine(CONTROLLER_NAME + "modify");
+        if(postId < 0){
+            return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.",DEFAULT_REDIRECT,redirectAttributes);
+        }
+        String memberId = getMemberIdInJwt(req);
+        PostDTO postDTO = postService.viewPost(postId);
+        if(postDTO==null){
+            return errorUtil.redirectWithError("없는 게시글입니다.",DEFAULT_REDIRECT,redirectAttributes);
+        }
+        if(!postDTO.getMember().getMemberId().equals(memberId)){
+            return errorUtil.redirectWithError("권한이 없습니다",DEFAULT_REDIRECT,redirectAttributes);
+        }
+        model.addAttribute("postDTO",postDTO);
         return "post/modify";
     }
     @PostMapping("/modify")
-    public String modifyPost(){
+    public String modifyPost(@Valid PostModifyDTO postModifyDTO,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes,
+                             HttpServletRequest req,
+                             Model model){
         LogUtil.logLine(CONTROLLER_NAME + "modify post");
-        return "post/view";
+        if(bindingResult.hasErrors()){
+            return errorUtil.redirectWithError(DEFAULT_REDIRECT,redirectAttributes,bindingResult);
+        }
+        String memberId = getMemberIdInJwt(req);
+        Post post = postService.modifyPost(postModifyDTO, memberId);
+        if(post==null){
+            return errorUtil.redirectWithError("게시글수정 실패",DEFAULT_REDIRECT,redirectAttributes);
+        }
+        return "redirect:/post/view?postId="+post.getPostId();
     }
 
     private String getMemberIdInJwt(HttpServletRequest req){

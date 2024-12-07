@@ -6,5 +6,62 @@
 </head>
 <body>
 <h1>Post View</h1>
+<div th:if="${viewType == 'my'}">나의학습</div>
+<div th:if="${viewType == 'others'}">공유학습</div>
+<table border="1">
+    <tr>
+        <td>제목</td>
+        <td th:text="${postDTO.title}" colspan="3"></td>
+        <td>좋아요</td>
+        <td th:text="${postDTO.thumbUps.size()}"></td>
+    </tr>
+    <tr>
+        <td colspan="2">등록일</td>
+        <td colspan="2">오늘의학습여부</td>
+        <td colspan="2">오늘의학습노출기간</td>
+    </tr>
+    <tr>
+        <td colspan="2" th:text="${#temporals.format(postDTO.createdAt,'yyyy-MM-dd')}"></td>
+        <td colspan="2" th:text="${postDTO.todayType == 1 ? 'Y' : 'N'}"></td>
+        <td colspan="2" th:text="${postDTO.displayAt + ' ~ ' + postDTO.displayEnd}"></td>
+    </tr>
+    <tr>
+        <td colspan="2" th:style="'background-image: url('+${postDTO.image}+');'"></td>
+        <td th:text="${postDTO.content}" colspan="4"></td>
+    </tr>
+    <tr>
+        <td>공유한사람</td>
+        <td colspan="5" th:text="${postDTO.title}">
+            <div th:each="sharedMember, status : ${postDTO.shares}" th:text="${sharedMember.member.memberId + sharedMember.createdAt + (viewType == 'my')?'X':''}"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>분야</td>
+        <td colspan="2" th:text="${postDTO.topics}"></td>
+        <td>해시태그</td>
+        <td colspan="2" th:text="${postDTO.hashtag}"></td>
+    </tr>
+    <tr>
+       <td colspan="6">
+           <button>목록</button>
+           <th:block th:if="${viewType == 'my'}">
+               <button th:onclick="'register('+${postDTO.postId}+')'">등록</button>
+               <button th:onclick="'modify('+${postDTO.postId}+')'">수정</button>
+               <button th:onclick="'deletePost('+${postDTO.postId}+')'">삭제</button>
+           </th:block>
+       </td>
+    </tr>
+    <script th:inline="javascript">
+        function register(postId){
+            location.href="/post/register";
+        }
+        function modify(postId){
+            location.href="/post/modify?postId="+postId;
+        }
+        function deletePost(postId){
+
+        }
+    </script>
+</table>
 </body>
 </html>

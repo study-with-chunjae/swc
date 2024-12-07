@@ -6,10 +6,10 @@
 </head>
 <body>
 <h1>Post Main</h1>
-    <div th:test="${postMainDTOList == null}">
+    <div th:if="${postMainDTOList == null}">
         조회된 게시글이 없습니다.
     </div>
-    <div th:test="${postMainDTOList != null}">
+    <div th:if="${postMainDTOList != null}">
         <table border="1">
             <tr>
                 <td>제목</td><td>내용</td><td>분야</td><td>해쉬태그</td><td>공유한사람</td><td>썸네일</td><td>좋아요</td>
