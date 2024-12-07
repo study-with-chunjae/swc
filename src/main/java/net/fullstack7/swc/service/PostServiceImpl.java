@@ -4,13 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
+import net.fullstack7.swc.dto.PostMainDTO;
 import net.fullstack7.swc.dto.PostRegisterDTO;
+import net.fullstack7.swc.dto.PostViewDTO;
 import net.fullstack7.swc.repository.PostRepository;
 import net.fullstack7.swc.util.FileUploadUtil;
+import net.fullstack7.swc.util.LogUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +27,8 @@ import java.io.IOException;
 public class PostServiceImpl implements PostServiceIf {
     private final PostRepository postRepository;
     private final FileUploadUtil fileUploadUtil;
+    private final ModelMapper modelMapper;
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
@@ -28,9 +38,9 @@ public class PostServiceImpl implements PostServiceIf {
                     .content(postRegisterDTO.getContent())
                     .todayType(postRegisterDTO.getTodayType())
                     .createdAt(postRegisterDTO.getCreatedAt())
-                    .displayEnd(postRegisterDTO.getDisplayEnd())
+                    .displayEnd(LocalDate.parse(postRegisterDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
                     .topics(postRegisterDTO.getTopics())
-                    .displayAt(postRegisterDTO.getDisplayAt())
+                    .displayAt(LocalDate.parse(postRegisterDTO.getDisplayAt(),FORMATTER).atStartOfDay())
                     .hashtag(postRegisterDTO.getHashtag())
                     .image(imageFilePath.replace("\\","/"))
                     .member(Member.builder().memberId(memberId).build())
@@ -38,6 +48,25 @@ public class PostServiceImpl implements PostServiceIf {
             return postRepository.save(post);
         }catch(Exception e){
             log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public PostViewDTO viewPost(int postId) {
+        return null;
+    }
+
+    @Override
+    public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType) {
+        LogUtil.logLine("PostService -> mainPost");
+        try {
+            Member member = Member.builder().memberId(memberId).build();
+            List<Post> postList = postRepository.findByMemberAndTodayTypeAndCreatedAtBetween(member, todayType, createdAt, createdAt.plusDays(1));
+            LogUtil.log("list", postList);
+            return postList.stream().map(post -> modelMapper.map(post, PostMainDTO.class)).toList();
+        }catch(Exception e){
+            log.error("mainPost 에러 발생 : {}",e.getMessage());
             return null;
         }
     }

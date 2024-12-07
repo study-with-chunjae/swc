@@ -6,5 +6,28 @@
 </head>
 <body>
 <h1>Post Main</h1>
+    <div th:test="${postMainDTOList == null}">
+        조회된 게시글이 없습니다.
+    </div>
+    <div th:test="${postMainDTOList != null}">
+        <table border="1">
+            <tr>
+                <td>제목</td><td>내용</td><td>분야</td><td>해쉬태그</td><td>공유한사람</td><td>썸네일</td><td>좋아요</td>
+            </tr>
+            <tr th:each="post, status:${postMainDTOList}">
+                <td th:text="${post.title}"></td>
+                <td th:text="${post.content}"></td>
+                <td th:text="${post.topics}"></td>
+                <td th:text="${post.hashtag}"></td>
+                <td>
+                    <div th:each="share, status:${post.shares}">
+                        <span th:text="${share.member.memberId}"></span>
+                    </div>
+                </td>
+                <td th:text="${post.image}"></td>
+                <td th:text="${post.thumbUps.size()}"></td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>

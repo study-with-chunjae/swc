@@ -5,6 +5,12 @@
     <title>Post List</title>
 </head>
 <body>
+<script th:inline="javascript">
+    const error = [[${error}]];
+    if(error){
+        alert(error);
+    }
+</script>
 <h1>Post List</h1>
 </body>
 </html>
