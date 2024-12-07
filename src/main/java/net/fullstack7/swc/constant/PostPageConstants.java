@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostPageConstants {
-    public static final List<String> ALLOWED_SEARCH_FIELDS = List.of("isCreated","title","content","");
-    public static final List<String> ALLOWED_SORT_FIELDS = List.of("isCreated","thumbUp");
+    public static final List<String> ALLOWED_SEARCH_FIELDS = List.of("createdAt","title","content","");
+    public static final List<String> ALLOWED_SORT_FIELDS = List.of("createdAt","thumbUp");
     public static final List<String> ALLOWED_SORT_ORDER = List.of("desc","asc");
     public static final String DEFAULT_SEARCH_FIELD = "";
-    public static final String DEFAULT_SORT_FIELD = "isCreated";
+    public static final String DEFAULT_SORT_FIELD = "createdAt";
     public static final String DEFAULT_SORT_ORDER = "desc";
     public static final LocalDateTime DEFAULT_SEARCH_DATE_END = LocalDate.now().atStartOfDay();
     public static final LocalDateTime DEFAULT_SEARCH_DATE_BEGIN = DEFAULT_SEARCH_DATE_END.plusDays(-7);

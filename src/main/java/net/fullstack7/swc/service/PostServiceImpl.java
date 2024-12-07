@@ -95,7 +95,7 @@ public class PostServiceImpl implements PostServiceIf {
                 throw new AssertionError();
             }
 
-            if (validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
+            if (pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
                 LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
                 validatedPageDTO.setPageNo(pagePost.getTotalPages());
                 pagePost = getPagePost(validatedPageDTO, memberId);

@@ -51,6 +51,7 @@ public class PostController {
         if(createdAt.isEmpty()){
             createdAt = NOW_STRING;
         }
+        LogUtil.log("now", createdAt);
         String memberId = getMemberIdInJwt(req);
         List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
         if(postMainDTOList==null){
@@ -115,7 +116,7 @@ public class PostController {
         if(post==null){
             return errorUtil.redirectWithError("게시글등록 실패",DEFAULT_REDIRECT,redirectAttributes);
         }
-        return "redirect:post/list";
+        return "redirect:/post/list";
     }
 
     @GetMapping("/modify")
