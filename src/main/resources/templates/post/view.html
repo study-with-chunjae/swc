@@ -33,6 +33,7 @@
         <td>공유한사람</td>
         <td colspan="5" th:text="${postDTO.title}">
             <div th:each="sharedMember, status : ${postDTO.shares}" th:text="${sharedMember.member.memberId + sharedMember.createdAt + (viewType == 'my')?'X':''}"></div>
+            <div th:if="${viewType == 'my'}" th:text="공유하기" th:onclick="'showFriends('+${postDTO.member.memberId}+')'"></div>
         </td>
     </tr>
     <tr>
@@ -60,6 +61,9 @@
         }
         function deletePost(postId){
 
+        }
+        function showFriends(memberId){
+            window.open()
         }
     </script>
 </table>

@@ -3,6 +3,7 @@ package net.fullstack7.swc.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import net.fullstack7.swc.service.MemberServiceIf;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -37,5 +38,10 @@ public class CookieUtil {
     }
     public static String makeUuid(){
         return UUID.randomUUID().toString();
+    }
+
+    public String getMemberIdInJwt(MemberServiceIf memberService, HttpServletRequest req){
+        String accessToken = this.getCookieValue(req,"accessToken");
+        return memberService.getMemberInfo(accessToken).get("memberId");
     }
 }
