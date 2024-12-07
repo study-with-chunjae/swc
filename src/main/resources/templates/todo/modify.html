@@ -32,19 +32,18 @@
             max-width: 1280px;
             margin: auto;
             padding: 20px;
-            /*background-image: url('/assets/public/mainback.png'); !* Removed trailing slash *!*/
-            /*background-size: cover; !* Ensures the image covers the container *!*/
-            /*background-position: center; !* Centers the image *!*/
-            /*background-repeat: no-repeat; !* Prevents the image from repeating *!*/
+            background-image: url('/assets/public/mainback.png'); /* Removed trailing slash */
+            background-size: cover; /* Ensures the image covers the container */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
 
-            background-color: white;
         }
 
         .content2 {
             max-width: 1280px;
             margin: 30px;
             padding: 20px;
-            background-color: rgba(133, 129, 129, 0.06);
+            background-color: rgba(255, 255, 255);
             height: 600px;
             border-radius: 8px;
         }
@@ -261,7 +260,7 @@
                         <td><input type="text" name="hashtag" id="hashtag" th:maxlength="100"></td>
                     </tr>
                     <tr>
-                        <td th:colspan="2">
+                        <td th:colspan="2" >
                             <button type="submit" id="btnSubmit">수정</button>
                             <button type="reset" id="btnReset">취소</button>
                             <button type="delete" id="btnDelete">삭제</button>
