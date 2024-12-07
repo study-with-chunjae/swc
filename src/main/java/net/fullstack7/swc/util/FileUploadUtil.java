@@ -28,7 +28,7 @@ import java.util.UUID;
 @Component
 @Log4j2
 public class FileUploadUtil {
-  private static final String UPLOAD_PATH = "/uploads/";
+  private static final String UPLOAD_PATH = "/upload/";
 
   @Value("${file.upload.path}")
   private String uploadPath;
@@ -141,6 +141,7 @@ public class FileUploadUtil {
 
   public void validateFileExtension(MultipartFile file, String[] allowedExtensions) {
     String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+    LogUtil.log("extension",extension);
     boolean isValid = Arrays.asList(allowedExtensions).contains(extension);
 
     if (!isValid) {

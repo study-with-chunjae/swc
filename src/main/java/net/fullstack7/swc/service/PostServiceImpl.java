@@ -39,6 +39,9 @@ public class PostServiceImpl implements PostServiceIf {
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
             String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getFile(), "images");
+            if(postRegisterDTO.getTodayType()==1){
+                validateDisplayDate(postRegisterDTO.getDisplayAt(), postRegisterDTO.getDisplayEnd());
+            }
             Post post = Post.builder()
                     .title(postRegisterDTO.getTitle())
                     .content(postRegisterDTO.getContent())
@@ -59,8 +62,13 @@ public class PostServiceImpl implements PostServiceIf {
     }
 
     @Override
-    public PostViewDTO viewPost(int postId) {
-        return null;
+    public PostDTO viewPost(int postId) {
+        try {
+            return modelMapper.map(postRepository.findById(postId).orElseThrow(), PostDTO.class);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -115,6 +123,57 @@ public class PostServiceImpl implements PostServiceIf {
         }
     }
 
+    @Override
+    public Post modifyPost(PostModifyDTO postModifyDTO, String memberId) {
+        LogUtil.logLine("PostService -> modifyPost");
+        try {
+            Post post = postRepository.findById(postModifyDTO.getPostId()).orElseThrow(()->new IllegalArgumentException("존재하지 않는 학습입니다."));
+            if(!post.getMember().getMemberId().equals(memberId)){
+                log.info("수정권한없음");
+                throw new IllegalArgumentException("수정 권한이 없습니다.");
+            }
+
+            if(postModifyDTO.getTodayType()==1){
+                log.info("todayType == 1");
+                validateDisplayDate(postModifyDTO.getDisplayAt(), postModifyDTO.getDisplayEnd());
+            }
+
+            if(postModifyDTO.getImage()!=null){
+                log.info("new file exist");
+                log.info("delete file");
+                fileUploadUtil.deleteFile(post.getImage());
+                log.info("delete file success");
+                log.info("upload new file");
+                String newImagePath =fileUploadUtil.uploadImageFile(postModifyDTO.getImage(),"images");
+                log.info("upload new file success");
+                postModifyDTO.setNewImagePath(newImagePath);
+            }
+
+            return postRepository.save(
+                Post.builder()
+                    .postId(postModifyDTO.getPostId())
+                    .title(postModifyDTO.getTitle())
+                    .content(postModifyDTO.getContent())
+                    .todayType(postModifyDTO.getTodayType())
+                    .displayAt(LocalDate.parse(postModifyDTO.getDisplayAt(),FORMATTER).atStartOfDay())
+                    .displayEnd(LocalDate.parse(postModifyDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
+                    .hashtag(postModifyDTO.getHashtag())
+                    .topics(postModifyDTO.getTopics())
+                    .image(postModifyDTO.getNewImagePath())
+                    .member(Member.builder().memberId(memberId).build())
+                    .createdAt(post.getCreatedAt())
+                    .build()
+            );
+        }catch(IllegalArgumentException e){
+            LogUtil.log("잘못된 형식",e.getMessage());
+            return null;
+        }
+        catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
     private Page<Post> getPagePost(PageDTO<PostDTO> pageDTO, String memberId){
         LogUtil.logLine("PostService -> getPagePost");
         try {
@@ -164,6 +223,18 @@ public class PostServiceImpl implements PostServiceIf {
             pageDTO.setSearchDateEnd(PostPageConstants.DEFAULT_SEARCH_DATE_END.format(FORMATTER));
             pageDTO.setSearchDateBegin(PostPageConstants.DEFAULT_SEARCH_DATE_BEGIN.format(FORMATTER));
             return pageDTO;
+        }
+    }
+    private void validateDisplayDate(String displayAt, String displayEnd){
+        LogUtil.logLine("validateDisplayDate");
+        if(displayAt==null||displayEnd==null){
+            throw new IllegalArgumentException("노출시작일과 종료일을 모두 입력하세요.");
+        }
+        if(LocalDate.parse(displayAt, FORMATTER).isAfter(LocalDate.parse(displayEnd, FORMATTER))){
+            throw new IllegalArgumentException("노출 시작일이 노출 종료일보다 클 수 없습니다.");
+        }
+        if(START_OF_TODAY.isAfter(LocalDate.parse(displayEnd, FORMATTER).atStartOfDay())){
+            throw new IllegalArgumentException("노출 종료일이 오늘보다 이전일 수 없습니다.");
         }
     }
 }

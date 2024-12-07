@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface PostServiceIf {
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId);
-    public PostViewDTO viewPost(int postId);
+    public PostDTO viewPost(int postId);
     public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType);
     public PageDTO<PostDTO> sortAndSearch(PageDTO<PostDTO> pageDTO, String memberId);
+    public Post modifyPost(PostModifyDTO postModifyDTO, String memberId);
 }
