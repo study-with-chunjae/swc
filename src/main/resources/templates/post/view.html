@@ -33,6 +33,7 @@
         <td>공유한사람</td>
         <td colspan="5" th:text="${postDTO.title}">
             <div th:each="sharedMember, status : ${postDTO.shares}" th:text="${sharedMember.member.memberId + sharedMember.createdAt + (viewType == 'my')?'X':''}"></div>
+            <div th:if="${viewType == 'my'}" th:text="공유하기" th:onclick="'showFriends('+${postDTO.member.memberId}+')'"></div>
         </td>
     </tr>
     <tr>
@@ -58,8 +59,30 @@
         function modify(postId){
             location.href="/post/modify?postId="+postId;
         }
-        function deletePost(postId){
-
+        async function deletePost(postId){
+            try{
+                const response = await fetch(`/posts/my-posts/${postId}`, {
+                    method : 'DELETE',
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    },
+                });
+                if(!response.ok){
+                    console.log("response not ok");
+                    const error = await respons.json();
+                    console.log(error.message);
+                    alert(error.message);
+                    return;
+                }
+                console.log("response ok");
+                const result = await response.json();
+                console.log(result);
+                alert(result.message);
+                location.href='/post/list';
+            }catch (error){
+                console.error('학습내용 삭제 실패 :',error);
+                alert('학습내용 삭제를 실패했습니다.' || error.message);
+            }
         }
     </script>
 </table>

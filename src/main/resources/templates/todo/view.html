@@ -175,59 +175,82 @@
                 <table class="info-table">
                     <tr>
                         <th>제목</th>
-                        <td colspan="3">오늘 학습 내용은 블라블라~~~</td>
+                        <td colspan="3" th:text="${postDTO.title}"></td>
                     </tr>
                     <tr>
                         <th>등록일</th>
-                        <td>20xx-01-01 오후 1:49:36</td>
+                        <td th:text="${#temporals.format(postDTO.createdAt,'yyyy-MM-dd')}"></td>
                         <th>오늘의 학습 노출 여부</th>
-                        <td>Y</td>
+                        <td th:text="${postDTO.todayType == 1 ? 'Y' : 'N'}"></td>
                     </tr>
                     <tr>
                         <th>좋아요</th>
-                        <td>0</td>
+                        <td th:text="${postDTO.thumbUps.size()}"></td>
                         <th>오늘의 학습 노출 기간</th>
-                        <td>20xx-01-01 ~ 2024-05-13</td>
+                        <td th:text="${#temporals.format(postDTO.displayAt,'yyyy-MM-dd') + ' ~ ' + #temporals.format(postDTO.displayEnd,'yyyy-MM-dd')}"></td>
                     </tr>
                 </table>
 
                 <div class="content-section">
                     <div class="image-section">
-                        <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail" >
+                        <img th:src="${postDTO.image}" alt="Thumbnail" >
                     </div>
-                    <div class="text-section">
-                        <p>오늘의 학습 내용은</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
-                        <p>블라블라~~~</p>
+                    <div class="text-section" th:text="${postDTO.content}">
                     </div>
                 </div>
 
                 <div class="shared-info">
-                    <p><strong>공유한 사람:</strong> 김개똥 (20xx-01-01 오후 13:00:30) </p>
+                    <p><strong>공유한 사람:</strong></p>
+                    <div th:each="sharedMember, status : ${postDTO.shares}" th:text="${sharedMember.member.memberId + sharedMember.createdAt + (viewType == 'my')?'X':''}"></div>
+                    <div th:if="${viewType == 'my'}" th:text="공유하기"></div>
                 </div>
 
                 <div class="tags">
-                    <p><strong>분야:</strong> 한식, 학교</p>
-                    <p><strong>해시태그:</strong> #맛집, #학교</p>
+                    <p th:utext="'<strong>분야:</strong>' + ${postDTO.topics}"></p>
+                    <p th:utext="'<strong>해시태그:</strong>' + ${postDTO.hashtag}"></p>
                 </div>
 
                 <div class="button-section">
                     <button>목록</button>
-                    <button>등록</button>
-                    <button>수정</button>
-                    <button>삭제</button>
+                    <th:block th:if="${viewType == 'my'}">
+                        <button th:onclick="'register('+${postDTO.postId}+')'">등록</button>
+                        <button th:onclick="'modify('+${postDTO.postId}+')'">수정</button>
+                        <button th:onclick="'deletePost('+${postDTO.postId}+')'">삭제</button>
+                    </th:block>
+                    <script th:inline="javascript">
+                        function register(postId){
+                            location.href="/post/register";
+                        }
+                        function modify(postId){
+                            location.href="/post/modify?postId="+postId;
+                        }
+                        async function deletePost(postId){
+                            try{
+                                const response = await fetch(`/posts/my-posts/${postId}`, {
+                                    method : 'DELETE',
+                                    headers : {
+                                        'Content-Type' : 'application/json'
+                                    },
+                                });
+                                if(!response.ok){
+                                    console.log("response not ok");
+                                    const error = await respons.json();
+                                    console.log(error.message);
+                                    alert(error.message);
+                                    return;
+                                }
+                                console.log("response ok");
+                                const result = await response.json();
+                                console.log(result);
+                                alert(result.message);
+                                location.href='/post/list';
+                            }catch (error){
+                                console.error('학습내용 삭제 실패 :',error);
+                                alert('학습내용 삭제를 실패했습니다.' || error.message);
+                            }
+                        }
+                    </script>
                 </div>
-
         </div>
     </div>
 </div>

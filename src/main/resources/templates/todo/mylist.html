@@ -207,36 +207,37 @@
 
     </style>
 </head>
+
 <div class="all">
     <div class="content" style="height: 840px;" layout:fragment="maincontent">
         <div class="content2">
                 <h1>나의 학습</h1>
-
+            <form action="/post/list" method="get">
                 <!-- Date and Search Filter -->
                 <div class="filter-section">
-                    <input type="date" class="date-input">
+                    <input type="date" name="searchDateBegin" id="searchDateBegin" class="date-input" th:value="${pageDTO.searchDateBegin}">
                     <span>~</span>
-                    <input type="date" class="date-input">
-                    <select class="view-count-select">
-                        <option value="title" selected>제목 + 내용</option>
-                        <option value="title">제목</option>
-                        <option value="content">내용</option>
+                    <input type="date" name="searchDateEnd" id="searchDateEnd" class="date-input" th:value="${pageDTO.searchDateEnd}">
+                    <select class="view-count-select" name="searchField" id="searchField">
+                        <option value="">검색조건</option>
+                        <option value="title" th:selected="${pageDTO.searchField == 'title'}">제목</option>
+                        <option value="content" th:selected="${pageDTO.searchField == 'content'}">내용</option>
                     </select>
-                    <input type="text" class="search-input" placeholder="검색어를 입력하세요">
-                    <button class="search-btn">검색</button>
+                    <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO.searchValue}">
+                    <input class="search-btn" type="submit" value="검색">
                 </div>
 
-            <div class="button-section">
-                <button class="sort-btn" >등록순</button>
-                <button class="sort-btn" >좋아요순</button>
-                <select class="view-count-select">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30" selected>30</option>
-                    <option value="50">50</option>
-                </select>
-                <span>개씩 보기</span>
-            </div>
+                <div class="button-section">
+                    <input class="sort-btn" type="radio" name="sortField" value="createdAt" th:selected="${pageDTO.sortField == 'createdAt'}">등록순
+                    <input class="sort-btn" type="radio" name="sortField" value="thumbUp" th:selected="${pageDTO.sortField == 'thumbUp'}">좋아요순
+                    <select name="pageSize" id="pageSize" class="view-count-select">
+                        <option value="5" th:selected="${pageDTO.pageSize == 5}">5개씩보기</option>
+                        <option value="10" th:selected="${pageDTO.pageSize == 10}">10개씩보기</option>
+                        <option value="30" th:selected="${pageDTO.pageSize == 30}">30개씩보기</option>
+                        <option value="50" th:selected="${pageDTO.pageSize == 50}">50개씩보기</option>
+                    </select>
+                </div>
+            </form>
                 <!-- Notice Table -->
                 <table>
                     <thead>
@@ -250,21 +251,18 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>물리와 탐구 <span class="new-badge">N</span></td>
-                        <td>2018.05.04 14:16</td>
-                        <td>4</td>
-                        <td>Y</td>
-                        <td>2018.05.04 14:16</td>
+                    <tr th:if="${pageDTO.dtoList == null}">
+                        <td colspan="6">
+                            작성된 학습이 존재하지 않습니다.
+                        </td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>탐구 사회 공부 <span class="new-badge">N</span></td>
-                        <td>2018.05.04 14:16</td>
-                        <td>7</td>
-                        <td>N</td>
-                        <td>2018.05.04 15:31</td>
+                    <tr th:if="${pageDTO.dtoList != null}" th:each="post, status:${pageDTO.dtoList}" th:onclick="'view('+${post.postId}+');'">
+                        <td th:text="${post.postId}"></td>
+                        <td th:text="${post.title}"></td>
+                        <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
+                        <td th:text="${post.thumbUps.size()}"></td>
+                        <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
+                        <td th:text="${post.displayAt + ' ~ ' + post.displayEnd}"></td>
                     </tr>
                     <!-- Additional rows as needed -->
                     </tbody>
@@ -272,13 +270,29 @@
 
                 <!-- Pagination -->
                 <div class="pagination">
-                    <button>&lt;</button>
-                    <span class="page-number">1</span>
-                    <button>&gt;</button>
+                    <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+                    <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+                        <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+                    </th:block>
+                    <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
                 </div>
+                <script th:inline="javascript">
+                    let pageBtn = document.querySelectorAll(".page-btn");
+
+                    for(let i of pageBtn){
+                        i.addEventListener("click",(e)=>{
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const num = e.target.getAttribute("data-num");
+                            const formObj = document.querySelector("form");
+                            formObj.innerHTML += `<input type='hidden' name='pageNo' value='${num}'>`;
+                            formObj.submit();
+                        });
+                    }
+                    function view(postId){
+                        location.href="/post/view?postId="+postId;
+                    }
+                </script>
             </div>
-
-
-
     </div>
 </div>

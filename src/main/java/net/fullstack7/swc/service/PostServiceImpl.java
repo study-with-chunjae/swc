@@ -6,10 +6,14 @@ import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.constant.PostPageConstants;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
+import net.fullstack7.swc.domain.Share;
 import net.fullstack7.swc.dto.*;
 import net.fullstack7.swc.repository.PostRepository;
+import net.fullstack7.swc.repository.ShareRepository;
+import net.fullstack7.swc.repository.ThumbUpRepository;
 import net.fullstack7.swc.util.FileUploadUtil;
 import net.fullstack7.swc.util.LogUtil;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,8 @@ import java.util.List;
 @Log4j2
 public class PostServiceImpl implements PostServiceIf {
     private final PostRepository postRepository;
+    private final ShareRepository shareRepository;
+    private final ThumbUpRepository thumbUpRepository;
     private final FileUploadUtil fileUploadUtil;
     private final ModelMapper modelMapper;
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -124,6 +130,44 @@ public class PostServiceImpl implements PostServiceIf {
     }
 
     @Override
+    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+        LogUtil.logLine("PostService -> sortAndSearchShare");
+        try{
+            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+            Page<Post> pagePost = postRepository.searchAndSortShare(validatedPageDTO.getPageable(),
+                    validatedPageDTO.getSearchField(),
+                    validatedPageDTO.getSearchValue(),
+                    validatedPageDTO.getSortField(),
+                    validatedPageDTO.getSortDirection(),
+                    validatedPageDTO.getSearchDateBegin(),
+                    validatedPageDTO.getSearchDateEnd(),
+                    memberId,
+                    type);
+            if(pagePost==null){
+                LogUtil.logLine("pagePost is null");
+                throw new NotFoundException("pagePost is null");
+            }
+            if(pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
+                LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
+                validatedPageDTO.setPageNo(pagePost.getTotalPages());
+                pagePost = getPagePost(validatedPageDTO, memberId);
+                if (pagePost == null) throw new NotFoundException("pagePost is null");
+            }
+            validatedPageDTO.setTotalCount((int)pagePost.getTotalElements());
+            LogUtil.log("setTotalCount : ",
+                    validatedPageDTO.getTotalCount() +"//"+
+                            validatedPageDTO.getPageNo()+"//"+
+                            validatedPageDTO.getPageSize());
+            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
+            validatedPageDTO.setDtoList(pageDTOList);
+            return validatedPageDTO;
+        }catch(Exception e){
+            LogUtil.log("[[sortAndSearch error : {}]]", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
     public Post modifyPost(PostModifyDTO postModifyDTO, String memberId) {
         LogUtil.logLine("PostService -> modifyPost");
         try {
@@ -173,6 +217,34 @@ public class PostServiceImpl implements PostServiceIf {
             return null;
         }
     }
+
+    @Override
+    public boolean deletePost(int postId, String memberId) throws IllegalArgumentException{
+        LogUtil.logLine("PostService -> deletePost");
+        try {
+            Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학습입니다."));
+            if (!post.getMember().getMemberId().equals(memberId)) {
+                throw new IllegalArgumentException("자신의 글만 삭제할 수 있습니다.");
+            }
+            if (post.getShares() != null && !post.getShares().isEmpty()) {
+                shareRepository.deleteAll(post.getShares());
+            }
+            if (post.getImage() != null && !post.getImage().isEmpty()) {
+                fileUploadUtil.deleteFile(post.getImage());
+            }
+            if (post.getThumbUps() != null && !post.getThumbUps().isEmpty()) {
+                thumbUpRepository.deleteAll(post.getThumbUps());
+            }
+            postRepository.delete(post);
+            return !postRepository.existsById(postId);
+        }catch(IllegalArgumentException e){
+            throw e;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
 
     private Page<Post> getPagePost(PageDTO<PostDTO> pageDTO, String memberId){
         LogUtil.logLine("PostService -> getPagePost");
