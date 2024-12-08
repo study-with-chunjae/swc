@@ -16,9 +16,9 @@
     <a href="/main/main"><img th:src="@{/assets/public/logo.png}" alt="K-MOOC 로고" style="width: 150px;"></a>
     <nav>
         <ul class="tabs">
-            <li class="active">오늘의 학습</li>
-            <li>나의 학습</li>
-            <li>공유학습</li>
+            <li th:class="${viewType == 'today' ? 'active' : ''}" th:onclick="|location.href='/post/main'|">오늘의 학습</li>
+            <li th:class="${viewType == 'my' ? 'active' : ''}" th:onclick="|location.href='/post/list'|">나의학습</li>
+            <li th:class="${viewType == 'share' ? 'active' : ''}" th:onclick="|location.href='/post/sharelist'|">공유학습</li>
         </ul>
     </nav>
     <div class="search-bar">
@@ -36,10 +36,9 @@
         <button class="login-btn">로그아웃</button>
     </div>
 </header>
-
 <div>
     <th:block layout:fragment="maincontent"></th:block>
 </div>
-
+<th:block layout:fragment="script"></th:block>
 </body>
 </html>

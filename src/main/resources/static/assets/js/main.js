@@ -22,7 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const li = document.createElement("li");
             li.textContent = weekdays[dayIndex];
             li.setAttribute("data-date", `${month}월 ${day}일`); // Store the date as a data attribute
-
+            //강감찬 추가
+            li.setAttribute("data-date-format", `${date.getFullYear()}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+            li.classList.add("post-date");
+            //강감찬 추가
             // Highlight today if within the current week range
             if (date.toDateString() === new Date().toDateString()) {
                 li.classList.add("today");
@@ -47,6 +50,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             weekdayList.appendChild(li);
         }
+        //강감찬추가
+        postDate = document.querySelectorAll(".post-date");
+        console.log(postDate);
+        for (let i of postDate) {
+            i.addEventListener("click", (event) => {
+                const createdAt = event.target.getAttribute("data-date-format");
+                location.href="/post/main?createdAt=" + createdAt;
+            });
+        }
+        //강감찬추가
     }
 
     // Event listeners for arrow buttons

@@ -52,7 +52,7 @@ public class ShareServiceImpl implements ShareServiceIf{
                             .build()
             );
         }catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage());
             return null;
         }
     }

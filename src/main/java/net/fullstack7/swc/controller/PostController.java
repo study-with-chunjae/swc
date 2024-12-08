@@ -5,8 +5,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.constant.PostPageConstants;
+import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.dto.*;
+import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.PostServiceIf;
 import net.fullstack7.swc.util.CheckJwtToken;
@@ -39,6 +41,7 @@ public class PostController {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String NOW_STRING = FORMATTER.format(LocalDate.now());
     private final MemberServiceIf memberService;
+    private final MemberRepository memberRepository;
     private final PostServiceIf postService;
     private final ErrorUtil errorUtil;
     private final CookieUtil cookieUtil;
@@ -53,12 +56,20 @@ public class PostController {
         }
         LogUtil.log("now", createdAt);
         String memberId = getMemberIdInJwt(req);
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        MemberDTO memberDTO = MemberDTO.builder()
+                .memberId(memberId)
+                .name(member.getName())
+                .build();
         List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
         if(postMainDTOList==null){
             model.addAttribute("error","조회 중 일시적인 에러가 발생했습니다.");
         }
+        model.addAttribute("createdAt",createdAt);
+        model.addAttribute("viewType","today");
         model.addAttribute("postMainDTOList",postMainDTOList);
-        return "post/main";
+        model.addAttribute("memberDTO",memberDTO);
+        return "main/main";
     }
 
     @CheckJwtToken
@@ -72,7 +83,40 @@ public class PostController {
         String memberId = getMemberIdInJwt(req);
         pageDTO = postService.sortAndSearch(pageDTO,memberId);
         model.addAttribute("pageDTO",pageDTO);
-        return "post/list";
+        model.addAttribute("viewType","my");
+        return "todo/mylist";
+    }
+
+    @CheckJwtToken
+    @GetMapping("/sharelist")
+    public String shareList(@RequestParam(required = false, defaultValue = "") String type,
+                            @Valid PageDTO<PostDTO> pageDTO,
+                            BindingResult bindingResult,
+                            Model model,
+                            RedirectAttributes redirectAttributes,
+                            HttpServletRequest req) {
+        LogUtil.logLine(CONTROLLER_NAME + "shareList");
+        if(bindingResult.hasErrors()){
+            pageDTO = PageDTO.<PostDTO>builder().build();
+        }
+        type = validShareListType(type);
+        String memberId = getMemberIdInJwt(req);
+        pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
+        pageDTO = postService.sortAndSearchShare(pageDTO,memberId,type);
+        model.addAttribute("pageDTO",pageDTO);
+        model.addAttribute("type",type);
+        model.addAttribute("viewType","share");
+        return "todo/sharelist";
+    }
+
+    private String validShareListType(String type){
+        if(type.isEmpty()){
+            return "my";
+        }
+        if(!type.equals("my") && !type.equals("others")){
+            return "my";
+        }
+        return type;
     }
 
     @CheckJwtToken
@@ -87,7 +131,7 @@ public class PostController {
         PostDTO postDTO = postService.viewPost(postId);
         model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
         model.addAttribute("postDTO",postDTO);
-        return "post/view";
+        return "todo/view";
     }
 
     @CheckJwtToken(redirectUri = DEFAULT_REDIRECT)

@@ -59,11 +59,30 @@
         function modify(postId){
             location.href="/post/modify?postId="+postId;
         }
-        function deletePost(postId){
-
-        }
-        function showFriends(memberId){
-            window.open()
+        async function deletePost(postId){
+            try{
+                const response = await fetch(`/posts/my-posts/${postId}`, {
+                    method : 'DELETE',
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    },
+                });
+                if(!response.ok){
+                    console.log("response not ok");
+                    const error = await respons.json();
+                    console.log(error.message);
+                    alert(error.message);
+                    return;
+                }
+                console.log("response ok");
+                const result = await response.json();
+                console.log(result);
+                alert(result.message);
+                location.href='/post/list';
+            }catch (error){
+                console.error('학습내용 삭제 실패 :',error);
+                alert('학습내용 삭제를 실패했습니다.' || error.message);
+            }
         }
     </script>
 </table>

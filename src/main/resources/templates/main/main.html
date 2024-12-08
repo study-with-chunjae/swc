@@ -77,9 +77,7 @@
         <div class="thumbnail-group">
           <img th:src="@{/assets/public/human.png}" alt="Thumbnail">
         </div>
-        <div class="likes">
-          이전재님
-        </div>
+        <div class="likes" th:text="${memberDTO.name + '님'}"></div>
         <button class="button">➕ 친구 추가</button>
         <button class="button">✉️ 쪽지 보내기</button>
       </aside>
@@ -110,32 +108,20 @@
 
       <div class="slider-container">
         <div class="slider-wrapper">
-          <div class="slider">
-            <article class="learning-card">
-              <div class="thumbnail">
-                <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail">
-                <p class="category">분야</p>
-                <p class="category">#태그1 #태그2</p>
+          <div class="slider" id="slider">
+            <article class="learning-card" th:each="post, status:${postMainDTOList}">
+                <div class="thumbnail">
+                  <img th:src="${post.image}" alt="Thumbnail">
+                <p class="category" th:text="${post.topics}"></p>
+                <p class="category" th:text="${post.hashtag}"></p>
               </div>
               <div class="info">
-                <h3 class="title">제목1</h3>
-                <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ...</p>
+                <h3 class="title" th:text="${post.title}"></h3>
+                <p class="description" th:text="${post.content}"></p>
                 <div class="shared-by">
-                  공유한 사람1<br>공유한 사람2<br>공유한 사람3
-                </div>
-              </div>
-            </article>
-            <article class="learning-card">
-              <div class="thumbnail">
-                <img th:src="@{/assets/public/grem1.png}" alt="Thumbnail">
-                <p class="category">분야</p>
-                <p class="category">#태그3 #태그4</p>
-              </div>
-              <div class="info">
-                <h3 class="title">제목2</h3>
-                <p class="description">내용이 들어갑니다. 사이트를 벗어난 경우 ...</p>
-                <div class="shared-by">
-                  공유한 사람4<br>공유한 사람5<br>공유한 사람6
+                  <th:block th:each="share, status:${post.shares}">
+                    <div th:text="${share.member.name}"></div>
+                  </th:block>
                 </div>
               </div>
             </article>
