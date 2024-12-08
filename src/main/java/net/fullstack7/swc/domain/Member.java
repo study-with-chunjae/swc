@@ -47,6 +47,10 @@ public class Member {
     @ToString.Exclude
     private Set<MemberRole> roleSet = new HashSet<>();
 
+    @Builder.Default
+    @Column(name = "is_temp_password", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isTemporaryPassword = false;
+
     public void modifyPassword(String newPwd) {
         this.pwd = newPwd;
     }
@@ -61,5 +65,15 @@ public class Member {
     }
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
+    }
+    public void setTemporaryPassword(Boolean isTemp) {
+        this.isTemporaryPassword = isTemp;
+    }
+    public Boolean isTemporaryPassword() {
+        return isTemporaryPassword != null ? isTemporaryPassword : false;
+    }
+    public void modifyName(String newName) {
+        this.name = newName;
+        this.updatedAt = LocalDateTime.now();
     }
 }

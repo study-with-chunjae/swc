@@ -5,7 +5,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const upButton = document.querySelector(".arrow.up");
     const downButton = document.querySelector(".arrow.down");
 
-    let baseDate = new Date(); // Reference date for calculating the 7-day range
+    let baseDate = new Date(); // 기준 날짜
+
+    // Function to calculate the week number of a given date
+    function getWeekNumber(date) {
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1); // 해당 월의 첫째 날
+        const firstDayOfWeek = firstDay.getDay(); // 첫째 날의 요일
+        const offsetDate = date.getDate() + firstDayOfWeek; // 기준 날짜까지의 오프셋
+        return Math.ceil(offsetDate / 7); // 몇째 주인지 계산
+    }
 
     // Function to render weekdays based on the base date
     function renderWeekdays() {
@@ -22,10 +30,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const li = document.createElement("li");
             li.textContent = weekdays[dayIndex];
             li.setAttribute("data-date", `${month}월 ${day}일`); // Store the date as a data attribute
+
             //강감찬 추가
             li.setAttribute("data-date-format", `${date.getFullYear()}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
             li.classList.add("post-date");
             //강감찬 추가
+
+            li.setAttribute("data-month", `${month}월`); // Store the month as a data attribute
+
             // Highlight today if within the current week range
             if (date.toDateString() === new Date().toDateString()) {
                 li.classList.add("today");
@@ -34,18 +46,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 const calendarIcon = document.createElement("span");
                 calendarIcon.textContent = " 📅";
                 calendarIcon.classList.add("calendar-icon");
-                // calendarIcon.addEventListener("click", () => {
-                //     alert("달력 모달 열기"); // Replace this with actual modal logic if needed
-                // });
+
                 li.appendChild(calendarIcon);
 
                 // Display today's date initially
-                todayDisplay.innerHTML = `<b>${weekdays[dayIndex]}: ${month}월 ${day}일</b> 📅`;
+                const weekNumber = getWeekNumber(date); // Calculate the week number for today
+                todayDisplay.innerHTML = `<b>${weekdays[dayIndex]}: ${month}월 ${day}일</b> <br> (${weekNumber}주, ${month}월) 📅`;
+
             }
 
-            // Add event listener to display clicked date
+            // Add event listener to display clicked date, month, and week info
             li.addEventListener("click", function () {
-                todayDisplay.innerHTML = `<b>${this.textContent}: ${this.getAttribute("data-date")}</b>`;
+                const clickedDate = new Date(baseDate);
+                clickedDate.setDate(baseDate.getDate() + i); // Adjust date for each list item
+                const weekNumber = getWeekNumber(clickedDate); // Calculate the week number
+
+                todayDisplay.innerHTML = `<b>${this.textContent}: ${this.getAttribute("data-date")}</b> <br> (${this.getAttribute("data-month")}, ${weekNumber}주)`;
+
             });
 
             weekdayList.appendChild(li);
@@ -76,6 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initial render
     renderWeekdays();
 });
+
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const slider = document.querySelector(".slider");

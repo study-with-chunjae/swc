@@ -1,5 +1,7 @@
 package net.fullstack7.swc.service;
 
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.config.JwtTokenProvider;
@@ -57,6 +59,9 @@ public class MemberServiceImpl implements MemberServiceIf {
     // 회원가입
     @Transactional
     public void signUp(MemberDTO memberDTO) {
+        // 이메일 중복 체크
+        checkEmailDuplicate(memberDTO.getEmail());
+        
         Member member = Member.builder()
                 .memberId(memberDTO.getMemberId())
                 .pwd(passwordEncoder.encode(memberDTO.getPwd()))
@@ -72,9 +77,16 @@ public class MemberServiceImpl implements MemberServiceIf {
         memberRepository.save(member);
     }
 
+    @Getter
+    @Builder
+    public static class SignInResponse {
+        private String token;
+        private boolean tempPassword;
+    }
+
     // 로그인
     @Transactional // 트랜잭션 관리를 위한 어노테이션. 예외 발생 시 롤백. <- JPA 쓸라면 당근 써야할듯
-    public String signIn(MemberDTO memberDTO) {
+    public SignInResponse signIn(MemberDTO memberDTO) {
         Member member = memberRepository.findById(memberDTO.getMemberId())
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
@@ -99,7 +111,7 @@ public class MemberServiceImpl implements MemberServiceIf {
         member.updateLastLoginAt();
         memberRepository.save(member);
 
-        return jwtTokenProvider.createToken(
+        String token = jwtTokenProvider.createToken(
                 member.getMemberId(),
                 member.getName(),
                 member.getEmail(),
@@ -107,6 +119,13 @@ public class MemberServiceImpl implements MemberServiceIf {
                 member.getSocial(),
                 member.getStatus()
         );
+
+        log.info("임시 비밀번호 상태: {}", member.isTemporaryPassword());
+
+        return SignInResponse.builder()
+                .token(token)
+                .tempPassword(member.isTemporaryPassword())
+                .build();
     }
 
     // 토큰 검증 후 회원 정보 반환
@@ -137,6 +156,11 @@ public class MemberServiceImpl implements MemberServiceIf {
     // 이메일 인증 (예쁘게 보내기)
     public void sendVerificationEmail(String email) {
         try {
+            // 이메일 중복 체크 추가
+            if (memberRepository.findByEmail(email).isPresent()) {
+                throw new RuntimeException("이미 사용 중인 이메일입니다.");
+            }
+
             String code = String.format("%06d", new Random().nextInt(1000000));
             verificationCodes.put(email, new VerificationCode(code));
 
@@ -169,7 +193,7 @@ public class MemberServiceImpl implements MemberServiceIf {
             // 이미지 넣을지 말지 고민중
             htmlContent.append("<p>안녕하세요. SWC 개발팀입니다.</p>");
             htmlContent.append("<p>SWC 회원가입을 위한 인증번호입니다.</p>");
-            htmlContent.append("<p>아래의 인증번호를 입���해주세요.</p>");
+            htmlContent.append("<p>아래의 인증번호를 입력해주세요.</p>");
             htmlContent.append("<div class='verification-code'>");
             htmlContent.append(code);
             htmlContent.append("</div>");
@@ -193,12 +217,135 @@ public class MemberServiceImpl implements MemberServiceIf {
         }
     }
 
-    public boolean verifyEmailCode(String email, String code) {
-        VerificationCode storedCode = verificationCodes.get(email);
-        if (storedCode != null && storedCode.isValid(code)) {
-            verificationCodes.remove(email);
-            return true;
+    public boolean verifyEmail(String email, String code) {
+        VerificationCode savedVerification = verificationCodes.get(email);
+        if (savedVerification == null || !savedVerification.isValid(code)) {
+            throw new RuntimeException("인증번호가 만료되었거나 일치하지 않습니다.");
         }
-        return false;
+        
+        verificationCodes.remove(email);
+        return true;
+    }
+
+    // 임시 비밀번호 이메일 전송
+    @Transactional
+    public void sendTemporaryPassword(String memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+
+        // 임시 비밀번호 생성 (영문 대소문자, 숫자, 특수문자 포함 12자리)
+        String temporaryPassword = generateTemporaryPassword();
+        
+        // 비밀번호 암호화하여 저장
+        member.modifyPassword(passwordEncoder.encode(temporaryPassword));
+        member.setTemporaryPassword(true);
+        memberRepository.save(member);
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setFrom(fromEmail);
+            helper.setTo(member.getEmail());
+            helper.setSubject("[SWC] 임시 비밀번호 안내");
+            
+            StringBuilder htmlContent = new StringBuilder();
+            htmlContent.append("<!DOCTYPE html>");
+            htmlContent.append("<html>");
+            htmlContent.append("<head>");
+            htmlContent.append("<meta charset='UTF-8'>");
+            htmlContent.append("<style>");
+            htmlContent.append(".container { width: 100%; max-width: 600px; margin: 0 auto; font-family: 'Arial', sans-serif; }");
+            htmlContent.append(".header { background-color: #4A90E2; padding: 20px; text-align: center; }");
+            htmlContent.append(".content { padding: 20px; background-color: #ffffff; border: 1px solid #e0e0e0; }");
+            htmlContent.append(".temp-password { font-size: 24px; font-weight: bold; text-align: center; color: #4A90E2; padding: 20px; margin: 20px 0; background-color: #f8f9fa; border-radius: 5px; }");
+            htmlContent.append(".footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }");
+            htmlContent.append("</style>");
+            htmlContent.append("</head>");
+            htmlContent.append("<body>");
+            htmlContent.append("<div class='container'>");
+            htmlContent.append("<div class='header'>");
+            htmlContent.append("<h1 style='color: white;'>임시 비밀번호 안내</h1>");
+            htmlContent.append("</div>");
+            htmlContent.append("<div class='content'>");
+            htmlContent.append("<p>안녕하세요. SWC 개발팀입니다.</p>");
+            htmlContent.append("<p>요청하신 임시 비밀번호를 안내해 드립니다.</p>");
+            htmlContent.append("<p>로그인 이후 반드시 비밀번호를 변경해 주세요.</p>");
+            htmlContent.append("<div class='temp-password'>");
+            htmlContent.append(temporaryPassword);
+            htmlContent.append("</div>");
+            htmlContent.append("</div>");
+            htmlContent.append("<div class='footer'>");
+            htmlContent.append("<p>본 메일은 발신전용 메일이므로 회신이 되지 않습니다.</p>");
+            htmlContent.append("<p>© 2024 SWC. All rights reserved.</p>");
+            htmlContent.append("</div>");
+            htmlContent.append("</div>");
+            htmlContent.append("</body>");
+            htmlContent.append("</html>");
+
+            helper.setText(htmlContent.toString(), true);
+            mailSender.send(mimeMessage);
+            
+            log.info("임시 비밀번호 이메일 전송 완료: {}", member.getEmail());
+        } catch (Exception e) {
+            log.error("임시 비밀번호 이메일 전송 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("임시 비밀번호 이메일 전송 실패: " + e.getMessage());
+        }
+    }
+
+    private String generateTemporaryPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        StringBuilder password = new StringBuilder();
+        Random random = new Random();
+        
+        // 최소 조건을 만족시키기 위해 각 카테고리에서 하나씩 선택
+        password.append(chars.substring(0, 26).charAt(random.nextInt(26))); // 대문자
+        password.append(chars.substring(26, 52).charAt(random.nextInt(26))); // 소문자
+        password.append(chars.substring(52, 62).charAt(random.nextInt(10))); // 숫자
+        password.append(chars.substring(62).charAt(random.nextInt(8))); // 특수문자
+        
+        // 나머지 8자리는 무작위로 선택
+        for (int i = 0; i < 8; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        
+        // 문자열 섞기
+        char[] passwordArray = password.toString().toCharArray();
+        for (int i = passwordArray.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = passwordArray[i];
+            passwordArray[i] = passwordArray[j];
+            passwordArray[j] = temp;
+        }
+        
+        return new String(passwordArray);
+    }
+
+    @Transactional
+    public void changePassword(String memberId, String newPassword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+            
+        // 비밀번호 유효성 검사
+        if (!isValidPassword(newPassword)) {
+            throw new RuntimeException("비밀번호는 영문, 숫자, 특수문자를 포함하여 10~20자리여야 합니다.");
+        }
+        
+        member.modifyPassword(passwordEncoder.encode(newPassword));
+        member.setTemporaryPassword(false);  // 임시 비밀번호 상태 해제
+        memberRepository.save(member);
+    }
+
+    private boolean isValidPassword(String password) {
+        // 비밀번호 정규식: 영문, 숫자, 특수문자 포함 10~20자
+        String passwordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{10,20}$";
+        return password.matches(passwordRegex);
+    }
+
+    // 이메일 중복 체크 메소드 추가
+    private void checkEmailDuplicate(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("이미 사용 중인 이메일입니다.");
+        }
     }
 }
