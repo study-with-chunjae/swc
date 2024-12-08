@@ -2,6 +2,7 @@ package net.fullstack7.swc.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.fullstack7.swc.domain.AlertType;
 import net.fullstack7.swc.domain.Friend;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class FriendServiceImpl implements FriendServiceIf {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
-    // private final AlertService alertService; // 알림 기능 통합 시 사용
+     private final AlertServiceIf alertService; // 알림 기능 통합 시 사용
 
     @Override
     @Transactional
@@ -32,25 +33,21 @@ public class FriendServiceImpl implements FriendServiceIf {
         Member receiver = memberRepository.findById(friendDTO.getReceiver())
                 .orElseThrow(() -> new RuntimeException("수신자 회원이 존재하지 않습니다."));
 
-        // 이미 친구 관계인지 확인
         Optional<Friend> existingFriend = friendRepository.findByRequesterAndReceiver(requester, receiver);
         if (existingFriend.isPresent()) {
             throw new RuntimeException("이미 친구 요청을 보냈거나 친구 관계입니다.");
         }
 
-        // 반대 방향의 친구 요청도 확인 (상호 친구 관계)
         existingFriend = friendRepository.findByRequesterAndReceiver(receiver, requester);
         if (existingFriend.isPresent()) {
             throw new RuntimeException("이미 친구 요청을 보냈거나 친구 관계입니다.");
         }
 
-        // 친구 요청 생성 (상태: 0 - 대기)
         Friend friend = new Friend(receiver, requester, 0);
         friendRepository.save(friend);
 
-        // 알림 생성 (알림 기능 통합 시 사용)
-        // String message = requester.getName() + "님이 친구 요청을 보냈습니다.";
-        // alertService.createAlert(receiver, AlertType.FRIEND_REQUEST, message);
+         String message = requester.getName() + "님이 친구 요청을 보냈습니다.";
+        alertService.registAlert(receiver, AlertType.FRIEND_REQUEST, message, "/friend/request");
     }
 
     @Override
@@ -61,18 +58,15 @@ public class FriendServiceImpl implements FriendServiceIf {
         if (!friend.getReceiver().getMemberId().equals(receiverId)) {
             throw new RuntimeException("권한이 없습니다.");
         }
-        if (friend.getStatus() != 0) { // 상태가 대기인지 확인
+        if (friend.getStatus() != 0) {
             throw new RuntimeException("이미 처리된 친구 요청입니다.");
         }
 
-        // 친구 요청 수락 (상태: 1 - 수락)
         friend.allow();
         friendRepository.save(friend);
 
-        // 알림 생성 (알림 기능 통합 시 사용)
-        // String message = receiverId + "님이 친구 요청을 수락했습니다.";
-        // alertService.createAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message);
-    }
+         String message = receiverId + "님이 친구 요청을 수락했습니다.";
+        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/accepted");    }
 
     @Override
     @Transactional
@@ -86,12 +80,8 @@ public class FriendServiceImpl implements FriendServiceIf {
             throw new RuntimeException("이미 처리된 친구 요청입니다.");
         }
 
-        // 친구 요청 거절은 친구 관계를 삭제하는 것과 동일
         friendRepository.delete(friend);
 
-        // 알림 생성 (알림 기능 통합 시 사용)
-        // String message = receiverId + "님이 친구 요청을 거절했습니다.";
-        // alertService.createAlert(friend.getRequester(), AlertType.FRIEND_REJECTED, message);
     }
 
     @Override
@@ -104,18 +94,8 @@ public class FriendServiceImpl implements FriendServiceIf {
             throw new RuntimeException("권한이 없습니다.");
         }
 
-        // 친구 관계 삭제
         friendRepository.delete(friend);
 
-        // 상대방의 ID 파악 (필요 시 알림을 위해)
-        String otherMemberId = friend.getRequester().getMemberId().equals(memberId)
-                ? friend.getReceiver().getMemberId()
-                : friend.getRequester().getMemberId();
-
-        // 알림 생성 (알림 기능 통합 시 사용)
-        // String message = "당신과 " + otherMemberId + "님이 친구를 삭제했습니다.";
-        // alertService.createAlert(friend.getRequester(), AlertType.FRIEND_DELETED, message);
-        // alertService.createAlert(friend.getReceiver(), AlertType.FRIEND_DELETED, message);
     }
 
     @Override
@@ -128,7 +108,9 @@ public class FriendServiceImpl implements FriendServiceIf {
             FriendDTO dto = new FriendDTO();
             dto.setFriendId(friend.getFriendId());
             dto.setRequester(friend.getRequester().getMemberId());
+            dto.setRequesterName(friend.getRequester().getName());
             dto.setReceiver(friend.getReceiver().getMemberId());
+            dto.setReceiverName(friend.getReceiver().getName());
             dto.setStatus(friend.getStatus());
             return dto;
         }).collect(Collectors.toList());
@@ -145,7 +127,9 @@ public class FriendServiceImpl implements FriendServiceIf {
             FriendDTO dto = new FriendDTO();
             dto.setFriendId(friend.getFriendId());
             dto.setRequester(friend.getRequester().getMemberId());
+            dto.setRequesterName(friend.getRequester().getName());
             dto.setReceiver(friend.getReceiver().getMemberId());
+            dto.setReceiverName(friend.getReceiver().getName());
             dto.setStatus(friend.getStatus());
             return dto;
         }).collect(Collectors.toList());
