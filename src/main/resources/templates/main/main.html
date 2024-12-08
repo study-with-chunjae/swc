@@ -18,6 +18,10 @@
       line-height: 1.6;
       background-color: #f9f9f9;
       color: #333;
+      background-image: url('/assets/public/back.png'); /* Removed trailing slash */
+      background-size: cover; /* Ensures the image covers the container */
+      background-position: center; /* Centers the image */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
     }
 
     .all {
@@ -37,8 +41,10 @@
       background-repeat: no-repeat; /* Prevents the image from repeating */
     }
 
+
+
     .content1 {
-      width: 78%;
+      width: 75%;
       float: left;
       padding: 35px;
       border-radius: 15px;
@@ -51,6 +57,7 @@
     .content2 {
       width: 20%;
       margin-top: 30px;
+      margin-left: 20px;
       float: left;
       padding: 20px;
       border-radius: 15px;
@@ -63,6 +70,32 @@
       float: left;
       border-radius: 15px;
       background-color: white;
+    }
+
+    .styled-date {
+      appearance: none; /* 기본 브라우저 스타일 제거 */
+      border: 1px solid black; /* 테두리 설정 */
+      border-radius: 5px; /* 부드러운 모서리 */
+      padding: 10px; /* 안쪽 여백 */
+      font-size: 16px; /* 글자 크기 */
+      color: #555; /* 글자 색 */
+      background-color: #f9f9f9; /* 배경색 */
+      outline: none; /* 포커스 테두리 제거 */
+      transition: border-color 0.3s, box-shadow 0.3s; /* 부드러운 효과 */
+    }
+
+    .styled-date:hover {
+      border-color: #888; /* 호버 시 테두리 색 변경 */
+    }
+
+    .styled-date:focus {
+      border-color: #0fbc8c; /* 포커스 시 테두리 색 변경 */
+      box-shadow: 0 0 5px rgba(15, 188, 140, 0.5); /* 포커스 시 그림자 효과 */
+    }
+
+    .styled-date::-webkit-calendar-picker-indicator {
+      cursor: pointer; /* 캘린더 아이콘 커서 변경 */
+      filter: invert(0.5); /* 캘린더 아이콘 색 조정 (선택 사항) */
     }
 
   </style>
@@ -91,6 +124,8 @@
       <section class="content3" style="margin-top: 23px">
 
         <div class="weekday-container">
+
+          <input type="date" class="styled-date">
           <button class="arrow up">▲</button>
           <ul id="weekday-list" class="weekday-list">
             <!-- Days will be dynamically injected here -->
@@ -98,12 +133,10 @@
           <button class="arrow down">▼</button>
 
           <p id="today" style="margin-top: 10px; font-size: 16px; text-align: center;"></p>
+
+
         </div>
 
-        <div id="calendar-modal" class="calendar-modal hidden">
-          <input type="date" id="date-picker">
-          <button id="close-calendar">닫기</button>
-        </div>
         <div><script th:src="@{/assets/js/main.js}" layout:fragment="mainscript"  th:inline="javascript"></script></div>
       </section>
 

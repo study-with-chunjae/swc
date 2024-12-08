@@ -3,11 +3,12 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid darkgreen;
+    /*border-bottom: 1px solid darkgreen;*/
     max-width: 1280px;
-    margin: 13px auto auto auto;
+    margin: 130px auto auto auto;
     background-color: white;
     padding: 20px;
+
 }
 
 .tabs {
