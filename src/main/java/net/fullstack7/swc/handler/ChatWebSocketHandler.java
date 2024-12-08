@@ -1,117 +1,71 @@
 package net.fullstack7.swc.handler;
 
+import jakarta.servlet.http.HttpServletRequest;
 import net.fullstack7.swc.config.JwtTokenProvider;
-import net.fullstack7.swc.domain.ChatMessage;
-import net.fullstack7.swc.domain.ChatRoom;
-import net.fullstack7.swc.domain.Member;
-import net.fullstack7.swc.dto.ChatMessageDTO;
-import net.fullstack7.swc.repository.ChatMessageRepository;
-import net.fullstack7.swc.repository.ChatRoomReposotory;
-import net.fullstack7.swc.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.net.URI;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    @Autowired
-    private ChatMessageRepository chatMessageRepository;
-    @Autowired
-    private ChatRoomReposotory chatRoomRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    // WebSocketSession에서 JWT 토큰을 추출하여 userId를 반환하는 메서드
-    private String getUserIdFromSession(WebSocketSession session) {
-        String token = session.getHandshakeHeaders().getFirst("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);  // "Bearer " 부분 제거
-            if (jwtTokenProvider.validateToken(token)) {
-                return jwtTokenProvider.getMemberId(token);
-            }
-        }
-        throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+    public ChatWebSocketHandler(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    // WebSocket 연결이 성립되었을 때 호출
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        String userId = getUserIdFromSession(session);
-        sessions.put(userId, session);
-        session.sendMessage(new TextMessage("채팅방 연결"));
-    }
+        URI uri = session.getUri();
+        String token = null;
+//        session.sendMessage(new TextMessage("Please send token for authentication"));
 
-    // 메시지를 받을 때
-    @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        String userId = getUserIdFromSession(session);
-        String payload = message.getPayload();
-
-        // 메시지를 보낼 대상(상대방)을 찾아 메시지 전송
-        String[] messageParts = payload.split(":", 2);
-        String receiverId = messageParts[0];
-        String textMessage = messageParts[1];
-
-        // ChatRoom을 찾기 위해 sender와 receiver의 Member 객체를 사용하여 조회
-        Optional<Member> senderOpt = memberRepository.findById(userId);
-        Optional<Member> receiverOpt = memberRepository.findById(receiverId);
-
-        if (!senderOpt.isPresent() || !receiverOpt.isPresent()) {
-            session.sendMessage(new TextMessage("유효하지 않은 아이디입니다."));
-            return;
-        }
-
-        Member sender = senderOpt.get();
-        Member receiver = receiverOpt.get();
-
-        // 채팅방을 찾음 (sender와 receiver 기준으로 찾음)
-        ChatRoom chatRoom = chatRoomRepository.findBySenderIdAndReceiverId(userId, receiverId);
-        if (chatRoom == null) {
-            chatRoom = chatRoomRepository.findBySenderIdAndReceiverId(receiverId, userId);
-        }
-
-        if (chatRoom == null) {
-            chatRoom = new ChatRoom(sender, receiver, 1, 1);
-            chatRoomRepository.save(chatRoom);
-        }
-
-        // 채팅 메시지 저장
-        ChatMessage chatMessage = new ChatMessage(chatRoom, sender, textMessage, LocalDateTime.now(), 0);
-        chatMessageRepository.save(chatMessage);
-
-        // 상대방에게 메시지 전송
-        WebSocketSession receiverSession = sessions.get(receiverId);
-        if (receiverSession != null && receiverSession.isOpen()) {
-            try {
-                // 메시지 전송
-                ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
-                chatMessageDTO.setChatRoomId(chatRoom.getChatRoomId());
-                chatMessageDTO.setSenderId(sender.getMemberId());
-                chatMessageDTO.setMessage(textMessage);
-                chatMessageDTO.setCreatedAt(LocalDateTime.now());
-                chatMessageDTO.setIsRead(0);
-
-                // 상대방에게 메시지 전송
-                receiverSession.sendMessage(new TextMessage("New message: " + textMessage));
-            } catch (Exception e) {
-                e.printStackTrace();
+        // URL의 쿼리 파라미터에서 JWT 토큰을 추출
+        if (uri != null && uri.getQuery() != null) {
+            String[] params = uri.getQuery().split("&");
+            for (String param : params) {
+                if (param.startsWith("token=")) {
+                    token = param.substring(6);
+                    break;
+                }
             }
         }
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            // 토큰이 유효한 경우 memberId를 WebSocket 세션에 추가
+            String memberId = jwtTokenProvider.getMemberId(token);
+            session.getAttributes().put("memberId", memberId);
+            System.out.println("memberId " + memberId + "채팅연결");
+        } else {
+            System.out.println("유효하지 않은 토큰");
+            session.sendMessage(new TextMessage("로그인하세요."));
+            session.close();
+        }
     }
 
-    // 연결 종료 시 세션에서 제거
+    // 메시지 처리
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String memberId = (String) session.getAttributes().get("memberId");
+        if (memberId != null) {
+            System.out.println("User " + memberId + "message: " + message.getPayload());
+        } else {
+            session.sendMessage(new TextMessage("메시지를 전송할 수 없습니다."));
+        }
+    }
+
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        exception.printStackTrace();
+    }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status) throws Exception {
-        String userId = getUserIdFromSession(session);
-        sessions.remove(userId);
+        String memberId = (String) session.getAttributes().get("memberId");
+        if (memberId != null) {
+            System.out.println("User " + memberId + "채팅끝남");
+        }
     }
 }

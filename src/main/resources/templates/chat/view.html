@@ -16,14 +16,14 @@
 
         /* 모달 스타일 */
         #chatModal {
-            display: none; /* 기본적으로 숨김 */
+            display: none;
             position: fixed;
             z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         #chatModalContent {
@@ -101,79 +101,117 @@
     let currentChatRoomId = null;
     let currentReceiverId = null;
 
+    // 페이지가 로드될 때 로그인 체크
+    window.onload = function() {
+    // 로컬스토리지에서 JWT 토큰을 확인
+    const token = localStorage.getItem('jwtToken');
+
+    if (!token || !isValidToken(token)) {
+        console.log("로그인되지 않았습니다. 로그인 페이지로 리다이렉트합니다.");
+        alert('로그인되지 않았습니다. 로그인 페이지로 이동합니다.');
+        window.location.href = 'http://localhost:8080/';  // 로그인 페이지로 리다이렉트
+    } else {
+        console.log('로그인 되어 있습니다. 토큰:', token);
+        loadChatRoomList();  // 로그인 됐으면 채팅방 목록을 불러옴
+    }
+};
+
+    // 토큰 유효성 확인 함수
+    function isValidToken(token) {
+    const parts = token.split('.');
+    return parts.length === 3;  // 토큰이 3부분으로 나뉘어야 정상
+}
+
+    // WebSocket 연결
     function connectToChat(receiverId) {
-        if (socket) {
-            socket.close();
-        }
-        currentReceiverId = receiverId;
-        socket = new WebSocket('ws://localhost:8080/chat'); // url맞나
+    if (socket) {
+        socket.close();
+    }
+    currentReceiverId = receiverId;
 
-        socket.onopen = function() {
-            console.log("WebSocket 연결 성공");
-            openChatModal();
-            loadMessages();
-        };
+    // 로컬스토리지에서 JWT 토큰을 가져옵니다.
+    const token = localStorage.getItem('jwtToken');
 
-        socket.onmessage = function(event) {
-            const message = event.data;
+    // 토큰이 유효하지 않으면 로그인 페이지로 리다이렉트
+    if (!token || !isValidToken(token)) {
+        console.log("로그인되지 않았습니다.");
+        alert('로그인되지 않았습니다. 로그인 페이지로 이동합니다.');
+        window.location.href = 'http://localhost:8080/';  // 로그인 페이지로 리다이렉트
+        return;
+    }
+
+    // WebSocket 연결
+    socket = new WebSocket('ws://localhost:8080/chat');
+
+    socket.onopen = function() {
+        socket.send(JSON.stringify({ type: 'auth', token: token }));
+        console.log("WebSocket 연결 성공");
+        openChatModal();
+        loadMessages();
+    };
+
+    socket.onmessage = function(event) {
+        console.log("서버로부터 받은 메시지:", event.data);
+        const message = event.data;
+        if (message === "Invalid token, redirecting to login...") {
+            alert("로그인 정보가 유효하지 않습니다. 로그인 페이지로 이동합니다.");
+            window.location.href = "http://localhost:8080/";  // 루트 페이지로 리다이렉트
+        } else {
             const messagesDiv = document.getElementById("messages");
             const messageElement = document.createElement("div");
             messageElement.textContent = message;
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        };
+        }
+    };
 
-        socket.onclose = function() {
-            console.log("WebSocket 연결 종료");
-        };
+    socket.onclose = function() {
+        console.log("WebSocket 연결 종료");
+    };
 
-        socket.onerror = function(error) {
-            console.error("WebSocket 오류:", error);
-        };
-    }
+    socket.onerror = function(error) {
+        console.error("WebSocket 오류:", error);
+    };
+}
 
     // 메시지 전송
     function sendMessage() {
-        const messageInput = document.getElementById("messageInput");
-        const message = messageInput.value;
-        if (message) {
-            const payload = currentReceiverId + ":" + message;
-            socket.send(payload);
-            messageInput.value = "";
-        }
+    const messageInput = document.getElementById("messageInput");
+    const message = messageInput.value;
+    if (message) {
+        const payload = currentReceiverId + ":" + message;
+        socket.send(payload);
+        messageInput.value = "";
     }
+}
 
     // 채팅방 목록
     function loadChatRoomList() {
-        const chatRoomList = document.getElementById("chatRoomList");
-        // 예시니까 지워
-        const chatRooms = ['user2', 'user3','sk'];
-        chatRoomList.innerHTML = '';
-        chatRooms.forEach(room => {
-            const listItem = document.createElement("li");
-            listItem.textContent = room;
-            listItem.onclick = function() {
-                connectToChat(room);
-            };
-            chatRoomList.appendChild(listItem);
-        });
-    }
+    const chatRoomList = document.getElementById("chatRoomList");
+    const chatRooms = ['user2', 'user3', 'sk'];
+    chatRoomList.innerHTML = '';
+    chatRooms.forEach(room => {
+        const listItem = document.createElement("li");
+        listItem.textContent = room;
+        listItem.onclick = function() {
+            connectToChat(room);
+        };
+        chatRoomList.appendChild(listItem);
+    });
+}
 
     // 모달 열기
     function openChatModal() {
-        document.getElementById('chatModal').style.display = 'block';
-        document.getElementById('chatRoomListContainer').style.display = 'none';
+    document.getElementById('chatModal').style.display = 'block';
+    document.getElementById('chatRoomListContainer').style.display = 'none';
     }
 
     // 모달 닫기
     function closeChatModal() {
-        document.getElementById('chatModal').style.display = 'none';
-        document.getElementById('chatRoomListContainer').style.display = 'block';
+    document.getElementById('chatModal').style.display = 'none';
+    document.getElementById('chatRoomListContainer').style.display = 'block';
     }
 
-    window.onload = function() {
-        loadChatRoomList();
-    };
 </script>
 </body>
 </html>
