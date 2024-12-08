@@ -1,27 +1,293 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>친구 관리</title>
-    <meta charset="UTF-8">
-    <style>
-        /* 기본 스타일 */
-        .section {
-            margin-bottom: 30px;
+<title>친구 관리</title>
+<meta charset="UTF-8">
+<style>
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+.section {
+    margin-bottom: 30px;
+}
+.section h3 {
+    margin-bottom: 10px;
+}
+.friend-list, .search-results, .friend-requests {
+    list-style: none;
+    padding: 0;
+}
+.friend-list li, .search-results li, .friend-requests li {
+    margin-bottom: 5px;
+}
+.button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+}
+.button-accept {
+    background-color: #4CAF50;
+    color: white;
+}
+.button-reject {
+    background-color: #f44336;
+    color: white;
+}
+.button-delete {
+    background-color: #f44336;
+    color: white;
+}
+.button-request {
+    background-color: #008CBA;
+    color: white;
+}
+/* 검색 결과 드롭다운 스타일 */
+.search-results {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    position: relative;
+    background-color: white;
+    width: 100%;
+    z-index: 1000;
+}
+.search-container {
+    position: relative;
+    width: 300px;
+}
+/* "더보기" 버튼 스타일 */
+.search-results .load-more-button {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 5px;
+}
+.search-results .load-more-button:hover {
+    background-color: #e0e0e0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const keywordInput = document.getElementById('keyword');
+    const searchResultsList = document.getElementById('search-results');
+    const loadMoreButton = document.getElementById('load-more-button');
+    let debounceTimeout = null;
+    let currentPage = 0;
+    let currentKeyword = '';
+
+    // 초기 "더보기" 버튼 숨기기
+    loadMoreButton.style.display = 'none';
+
+    keywordInput.addEventListener('input', function() {
+        const keyword = this.value.trim();
+        currentKeyword = keyword;
+        currentPage = 0; // 새로운 검색 시 페이지 초기화
+
+        // 디바운싱: 300ms 동안 입력이 없으면 검색 요청
+        if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
         }
-        .section h3 {
-            margin-bottom: 10px;
+
+        debounceTimeout = setTimeout(() => {
+            if (keyword.length === 0) {
+                searchResultsList.innerHTML = '';
+                loadMoreButton.style.display = 'none';
+                return;
+            }
+
+            // 검색 초기화
+            searchResultsList.innerHTML = '';
+            fetchFriends(keyword, currentPage);
+        }, 300);
+    });
+
+    function fetchFriends(keyword, page) {
+        fetch(`/friend/search?keyword=${encodeURIComponent(keyword)}&limit=5&page=${page}`)
+            .then(response => response.json())
+            .then(data => {
+                displaySearchResults(data);
+                // "더보기" 버튼 표시 여부 결정
+                if (data.length === 5) { // limit=5
+                    loadMoreButton.style.display = 'block';
+                } else {
+                    loadMoreButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function displaySearchResults(members) {
+        if (currentPage === 0) {
+            searchResultsList.innerHTML = ''; // 검색 초기화
         }
-        .friend-list, .search-results, .friend-requests {
-            list-style: none;
-            padding: 0;
+
+        if (members.length === 0 && currentPage === 0) {
+            const li = document.createElement('li');
+            li.textContent = '검색 결과가 없습니다.';
+            searchResultsList.appendChild(li);
+            loadMoreButton.style.display = 'none'; // 결과가 없으므로 "더보기" 숨김
+            return;
         }
-        .friend-list li, .search-results li, .friend-requests li {
-            margin-bottom: 5px;
+
+        // 멤버 추가
+        members.forEach(member => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = `${member.memberId} (${member.name})`;
+
+            const requestButton = document.createElement('button');
+            requestButton.textContent = '친구 신청';
+            requestButton.className = 'button button-request';
+            requestButton.onclick = () => sendFriendRequest(member.memberId);
+
+            li.appendChild(span);
+            li.appendChild(requestButton);
+            searchResultsList.appendChild(li);
+        });
+
+        // "더보기" 버튼 재배치
+        if (members.length === 5) { // limit=5 기준
+            loadMoreButton.style.display = 'block';
+            searchResultsList.appendChild(loadMoreButton);
+        } else {
+            loadMoreButton.style.display = 'none';
         }
-        .button {
-            margin-left: 10px;
+    }
+
+    function sendFriendRequest(receiverId) {
+        fetch('/friend/request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ receiver: receiverId })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                // 친구 요청을 보낸 사용자를 검색 결과 목록에서 제거
+                const buttons = document.querySelectorAll(`button.button-request[onclick="sendFriendRequest('${receiverId}')"]`);
+                buttons.forEach(button => {
+                    button.parentElement.remove();
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || '친구 요청에 실패했습니다.');
+            });
+    }
+
+    // 친구 요청 수락 함수
+    window.acceptFriendRequest = function(friendId) {
+        fetch(`/friend/accept/${friendId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                // 해당 친구 요청을 리스트에서 제거
+                const button = document.querySelector(`button.button-accept[onclick="acceptFriendRequest(${friendId})"]`);
+                if (button) {
+                    button.parentElement.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || '친구 요청 수락에 실패했습니다.');
+            });
+    };
+
+    // 친구 요청 거절 함수
+    window.rejectFriendRequest = function(friendId) {
+        fetch(`/friend/reject/${friendId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                // 해당 친구 요청을 리스트에서 제거
+                const button = document.querySelector(`button.button-reject[onclick="rejectFriendRequest(${friendId})"]`);
+                if (button) {
+                    button.parentElement.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || '친구 요청 거절에 실패했습니다.');
+            });
+    };
+
+    // 친구 삭제 함수
+    window.deleteFriend = function(friendId) {
+        if (!confirm('정말 친구를 삭제하시겠습니까?')) {
+            return;
         }
-    </style>
+
+        fetch(`/friend/delete/${friendId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.text();
+            })
+            .then(message => {
+                alert(message);
+                // 해당 친구를 목록에서 제거
+                const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
+                if (button) {
+                    button.parentElement.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || '친구 삭제에 실패했습니다.');
+            });
+    };
+
+    // "더보기" 버튼 클릭 시 다음 페이지 로드
+    loadMoreButton.addEventListener('click', function() {
+        currentPage += 1;
+        fetchFriends(currentKeyword, currentPage);
+    });
+});
+</script>
 </head>
 <body>
 <h1>친구 관리</h1>
@@ -29,29 +295,12 @@
 <!-- 친구 검색 섹션 -->
 <div class="section">
     <h3>친구 검색</h3>
-    <form th:action="@{/friend/manage}" method="get">
-        <input type="text" name="keyword" placeholder="아이디 또는 이름 검색" th:value="${keyword}" />
-        <button type="submit">검색</button>
-    </form>
-
-    <ul class="search-results">
-        <li th:each="member : ${searchResults}">
-            <span th:text="${member.name} + ' (' + ${member.memberId} + ')'"></span>
-            <form th:action="@{/friend/request}" method="post" style="display:inline;">
-                <input type="hidden" name="receiver" th:value="${member.memberId}" />
-                <button type="submit" class="button">친구 신청</button>
-            </form>
-        </li>
-    </ul>
-
-    <!-- 더보기 버튼 -->
-    <div th:if="${searchResults.size()} == ${pageSize}">
-        <form th:action="@{/friend/manage}" method="get">
-            <input type="hidden" name="keyword" th:value="${keyword}" />
-            <input type="hidden" name="page" th:value="${page + 1}" />
-            <input type="hidden" name="size" th:value="${pageSize}" />
-            <button type="submit">더보기</button>
-        </form>
+    <div class="search-container">
+        <input type="text" id="keyword" name="keyword" placeholder="아이디 또는 이름 검색" th:value="${keyword}" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+        <ul class="search-results" id="search-results">
+            <!-- 검색 결과가 동적으로 추가됨 -->
+        </ul>
+        <button type="button" id="load-more-button" class="search-results load-more-button">더보기</button>
     </div>
 </div>
 
@@ -60,13 +309,9 @@
     <h3>받은 친구 요청</h3>
     <ul class="friend-requests">
         <li th:each="request : ${friendRequests}">
-            <span th:text="${request.requesterName} + ' (' + ${request.requester} + ')'"></span>
-            <form th:action="@{'/friend/accept/' + ${request.friendId}}" method="post" style="display:inline;">
-                <button type="submit" class="button">수락</button>
-            </form>
-            <form th:action="@{'/friend/reject/' + ${request.friendId}}" method="post" style="display:inline;">
-                <button type="submit" class="button">거절</button>
-            </form>
+            <span th:text="${request.requester} + ' (' + ${request.requesterName} + ')' "></span>
+            <button type="button" class="button button-accept" th:onclick="'acceptFriendRequest(' + ${request.friendId} + ')'">수락</button>
+            <button type="button" class="button button-reject" th:onclick="'rejectFriendRequest(' + ${request.friendId} + ')'">거절</button>
         </li>
     </ul>
 </div>
@@ -76,13 +321,15 @@
     <h3>친구 목록</h3>
     <ul class="friend-list">
         <li th:each="friend : ${friends}">
-                <span th:text="${friend.requesterName != null ? friend.requesterName : friend.receiverName} + ' (' +
-                             (${friend.requesterName != null ? friend.requester : friend.receiver}) + ')'"></span>
-            <form th:action="@{'/friend/delete/' + ${friend.friendId}}" method="post" style="display:inline;">
-                <button type="submit" class="button">삭제</button>
-            </form>
+<span th:text="${friend.requesterName != null ? friend.requester : friend.receiver} + ' (' +
+               (${friend.requesterName != null ? friend.requesterName : friend.receiverName}) + ')'"></span>
+            <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">삭제</button>
         </li>
     </ul>
+</div>
+
+<div th:replace="~{friend/alertTest :: alert}"
+     th:with="memberId=${memberId}, alerts=${alerts}">
 </div>
 </body>
 </html>
