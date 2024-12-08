@@ -9,11 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ChatRoomReposotory extends JpaRepository<ChatRoom, Integer> {
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.sender.memberId = :senderId")
-    List<ChatRoom> findBySenderId(@Param("senderId") String senderId);
-
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.receiver.memberId = :receiverId")
-    List<ChatRoom> findByReceiverId(@Param("receiverId") String receiverId);
+//    @Query("SELECT cr FROM ChatRoom cr WHERE cr.sender.memberId = :senderId")
+//    List<ChatRoom> findBySenderId(@Param("senderId") String senderId);
+//
+//    @Query("SELECT cr FROM ChatRoom cr WHERE cr.receiver.memberId = :receiverId")
+//    List<ChatRoom> findByReceiverId(@Param("receiverId") String receiverId);
+    // 송신자와 수신자로 채팅방을 찾음
+    @Query("SELECT cr FROM ChatRoom cr WHERE cr.sender.memberId = :senderId AND cr.receiver.memberId = :receiverId")
+    ChatRoom findBySenderIdAndReceiverId(@Param("senderId") String senderId, @Param("receiverId") String receiverId);
 
     //개별상태변경할때
     @Modifying

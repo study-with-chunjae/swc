@@ -28,4 +28,7 @@ public class ChatRoom {
 
     private Integer senderStatus; // 보낸사람 나감여부 0:나감 1:안나감
     private Integer receiverStatus; // 받은사람 나감여부 0:나감 1:안나감
+
+    public ChatRoom(Member sender, Member receiver, int i, int i1) {
+    }
 }
