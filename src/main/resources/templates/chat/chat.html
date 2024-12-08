@@ -14,28 +14,12 @@
             margin: 0 auto;
         }
 
-        /* 모달 스타일 */
-        #chatModal {
-            display: none; /* 기본적으로 숨김 */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
+        #chatContainer {
+            width: 600px;
+            margin: 0 auto;
+            display: none;
         }
 
-        #chatModalContent {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-        }
-
-        /* 채팅창 스타일 */
         #messages {
             height: 300px;
             border: 1px solid #ccc;
@@ -62,17 +46,6 @@
             margin: 10px 0;
             cursor: pointer;
         }
-
-        .close-btn {
-            font-size: 30px;
-            cursor: pointer;
-            color: #aaa;
-            float: right;
-        }
-
-        .close-btn:hover {
-            color: black;
-        }
     </style>
 </head>
 <body>
@@ -85,15 +58,12 @@
     </ul>
 </div>
 
-<!-- 모달 -->
-<div id="chatModal">
-    <div id="chatModalContent">
-        <span class="close-btn" onclick="closeChatModal()">&times;</span>
-        <h2>채팅방</h2>
-        <div id="messages"></div>
-        <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." />
-        <button onclick="sendMessage()">보내기</button>
-    </div>
+<div id="chatContainer">
+    <h2>채팅방</h2>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." />
+    <button onclick="sendMessage()">보내기</button>
+    <button onclick="goBackToChatRoomList()">채팅 목록으로 돌아가기</button>
 </div>
 
 <script>
@@ -101,6 +71,7 @@
     let currentChatRoomId = null;
     let currentReceiverId = null;
 
+    // WebSocket 연결
     function connectToChat(receiverId) {
         if (socket) {
             socket.close();
@@ -110,7 +81,8 @@
 
         socket.onopen = function() {
             console.log("WebSocket 연결 성공");
-            openChatModal();
+            document.getElementById('chatContainer').style.display = 'block';
+            document.getElementById('chatRoomListContainer').style.display = 'none';
             loadMessages();
         };
 
@@ -159,16 +131,10 @@
         });
     }
 
-    // 모달 열기
-    function openChatModal() {
-        document.getElementById('chatModal').style.display = 'block';
-        document.getElementById('chatRoomListContainer').style.display = 'none';
-    }
-
-    // 모달 닫기
-    function closeChatModal() {
-        document.getElementById('chatModal').style.display = 'none';
+    // 채팅방 목록
+    function goBackToChatRoomList() {
         document.getElementById('chatRoomListContainer').style.display = 'block';
+        document.getElementById('chatContainer').style.display = 'none';
     }
 
     window.onload = function() {
