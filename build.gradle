@@ -94,6 +94,10 @@ dependencies {
 
     // OAuth2 Google 설정
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    //알림
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.webjars:sockjs-client:1.5.1'
 }
 
 sourceSets {

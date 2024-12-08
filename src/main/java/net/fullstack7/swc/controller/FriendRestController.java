@@ -1,10 +1,13 @@
 package net.fullstack7.swc.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
 import net.fullstack7.swc.service.FriendServiceIf;
+import net.fullstack7.swc.service.MemberServiceIf;
+import net.fullstack7.swc.util.CookieUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +27,8 @@ import java.util.List;
 @RequestMapping("/friend")
 public class FriendRestController {
     private final FriendServiceIf friendService;
+    private final CookieUtil cookieUtil;
+    private final MemberServiceIf memberService;
 
     @GetMapping("/search")
     public ResponseEntity<List<Member>> searchFriends(@RequestParam String keyword,
@@ -35,10 +40,9 @@ public class FriendRestController {
 
     @PostMapping("/request")
     public ResponseEntity<String> sendFriendRequest(@RequestBody FriendDTO friendDTO
-                                                    //,Authentication authentication
+                                                    ,HttpServletRequest request
     ) {
-        //String requesterId = authentication.getName();
-        String requesterId = "user1";
+        String requesterId = getMemberIdInJwt(request);
 
         friendService.sendFriendRequest(requesterId, friendDTO);
         return ResponseEntity.ok("친구 요청이 전송되었습니다.");
@@ -46,53 +50,47 @@ public class FriendRestController {
 
     @PostMapping("/accept/{friendId}")
     public ResponseEntity<String> acceptFriendRequest(@PathVariable Integer friendId
-    //                                                  ,Authentication authentication
+                                                      ,HttpServletRequest request
     ) {
-        //String receiverId = authentication.getName();
-        String receiverId = "user1";
+        String receiverId = getMemberIdInJwt(request);
         friendService.acceptFriendRequest(friendId, receiverId);
         return ResponseEntity.ok("친구 요청이 수락되었습니다.");
     }
 
     @PostMapping("/reject/{friendId}")
     public ResponseEntity<String> rejectFriendRequest(@PathVariable Integer friendId
-    //                                                  ,Authentication authentication
+                                                      ,HttpServletRequest request
     ) {
-        //String receiverId = authentication.getName();
-        String receiverId = "user1";
+        String receiverId = getMemberIdInJwt(request);
         friendService.rejectFriendRequest(friendId, receiverId);
         return ResponseEntity.ok("친구 요청이 거절되었습니다.");
     }
 
     @DeleteMapping("/delete/{friendId}")
     public ResponseEntity<String> deleteFriend(@PathVariable Integer friendId
-    //                                           ,Authentication authentication
+                                               ,HttpServletRequest request
     ) {
-//        String memberId = authentication.getName();
-        String memberId = "user1";
+        String memberId = getMemberIdInJwt(request);
         friendService.deleteFriend(friendId, memberId);
         return ResponseEntity.ok("친구가 삭제되었습니다.");
     }
 
     @GetMapping("/requests")
-    public ResponseEntity<List<FriendDTO>> getFriendRequests(
-           // Authentication authentication
-    ) {
-//        String receiverId = authentication.getName();
-        String receiverId = "user1";
+    public ResponseEntity<List<FriendDTO>> getFriendRequests(HttpServletRequest request) {
+        String receiverId = getMemberIdInJwt(request);
         List<FriendDTO> requests = friendService.getFriendRequests(receiverId);
         return ResponseEntity.ok(requests);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<FriendDTO>> getFriends(
-            Authentication authentication
-    ) {
-//        String memberId = authentication.getName();
-        String memberId = "user1";
+    public ResponseEntity<List<FriendDTO>> getFriends(HttpServletRequest request) {
+        String memberId = getMemberIdInJwt(request);
         List<FriendDTO> friends = friendService.getFriends(memberId);
         return ResponseEntity.ok(friends);
     }
 
-
+    private String getMemberIdInJwt(HttpServletRequest req){
+        String accessToken = cookieUtil.getCookieValue(req,"accessToken");
+        return memberService.getMemberInfo(accessToken).get("memberId");
+    }
 }

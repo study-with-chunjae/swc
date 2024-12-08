@@ -1,0 +1,105 @@
+
+<div th:fragment="alert">
+    <button id="alertButton" onclick="openAlertPopup()">알림 (<span id="unreadCount">0</span>)</button>
+
+    <div id="alertPopup" style="display:none; position:absolute; top:50px; right:50px; background:#fff; border:1px solid #ccc; padding:10px;">
+        <h3>알림 목록</h3>
+        <ul>
+            <li th:each="alert : ${alerts}">
+                <span th:text="${alert.message}"></span> (<span th:text="${alert.type}"></span>)
+                <button th:attr="onclick='markRead(' + ${alert.alertId} + ', \'[[${memberId}]]\')'">Mark as Read</button>
+            </li>
+            <li th:if="${#lists.isEmpty(alerts)}">알림이 없습니다</li>
+        </ul>
+    </div>
+
+
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+
+    <script>
+        var memberId = '[[${memberId}]]';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/alerts/unreadCount?memberId=' + memberId)
+                .then(res => res.json())
+                .then(count => {
+                    document.getElementById('unreadCount').textContent = count;
+                });
+        });
+
+        function openAlertPopup() {
+            fetch('/alerts/markAllAsRead?memberId=' + memberId, { method:'POST' })
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById('unreadCount').textContent = '0';
+
+                    loadAlerts();
+
+                    document.getElementById('alertPopup').style.display = 'block';
+                });
+        }
+
+        function loadAlerts() {
+            fetch('/alerts?memberId=' + memberId)
+                .then(res => res.json())
+                .then(alerts => {
+                    let list = document.getElementById('alertList');
+                    let noAlertMsg = document.getElementById('noAlertMsg');
+
+                    while (list.firstChild) {
+                        list.removeChild(list.firstChild);
+                    }
+
+                    if (alerts.length > 0) {
+                        alerts.forEach(alert => {
+                            let li = document.createElement('li');
+                            li.textContent = alert.message + " (" + alert.type + ")";
+
+                            list.appendChild(li);
+                        });
+                    } else {
+                        let li = document.createElement('li');
+                        li.id = 'noAlertMsg';
+                        li.textContent = '알림이 없습니다';
+                        list.appendChild(li);
+                    }
+                });
+        }
+
+        var socket = new SockJS('/ws-stomp');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            stompClient.subscribe('/user/' + memberId + '/queue/alerts', function (message) {
+                let alertData = JSON.parse(message.body);
+
+                let countElem = document.getElementById('unreadCount');
+                let currentCount = parseInt(countElem.textContent) || 0;
+                countElem.textContent = currentCount + 1;
+
+                let popup = document.getElementById('alertPopup');
+                let list = document.getElementById('alertList');
+                let noAlertMsg = document.getElementById('noAlertMsg');
+
+                if (noAlertMsg) {
+                    noAlertMsg.remove();
+                }
+
+                if (popup.style.display === 'block') {
+                    let li = document.createElement('li');
+                    li.textContent = alertData.message + " (" + alertData.type + ")";
+                    list.prepend(li);
+                }
+            });
+        });
+
+        function markRead(alertId, memberId) {
+            fetch('/alerts/read?alertId=' + alertId + '&memberId=' + memberId, {
+                method: 'POST'
+            }).then(r => r.text()).then(res => {
+                console.log(res);
+            });
+        }
+    </script>
+</div>

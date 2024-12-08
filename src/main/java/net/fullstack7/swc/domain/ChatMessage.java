@@ -29,4 +29,12 @@ public class ChatMessage {
     @JoinColumn(name = "senderId")
     @ToString.Exclude
     private Member sender; //보낸사람
+
+    public ChatMessage(ChatRoom chatRoom, Member sender, String message, LocalDateTime createdAt, Integer isRead) {
+        this.chatRoom = chatRoom;
+        this.sender = sender;
+        this.message = message;
+        this.createdAt = createdAt;
+        this.isRead = isRead;
+    }
 }
