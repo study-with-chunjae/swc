@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Log4j2
@@ -39,40 +41,35 @@ public class FriendRestController {
     }
 
     @PostMapping("/request")
-    public ResponseEntity<String> sendFriendRequest(@RequestBody FriendDTO friendDTO
-                                                    ,HttpServletRequest request
-    ) {
+    public ResponseEntity<Map<String, String>> sendFriendRequest(@RequestBody FriendDTO friendDTO,
+                                                                 HttpServletRequest request) {
         String requesterId = getMemberIdInJwt(request);
-
         friendService.sendFriendRequest(requesterId, friendDTO);
-        return ResponseEntity.ok("친구 요청이 전송되었습니다.");
+        return ResponseEntity.ok(Collections.singletonMap("message", "친구 요청이 전송되었습니다."));
     }
 
     @PostMapping("/accept/{friendId}")
-    public ResponseEntity<String> acceptFriendRequest(@PathVariable Integer friendId
-                                                      ,HttpServletRequest request
-    ) {
+    public ResponseEntity<Map<String, String>> acceptFriendRequest(@PathVariable Integer friendId,
+                                                                   HttpServletRequest request) {
         String receiverId = getMemberIdInJwt(request);
         friendService.acceptFriendRequest(friendId, receiverId);
-        return ResponseEntity.ok("친구 요청이 수락되었습니다.");
+        return ResponseEntity.ok(Collections.singletonMap("message", "친구 요청이 수락되었습니다."));
     }
 
     @PostMapping("/reject/{friendId}")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable Integer friendId
-                                                      ,HttpServletRequest request
-    ) {
+    public ResponseEntity<Map<String, String>> rejectFriendRequest(@PathVariable Integer friendId,
+                                                                   HttpServletRequest request) {
         String receiverId = getMemberIdInJwt(request);
         friendService.rejectFriendRequest(friendId, receiverId);
-        return ResponseEntity.ok("친구 요청이 거절되었습니다.");
+        return ResponseEntity.ok(Collections.singletonMap("message", "친구 요청이 거절되었습니다."));
     }
 
     @DeleteMapping("/delete/{friendId}")
-    public ResponseEntity<String> deleteFriend(@PathVariable Integer friendId
-                                               ,HttpServletRequest request
-    ) {
+    public ResponseEntity<Map<String, String>> deleteFriend(@PathVariable Integer friendId,
+                                                            HttpServletRequest request) {
         String memberId = getMemberIdInJwt(request);
         friendService.deleteFriend(friendId, memberId);
-        return ResponseEntity.ok("친구가 삭제되었습니다.");
+        return ResponseEntity.ok(Collections.singletonMap("message", "친구가 삭제되었습니다."));
     }
 
     @GetMapping("/requests")

@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/move")
+@RequestMapping("/friendList")
 @RequiredArgsConstructor
-public class MoveController {
+public class FriendPageController {
     private final FriendServiceIf friendService;
     private final CookieUtil cookieUtil;
     private final MemberServiceIf memberService;
     private final AlertServiceIf alertService;
 
-    @GetMapping("/friendTest")
-    public String manageFriends(
+    @GetMapping("/list")
+    public String friendList(
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size,
@@ -56,8 +56,15 @@ public class MoveController {
         model.addAttribute("alerts", alerts);
         model.addAttribute("memberId", memberId);
 
+
+        int unreadCount = alertService.unreadCount(memberId);
+        model.addAttribute("unreadCount", unreadCount);
+
+
         return "friend/test";
     }
+
+
     private String getMemberIdInJwt(HttpServletRequest req){
         String accessToken = cookieUtil.getCookieValue(req,"accessToken");
         return memberService.getMemberInfo(accessToken).get("memberId");

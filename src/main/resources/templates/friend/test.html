@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </head>
 <body>
-<h1>친구 관리</h1>
+<h1 th:text="${memberId}+'의 친구관리'"></h1>
 
 <!-- 친구 검색 섹션 -->
 <div class="section">
@@ -321,9 +321,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <h3>친구 목록</h3>
     <ul class="friend-list">
         <li th:each="friend : ${friends}">
-<span th:text="${friend.requesterName != null ? friend.requester : friend.receiver} + ' (' +
-               (${friend.requesterName != null ? friend.requesterName : friend.receiverName}) + ')'"></span>
-            <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">삭제</button>
+            <span th:text="${memberId == friend.requester ? friend.receiver + ' (' + friend.receiverName + ')' : friend.requester + ' (' + friend.requesterName + ')'}"></span>
+                    <span th:if="${friend.status == 0}">수락 대기중</span>
+                    <span th:if="${friend.status == 1}"></span>
+               <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">삭제</button>
         </li>
     </ul>
 </div>
