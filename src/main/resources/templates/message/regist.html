@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>쪽지 작성</title>
+</head>
+<body>
+<h1>쪽지 작성</h1>
+
+<!-- 쪽지 작성 폼 -->
+<form action="/message/regist" method="post">
+    <div>
+        <label for="senderId">발신자 ID:</label>
+        <input type="text" id="senderId" name="senderId" th:value="${senderId}" readonly />
+    </div>
+
+    <div>
+        <label for="receiverId">수신자 ID:</label>
+        <input type="text" id="receiverId" name="receiverId" placeholder="수신자 ID" required />
+    </div>
+
+    <div>
+        <label for="content">내용:</label>
+        <textarea id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
+    </div>
+
+    <div>
+        <button type="submit">쪽지 보내기</button>
+    </div>
+</form>
+
+<!-- 취소 버튼 -->
+<a href="/message/list">
+    <button>취소</button>
+</a>
+
+</body>
+</html>

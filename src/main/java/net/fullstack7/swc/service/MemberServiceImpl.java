@@ -118,8 +118,10 @@ public class MemberServiceImpl implements MemberServiceIf {
                 member.getPhone(),
                 member.getSocial(),
                 member.getStatus(),
-                member.getMemberProfile().getPath() != null ? member.getMemberProfile().getPath() : null
+//                member.getMemberProfile().getPath() != null ? member.getMemberProfile().getPath() : null
+                null
         );
+
 
         log.info("임시 비밀번호 상태: {}", member.isTemporaryPassword());
 
