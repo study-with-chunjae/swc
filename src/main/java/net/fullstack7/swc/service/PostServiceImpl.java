@@ -78,6 +78,17 @@ public class PostServiceImpl implements PostServiceIf {
     }
 
     @Override
+    public Post viewPost2(int postId) {
+        try {
+            return postRepository.findById(postId).orElseThrow();
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+
+    @Override
     public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType) {
         LogUtil.logLine("PostService -> mainPost");
         try {

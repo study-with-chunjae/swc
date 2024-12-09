@@ -65,4 +65,32 @@ public class ThumbUpServiceImpl implements ThumbUpServiceIf{
             return false;
         }
     }
+
+    @Override
+    public boolean isExist(Integer postId, String memberId) {
+        try {
+            Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("post not found"));
+            Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("member not found"));
+            Optional<ThumbUp> result = thumbUpRepository.findByPostAndMember(post, member);
+            return result.isPresent();
+        }catch(IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }catch(Exception e){
+            log.error(e);
+            return false;
+        }
+    }
+
+    @Override
+    public Integer getThumbUpCount(Integer postId) {
+        try{
+            Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("post not found"));
+            return thumbUpRepository.findByPost(post).size();
+        }catch(IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }catch(Exception e){
+            log.error(e);
+            return null;
+        }
+    }
 }

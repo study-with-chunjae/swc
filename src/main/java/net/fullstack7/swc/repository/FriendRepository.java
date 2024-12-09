@@ -3,6 +3,7 @@ package net.fullstack7.swc.repository;
 import net.fullstack7.swc.domain.Friend;
 import net.fullstack7.swc.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,12 @@ public interface FriendRepository extends JpaRepository<Friend, Integer> {
     List<Friend> findByReceiverAndStatus(Member receiver, Integer status);
     List<Friend> findByRequesterOrReceiverAndStatus(Member requester, Member receiver, Integer status);
 
+    //강감찬 추가
+    @Query(value = "SELECT f "
+            + "FROM Friend f "
+            + "LEFT JOIN Share s ON (f.receiver.memberId = s.member.memberId OR f.requester.memberId = s.member.memberId) AND s.post.postId = :postId "
+            + "WHERE (f.receiver.memberId = :memberId OR f.requester.memberId=:memberId) AND s IS NULL"
+    )
+    List<Friend> findNotSharedFriends(Integer postId, String memberId);
+    //강감찬 추가
 }

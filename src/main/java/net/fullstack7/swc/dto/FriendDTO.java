@@ -6,6 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class FriendDTO {
     private Integer friendId;
     private String receiver; // 수락할사람

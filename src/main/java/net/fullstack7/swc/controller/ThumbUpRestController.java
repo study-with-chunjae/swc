@@ -59,4 +59,20 @@ public class ThumbUpRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
     }
+    @GetMapping("/{post-id}")
+    public ResponseEntity<ApiResponse<?>> getThumbUpCount(@PathVariable(value = "post-id", required = false) Integer postId, HttpServletRequest request) {
+        try{
+            LogUtil.logLine("ThumbUpRestController -> getThumbUpCount");
+            if(postId == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("잘못된 요청값입니다."));
+            }
+            Integer count = thumbUpService.getThumbUpCount(postId);
+            if(count == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("좋아요 값 조회 실패"));
+            }
+            return ResponseEntity.ok(ApiResponse.success("좋아요 수 불러오기 성공",count));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }

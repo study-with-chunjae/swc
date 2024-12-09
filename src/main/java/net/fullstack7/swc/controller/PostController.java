@@ -11,6 +11,7 @@ import net.fullstack7.swc.dto.*;
 import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.PostServiceIf;
+import net.fullstack7.swc.service.ThumbUpServiceIf;
 import net.fullstack7.swc.util.CheckJwtToken;
 import net.fullstack7.swc.util.CookieUtil;
 import net.fullstack7.swc.util.ErrorUtil;
@@ -43,6 +44,7 @@ public class PostController {
     private final MemberServiceIf memberService;
     private final MemberRepository memberRepository;
     private final PostServiceIf postService;
+    private final ThumbUpServiceIf thumbUpService;
     private final ErrorUtil errorUtil;
     private final CookieUtil cookieUtil;
 
@@ -128,10 +130,13 @@ public class PostController {
             return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.", DEFAULT_REDIRECT,redirectAttributes);
         }
         String memberId = getMemberIdInJwt(req);
-        PostDTO postDTO = postService.viewPost(postId);
+        Post postDTO = postService.viewPost2(postId);
+        LogUtil.log("postDTO",postDTO);
+        LogUtil.log("shares",postDTO.getShares());
         model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
         model.addAttribute("postDTO",postDTO);
-        return "todo/view";
+        model.addAttribute("thumbUp",thumbUpService.isExist(postId,memberId)?"1":"0");
+        return "post/view";
     }
 
     @CheckJwtToken(redirectUri = DEFAULT_REDIRECT)
