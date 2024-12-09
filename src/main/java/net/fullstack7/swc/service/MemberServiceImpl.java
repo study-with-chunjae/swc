@@ -117,7 +117,8 @@ public class MemberServiceImpl implements MemberServiceIf {
                 member.getEmail(),
                 member.getPhone(),
                 member.getSocial(),
-                member.getStatus()
+                member.getStatus(),
+                member.getMemberProfile().getPath() != null ? member.getMemberProfile().getPath() : null
         );
 
         log.info("임시 비밀번호 상태: {}", member.isTemporaryPassword());
@@ -156,7 +157,6 @@ public class MemberServiceImpl implements MemberServiceIf {
     // 이메일 인증 (예쁘게 보내기)
     public void sendVerificationEmail(String email) {
         try {
-            // 이메일 중복 체크 추가
             if (memberRepository.findByEmail(email).isPresent()) {
                 throw new RuntimeException("이미 사용 중인 이메일입니다.");
             }

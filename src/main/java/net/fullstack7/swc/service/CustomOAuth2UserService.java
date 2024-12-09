@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.CookieValue;
 
 
 import net.fullstack7.swc.domain.Member;
+import net.fullstack7.swc.domain.MemberProfile;
 import net.fullstack7.swc.repository.MemberRepository;
+import net.fullstack7.swc.repository.MemberProfileRepository;
 import net.fullstack7.swc.config.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberProfileRepository memberProfileRepository;
 
     @Override
     @Transactional
@@ -49,6 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // DB에 사용자 정보 저장
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> {
+                    // 새로운 Member 생성
                     Member newMember = Member.builder()
                             .memberId(email)
                             .name(name)
@@ -56,17 +59,24 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                             .social("google")
                             .status("Y")
                             .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
+                            .lastLoginAt(LocalDateTime.now())
                             .build();
-                    return memberRepository.save(newMember);
+
+                    // Member 저장
+                    memberRepository.save(newMember);
+
+                    // MemberProfile 생성 및 저장 (builder 사용)
+                    MemberProfile memberProfile = MemberProfile.builder()
+                            .member(newMember) // Member와 연결
+                            .path(path) // 프로필 사진 경로 설정
+                            .build();
+
+                    // MemberProfile 저장
+                    memberProfileRepository.save(memberProfile);
+
+                    return newMember;
                 });
 
-        // JWT 토큰 생성
-        String token = jwtTokenProvider.createToken(member.getMemberId(), member.getName(), member.getEmail(), member.getPhone(), member.getSocial(), member.getStatus());
-
-        log.info("==========================================================================================");
-        log.info("token : " + token);
-        log.info("==========================================================================================");
         return oAuth2User;
     }
 } 

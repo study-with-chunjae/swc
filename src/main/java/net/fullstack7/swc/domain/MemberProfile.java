@@ -2,10 +2,15 @@ package net.fullstack7.swc.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MemberProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +20,5 @@ public class MemberProfile {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
-    @ToString.Exclude
-    private Member member;
+    private Member member; // Member와의 관계
 }

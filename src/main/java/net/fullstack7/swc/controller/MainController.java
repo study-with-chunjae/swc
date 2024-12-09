@@ -49,10 +49,16 @@ public class MainController {
 
     @GetMapping("/sign/loginSuccess")
     public String loginSuccess(Model model, @AuthenticationPrincipal OAuth2User principal, HttpServletResponse response) {
-        String email = principal.getAttribute("email");
-        String name = principal.getAttribute("name");
-        String memberId = principal.getAttribute("email");
-        String token = jwtTokenProvider.createToken(memberId, name, email, null, "google", "Y");
+
+        String token = jwtTokenProvider.createToken(
+            principal.getAttribute("email"),
+            principal.getAttribute("name"),
+            principal.getAttribute("email"),
+            null,
+            "google",
+            "Y",
+            principal.getAttribute("picture")
+        );
 
         Cookie cookie = new Cookie("accessToken", token);
         cookie.setHttpOnly(true);

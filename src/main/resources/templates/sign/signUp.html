@@ -3,105 +3,142 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>signIn</title>
+    <title>signUp</title>
     <link rel="stylesheet" href="/assets/css/sign/signUp.css" />
   </head>
   <body>
-    <div class="signContainer">
-      <h2>회원가입</h2>
-      <form id="signupForm">
-        <div class="form-group">
-          <label for="signupId">아이디</label>
+    <div class="signBackground">
+      <div class="center">
+        <div>
           <div>
-            <input
-              type="text"
-              id="signupId"
-              oninput="validateId(this)"
-              required
-            />
-            <button type="button" onclick="checkMemberId()" class="btn">
-              중복확인
-            </button>
+            <img src="/assets/public/loginHeaderImg.png" alt="" />
           </div>
-          <p id="idCheckMessage"></p>
-        </div>
-        <div class="form-group">
-          <label for="signupPwd">비밀번호</label>
-          <input
-            type="password"
-            id="signupPwd"
-            oninput="validatePassword(this)"
-            required
-          />
-          <p id="pwdValidMessage" class="validation-message">
-            비밀번호는 영어, 숫자, 특수문자를 포함해야 하며, 10~20자여야 합니다.
-          </p>
-        </div>
-        <div class="form-group">
-          <label for="signupPwdConfirm">비밀번호 확인</label>
-          <input type="password" id="signupPwdConfirm" required />
-          <p id="pwdMatchMessage" class="validation-message">
-            비밀번호가 일치하지 않습니다.
-          </p>
-        </div>
-        <div class="form-group">
-          <label for="signupName">이름</label>
-          <input
-            type="text"
-            id="signupName"
-            oninput="validateName(this)"
-            required
-          />
-          <p id="nameValidMessage" class="validation-message">
-            한국 이름만 가능합니다.
-          </p>
-        </div>
-        <div class="form-group">
-          <label for="signupEmail">이메일</label>
-          <div>
-            <input
-              type="email"
-              id="signupEmail"
-              oninput="validateEmail(this)"
-              required
-            />
-            <button type="button" onclick="sendVerificationEmail()" class="btn">
-              인증번호 전송
-            </button>
-          </div>
-          <p id="emailValidMessage" class="validation-message">
-            유효한 이메일 주소를 입력해주세요.
-          </p>
-          <div id="verificationSection" style="display: none; margin-top: 10px">
-            <div>
-              <input
-                type="text"
-                id="verificationCode"
-                placeholder="인증번호 6자리"
-              />
-              <span id="timer" style="line-height: 35px; color: #dc3545"></span>
+          <div class="center">
+            <div class="signContainer">
+              <div class="signUpContent">
+                <h1>회원가입</h1>
+                <form id="signupForm">
+                  <div>
+                    <div>
+                      <input
+                        type="text"
+                        id="signupId"
+                        class="custom-input"
+                        oninput="validateId(this)"
+                        placeholder="아이디"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onclick="checkMemberId()"
+                        class="btn"
+                      >
+                        중복확인
+                      </button>
+                    </div>
+                    <p id="idCheckMessage" class="validation-message"></p>
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      id="signupPwd"
+                      class="custom-input"
+                      oninput="validatePassword(this)"
+                      placeholder="비밀번호"
+                      required
+                    />
+                    <p id="pwdValidMessage" class="validation-message">
+                      비밀번호는 영어, 숫자, 특수문자를 포함해야 하며,
+                      10~20자여야 합니다.
+                    </p>
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      id="signupPwdConfirm"
+                      class="custom-input"
+                      placeholder="비밀번호 확인"
+                      required
+                    />
+                    <p id="pwdMatchMessage" class="validation-message">
+                      비밀번호가 일치하지 않습니다.
+                    </p>
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      id="signupName"
+                      class="custom-input"
+                      oninput="validateName(this)"
+                      placeholder="이름"
+                      required
+                    />
+                    <p id="nameValidMessage" class="validation-message"></p>
+                  </div>
+                  <div>
+                    <div>
+                      <input
+                        type="email"
+                        id="signupEmail"
+                        class="custom-input"
+                        oninput="validateEmail(this)"
+                        placeholder="이메일"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onclick="sendVerificationEmail()"
+                        class="btn"
+                      >
+                        인증번호 전송
+                      </button>
+                    </div>
+                    <p id="emailValidMessage" class="validation-message">
+                      유효한 이메일 주소를 입력해주세요.
+                    </p>
+                    <div
+                      id="verificationSection"
+                      style="display: none; margin-top: 10px"
+                    >
+                      <div>
+                        <input
+                          type="text"
+                          id="verificationCode"
+                          class="custom-input"
+                          placeholder="인증번호 6자리"
+                        />
+                        <span
+                          id="timer"
+                          style="line-height: 35px; color: #dc3545"
+                        ></span>
+                      </div>
+                      <button type="button" onclick="verifyEmail()" class="btn">
+                        인증확인
+                      </button>
+                    </div>
+                    <p id="emailVerificationMessage"></p>
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      id="signupPhone"
+                      class="custom-input"
+                      oninput="validatePhone(this)"
+                      placeholder="전화번호"
+                      required
+                    />
+                    <p id="phoneValidMessage" class="validation-message">
+                      전화번호는 11자리 숫자여야 합니다.
+                    </p>
+                  </div>
+                  <button type="submit" class="btn">회원가입</button>
+                  <p id="signupError" class="error"></p>
+                </form>
+              </div>
             </div>
-            <button type="button" onclick="verifyEmail()" class="btn">
-              인증확인
-            </button>
           </div>
-          <p id="emailVerificationMessage"></p>
         </div>
-        <div class="form-group">
-          <label for="signupPhone">전화번호</label>
-          <input
-            type="tel"
-            id="signupPhone"
-            oninput="validatePhone(this)"
-            required
-          />
-          <p id="phoneValidMessage" class="validation-message">
-            전화번호는 11자리 숫자여야 합니다.
-          </p>
-        </div>
-        <button type="submit" class="btn">회원가입</button>
-        <p id="signupError" class="error"></p>
-      </form>
+      </div>
     </div>
 
     <script th:inline="javascript" src="/assets/js/sign/signUp.js"></script>
