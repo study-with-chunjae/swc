@@ -6,8 +6,10 @@ import net.fullstack7.swc.domain.AlertType;
 import net.fullstack7.swc.domain.Friend;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
+import net.fullstack7.swc.dto.FriendShareDTO;
 import net.fullstack7.swc.repository.FriendRepository;
 import net.fullstack7.swc.repository.MemberRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,10 @@ import java.util.stream.Collectors;
 public class FriendServiceImpl implements FriendServiceIf {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
-     private final AlertServiceIf alertService; // 알림 기능 통합 시 사용
+    private final AlertServiceIf alertService; // 알림 기능 통합 시 사용
+    //강감찬추가
+    private final ModelMapper modelMapper;
+    //강감찬추가
 
     @Override
     @Transactional
@@ -147,7 +152,11 @@ public class FriendServiceImpl implements FriendServiceIf {
         return memberRepository.findById(keyword, pageable);
     }
 
-
-
+    //강감찬 추가
+    @Override
+    public List<FriendShareDTO> notSharedFriends(Integer postId,String memberId) {
+        return friendRepository.findNotSharedFriends(postId, memberId).stream().map(f -> modelMapper.map(f,FriendShareDTO.class)).toList();
+    }
+    //강감찬 추가
 
 }

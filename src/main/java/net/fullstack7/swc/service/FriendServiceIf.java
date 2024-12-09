@@ -2,6 +2,7 @@ package net.fullstack7.swc.service;
 
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
+import net.fullstack7.swc.dto.FriendShareDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +15,8 @@ public interface FriendServiceIf {
     List<FriendDTO> getFriendRequests(String receiverId);
     List<FriendDTO> getFriends(String memberId);
     List<Member> searchFriends(String keyword, int limit, int page);
+
+    //강감찬추가
+    List<FriendShareDTO> notSharedFriends(Integer postId, String memberId);
+    //강감찬추가
 }
