@@ -7,7 +7,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
   }
 
   const messageEl = document.getElementById("idCheckMessage");
-  if (!messageEl.textContent || messageEl.style.color === "red") {
+  if (!messageEl.textContent || messageEl.style.color === "#FFCC00") {
     alert("아이디 중복 확인이 필요합니다.");
     return;
   }
@@ -50,12 +50,12 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
 // 아이디 유효성 검사 함수
 function validateId(input) {
   const messageEl = document.getElementById("idCheckMessage");
-  const idRegex = /^[a-z0-9]{6,}$/;
+  const idRegex = /^(?=.*[a-z])(?=.*\d)[a-z0-9]{6,}$/;
 
   if (!idRegex.test(input.value)) {
-    messageEl.style.color = "red";
+    messageEl.style.color = "#FFCC00";
     messageEl.textContent =
-      "아이디는 영어 소문자와 숫자를 포함하여 6자리 이상이어야 합니다.";
+      "아이디는 영어 소문자와 숫자를 포함한 6자리 이상이어야 합니다.";
     return false;
   }
   messageEl.textContent = "";
@@ -75,10 +75,10 @@ async function checkMemberId() {
     const response = await fetch(`/sign/check/${memberId}`);
     const data = await response.json();
 
-    messageEl.style.color = data.duplicate ? "red" : "green";
+    messageEl.style.color = data.duplicate ? "#FFCC00" : "white";
     messageEl.textContent = data.message;
   } catch (error) {
-    messageEl.style.color = "red";
+    messageEl.style.color = "#FFCC00";
     messageEl.textContent = error.message;
   }
 }
@@ -173,12 +173,12 @@ async function verifyEmail() {
       isEmailVerified = true;
       clearInterval(timerInterval);
     } else {
-      messageEl.style.color = "red";
+      messageEl.style.color = "#FFCC00";
       messageEl.textContent = "인증번호가 일치하지 않습니다.";
       isEmailVerified = false;
     }
   } catch (error) {
-    messageEl.style.color = "red";
+    messageEl.style.color = "#FFCC00";
     messageEl.textContent = "인증 확인 중 오류가 발생했습니다.";
     isEmailVerified = false;
   }

@@ -38,7 +38,7 @@ public class Member {
     private LocalDateTime deletedAt; //회원삭제일
     private LocalDateTime lastLoginAt; // 마지막 로그인
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private MemberProfile memberProfile;
 

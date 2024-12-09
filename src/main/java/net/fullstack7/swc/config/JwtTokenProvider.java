@@ -34,7 +34,7 @@ public class JwtTokenProvider {
   }
 
   // JWT 생성
-  public String createToken(String memberId, String name, String email, String phone, String social, String status) {
+  public String createToken(String memberId, String name, String email, String phone, String social, String status, String path) {
     Date now = new Date();
     Date expiration = new Date(now.getTime() + expirationTime);
 
@@ -45,6 +45,7 @@ public class JwtTokenProvider {
         .claim("phone", phone)
         .claim("social", social)
         .claim("status", status)
+        .claim("path", path)
         .setIssuedAt(now)
         .setExpiration(expiration)
         .signWith(key)
