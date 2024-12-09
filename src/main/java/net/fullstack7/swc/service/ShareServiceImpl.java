@@ -38,12 +38,13 @@ public class ShareServiceImpl implements ShareServiceIf{
             if(post.getMember().getMemberId().equals(member.getMemberId())) {
                 throw new IllegalArgumentException("자신의 글은 공유할 수 없습니다.");
             }
-            Friend friend = friendRepository.findByRequesterAndReceiver(post.getMember(),member).orElseThrow(()->new IllegalArgumentException("친구가 아닌 회원에게 공유할 수 없습니다."));
+            if(friendRepository.findByRequesterAndReceiver(member,post.getMember()).isEmpty()){
+                friendRepository.findByRequesterAndReceiver(post.getMember(),member).orElseThrow(()->new IllegalArgumentException("친구가 아닌 회원에게 공유할 수 없습니다."));
+            };
             Optional<Share> shareOptional = shareRepository.findByPostAndMember(post,member);
             if(shareOptional.isPresent()) {
                 throw new IllegalArgumentException("이미 공유한 회원입니다.");
             }
-
             return shareRepository.save(
                     Share.builder()
                             .post(post)
@@ -51,6 +52,8 @@ public class ShareServiceImpl implements ShareServiceIf{
                             .createdAt(NOW)
                             .build()
             );
+        }catch(IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
         }catch (Exception e) {
             log.error(e.getMessage());
             return null;

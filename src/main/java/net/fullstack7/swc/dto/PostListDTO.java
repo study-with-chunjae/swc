@@ -25,8 +25,7 @@ public class PostListDTO {
     private String topics; //분야
     private String hashtag; //해시태그
     private String image;
-    private Integer thumbUps;
     private List<Share> shares;
     private Member member;
-    private int thumbUpCount;
+    private Integer thumbUpCount;
 }

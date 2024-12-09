@@ -35,12 +35,14 @@
     <tr>
         <td>공유한사람</td>
         <td colspan="5">
-            <th:block th:each="share, status : ${postDTO.shares}">
-                <div>
-                    <span th:text="${share.member.memberId + share.createdAt}"></span>
-                    <button th:if="${viewType == 'my'}" th:text="X"></button>
-                </div>
-            </th:block>
+            <div id="shared-list-container">
+                <th:block th:each="share, status : ${postDTO.shares}">
+                    <div>
+                        <span th:text="${share.member.memberId + #temporals.format(share.createdAt,'yyyy-MM-dd')}"></span>
+                        <button th:if="${viewType == 'my'}" th:data-postId="${postDTO.postId}" th:data-sharedId="${share.member.memberId}" th:text="X" th:onclick="'deleteShare(this);'"></button>
+                    </div>
+                </th:block>
+            </div>
             <!-- Button trigger modal -->
             <button th:if="${viewType == 'my'}"
                     type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
@@ -203,9 +205,71 @@
                 alert('잘못된 값 입력');
             }
         }
+        async function addShare(postId,sharedId,buttonElement){
+            try{
+                const response = await fetch(`/shares/${postId}/${sharedId}`, {
+                    method : 'POST',
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    },
+                });
+                if(!response.ok){
+                    console.log("response not ok");
+                    const error = await response.json();
+                    console.log(error.message);
+                    alert(error.message);
+                    return;
+                }
+                console.log("response ok");
+                const result = await response.json();
+                console.log(result);
+                const spanElement = buttonElement.parentElement;
+                buttonElement.remove();
+                spanElement.innerHTML += result.message;
+                const sharedListContainer = document.querySelector("#shared-list-container");
+                sharedListContainer.innerHTML += `
+                    <div>
+                        <span>${sharedId} ${new Date().toISOString().slice(0, 10)}</span>
+                        <button data-postId="${postId}" data-sharedId="${sharedId}" onclick="deleteShare(this);">X</button>
+                    </div>
+                `;
+            }catch(error){
+                console.error("공유 실패" || error);
+                console.error(error.message);
+                alert("공유 실패");
+            }
+        }
+        async function deleteShare(buttonElement){
+            try{
+                const postId = buttonElement.getAttribute("data-postId");
+                const sharedId = buttonElement.getAttribute("data-sharedId");
+                const response = await fetch(`/shares/${postId}/${sharedId}`, {
+                    method : 'DELETE',
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    },
+                });
+                if(!response.ok){
+                    console.log("response not ok");
+                    const error = await response.json();
+                    console.log(error.message);
+                    alert(error.message);
+                    return;
+                }
+                console.log("response ok");
+                const result = await response.json();
+                console.log(result);
+                const divElement = buttonElement.parentElement;
+                divElement.remove();
+            }catch(error){
+                console.error("공유 취소 실패" || error);
+                console.error(error.message);
+                alert("공유 취소 실패");
+            }
+        }
         async function getNotSharedFriendList(postId){
             try{
-                const response = await fetch(`/shares/not-shared-friends-list/${postId}`, {
+                const response = await fetch(`/shares/${postId}/not-shared-friends-list`, {
                     method : 'GET',
                     headers : {
                         'Content-Type' : 'application/json'
@@ -229,7 +293,7 @@
                         <div>
                             <span>${friend.memberId}</span>
                             <span>${friend.name}</span>
-                            <span><button class="btn">공유하기</button></span>
+                            <span><button class="btn" onclick="addShare(${postId},'${friend.memberId}',this)">공유하기</button></span>
                         </div>
                     `;
                 }

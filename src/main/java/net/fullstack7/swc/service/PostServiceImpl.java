@@ -303,7 +303,7 @@ public class PostServiceImpl implements PostServiceIf {
                             "offset",validatedPageDTO.getOffset(),
                             "pageSize", validatedPageDTO.getPageSize()
                     )
-            ).stream().map(p -> modelMapper.map(p, PostDTO.class)).toList();
+            );
             pageDTO.setDtoList(dtoList);
             return pageDTO;
         }catch(Exception e){
