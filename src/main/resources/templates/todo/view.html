@@ -47,7 +47,7 @@
             margin: 30px;
             padding: 20px;
             background-color: rgba(255, 255, 255);
-            height: 700px;
+            height: 730px;
             border-radius: 8px;
         }
 
@@ -165,6 +165,77 @@
         }
 
 
+        /* style.css */
+
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .timestamp {
+            color: #888;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+
+        .content {
+            margin-top: 10px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .post-text {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .like-section {
+            text-align: center;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .heart-icon {
+            font-size: 24px;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .heart-icon.active {
+            color: red;
+            transform: scale(1.2);
+        }
+
     </style>
 </head>
 <div class="all">
@@ -199,6 +270,12 @@
                     </div>
                 </div>
 
+            <div class="like-section">
+                <button class="like-button">
+                    <span class="heart-icon">❤️</span>
+                    <span class="like-count" th:text="${postDTO.thumbUps.size()}"></span>
+                </button>
+            </div>
                 <div class="shared-info">
                     <p><strong>공유한 사람:</strong></p>
                     <div th:each="sharedMember, status : ${postDTO.shares}" th:text="${sharedMember.member.memberId + sharedMember.createdAt + (viewType == 'my')?'X':''}"></div>
@@ -210,7 +287,9 @@
                     <p th:utext="'<strong>해시태그:</strong>' + ${postDTO.hashtag}"></p>
                 </div>
 
-                <div class="button-section">
+
+
+            <div class="button-section">
                     <button>목록</button>
                     <th:block th:if="${viewType == 'my'}">
                         <button th:onclick="'register('+${postDTO.postId}+')'">등록</button>
