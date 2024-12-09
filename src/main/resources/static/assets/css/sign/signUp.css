@@ -69,6 +69,10 @@ input::placeholder {
 }
 
 .validation-message {
-  color: #FFCC00;
+  color: #ffcc00;
   font-size: 22px;
+}
+
+.flex {
+  display: flex;
 }
