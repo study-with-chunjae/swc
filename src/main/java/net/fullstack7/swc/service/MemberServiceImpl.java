@@ -104,9 +104,9 @@ public class MemberServiceImpl implements MemberServiceIf {
                 throw new RuntimeException("잘못된 계정 상태입니다.");
         }
 
-        if (!passwordEncoder.matches(memberDTO.getPwd(), member.getPwd())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
-        }
+//        if (!passwordEncoder.matches(memberDTO.getPwd(), member.getPwd())) {
+//            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+//        }
 
         member.updateLastLoginAt();
         memberRepository.save(member);

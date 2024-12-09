@@ -43,7 +43,6 @@ public class JwtTokenProvider {
         .claim("name", name)
         .claim("email", email)
         .claim("phone", phone)
-
         .claim("social", social)
         .claim("status", status)
         .setIssuedAt(now)
