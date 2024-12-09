@@ -17,4 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     //친구
     @Query("SELECT m FROM Member m WHERE m.memberId LIKE %:keyword% OR m.name LIKE %:keyword%")
     List<Member> findById(String keyword, Pageable pageable);
+
+    Member findByMemberId(String memberId);
 }

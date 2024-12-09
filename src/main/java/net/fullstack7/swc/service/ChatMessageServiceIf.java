@@ -1,7 +1,10 @@
 package net.fullstack7.swc.service;
 
+
+import net.fullstack7.swc.domain.ChatMessage;
+import net.fullstack7.swc.domain.ChatRoom;
+
 public interface ChatMessageServiceIf {
-    //메시지 생성
-    
-    //읽음여부
+    void sendMessage(ChatMessage message, ChatRoom room);
+
 }

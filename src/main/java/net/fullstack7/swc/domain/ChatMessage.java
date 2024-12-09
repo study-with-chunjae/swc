@@ -7,10 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
-@Getter
+@Data
 @Entity
 public class ChatMessage {
     @Id
@@ -36,5 +38,9 @@ public class ChatMessage {
         this.message = message;
         this.createdAt = createdAt;
         this.isRead = isRead;
+    }
+
+    public ChatMessage() {
+
     }
 }

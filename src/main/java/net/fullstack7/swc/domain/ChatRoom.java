@@ -7,9 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+@Setter
 @Entity
 public class ChatRoom {
     @Id
@@ -30,5 +32,11 @@ public class ChatRoom {
     private Integer receiverStatus; // 받은사람 나감여부 0:나감 1:안나감
 
     public ChatRoom(Member sender, Member receiver, int i, int i1) {
+    }
+
+    public ChatRoom() {}
+
+    public Member getReceiver() {
+        return receiver;
     }
 }

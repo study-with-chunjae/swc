@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Integer> {
     @Query("SELECT cm FROM ChatMessage cm WHERE cm.chatRoom.chatRoomId = :chatRoomId")
-    List<ChatMessage> findByChatRoomId(@Param("chatRoomId") Integer chatRoomId);
+    List<ChatMessage> findByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     @Modifying
     @Query("UPDATE ChatMessage cm SET cm.isRead = :isRead WHERE cm.chatMessageId = :chatMessageId")

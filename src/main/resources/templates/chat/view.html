@@ -93,6 +93,7 @@
         <div id="messages"></div>
         <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." />
         <button onclick="sendMessage()">보내기</button>
+        <button onclick="leaveChatRoom()">나가기</button>
     </div>
 </div>
 
@@ -101,12 +102,66 @@
     let currentChatRoomId = null;
     let currentReceiverId = null;
 
-    function connectToChat(receiverId) {
+    class CookieUtil {
+        // 쿠키에서 특정 이름을 가진 값을 가져오는 함수
+        getCookieValue(document, cName) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(cName + "=")) {
+                    return cookie.substring(cName.length + 1, cookie.length);
+                }
+            }
+            return "";  // 해당 쿠키가 없다면 빈 문자열 반환
+        }
+
+        // 예시로 숫자로 변환하는 함수
+        getStringToInt(str, defaultValue) {
+            return (isNaN(str) ? defaultValue : parseInt(str));
+        }
+    }
+
+
+    // 예시로 채팅방 ID 목록을 사용 (실제로는 서버에서 받아와야 함)
+    let chatRooms = [
+        { chatRoomId: 1, senderId: 'user1', receiverId: 'user2' },
+        { chatRoomId: 2, senderId: 'user1', receiverId: 'user3' },
+        { chatRoomId: 3, senderId: 'user1', receiverId: '길동' }
+    ];
+
+    // CookieUtil 객체를 사용하여 accessToken을 쿠키에서 가져오는 코드
+    function getAccessTokenFromCookies() {
+        const cookieUtil = new CookieUtil();  // CookieUtil 객체 생성
+        return cookieUtil.getCookieValue(document, 'accessToken');  // 'accessToken' 쿠키 값 가져오기
+    }
+
+    // 채팅방 목록 로딩
+    function loadChatRoomList() {
+        const chatRoomList = document.getElementById("chatRoomList");
+        chatRoomList.innerHTML = '';
+        chatRooms.forEach(room => {
+            const listItem = document.createElement("li");
+            listItem.textContent = room.receiverId;
+
+            // chatRoomId를 onclick 이벤트에 전달
+            listItem.onclick = function() {
+                currentReceiverId = room.receiverId; // 상대방 ID
+                currentChatRoomId = room.chatRoomId; // 채팅방 ID
+                connectToChat(room.chatRoomId); // chatRoomId를 전달
+            };
+
+            chatRoomList.appendChild(listItem);
+        });
+    }
+
+
+    function connectToChat(chatRoomId) {
         if (socket) {
             socket.close();
         }
-        currentReceiverId = receiverId;
-        socket = new WebSocket('ws://localhost:8080/chat'); // url맞나
+
+        currentChatRoomId = chatRoomId;
+        socket = new WebSocket('ws://localhost:8080/chat');
 
         socket.onopen = function() {
             console.log("WebSocket 연결 성공");
@@ -115,12 +170,38 @@
         };
 
         socket.onmessage = function(event) {
-            const message = event.data;
-            const messagesDiv = document.getElementById("messages");
-            const messageElement = document.createElement("div");
-            messageElement.textContent = message;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            try {
+                const chatMessage = JSON.parse(event.data);
+                console.log(chatMessage);
+
+                const messagesDiv = document.getElementById("messages");
+                const messageElement = document.createElement("div");
+
+                const senderId = chatMessage.senderId;
+                const receiverId = chatMessage.receiverId;
+
+                const currentUserId = getCurrentUserId(); // 로그인된 사용자의 ID
+
+                if (senderId === currentUserId) {
+                    messageElement.textContent = `You: ${chatMessage.message}`; // 자신이 보낸 메시지
+                } else {
+                    messageElement.textContent = `${senderId}: ${chatMessage.message}`; // 다른 사용자가 보낸 메시지
+                }
+                // messageElement.textContent = `${chatMessage.senderId}: ${chatMessage.message}`;
+                messagesDiv.appendChild(messageElement);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            } catch (error) {
+                console.error("Invalid JSON received: ", event.data);
+                // 예외 메시지가 왔을 경우 처리
+                try {
+                    const errorMessage = JSON.parse(event.data);
+                    if (errorMessage.error) {
+                        alert("Error: " + errorMessage.error);  // 오류 메시지 표시
+                    }
+                } catch (e) {
+                    console.error("Failed to parse error message:", e);
+                }
+            }
         };
 
         socket.onclose = function() {
@@ -136,31 +217,119 @@
     function sendMessage() {
         const messageInput = document.getElementById("messageInput");
         const message = messageInput.value;
-        if (message) {
-            const payload = currentReceiverId + ":" + message;
-            socket.send(payload);
-            messageInput.value = "";
+
+        // receiverId가 null인 경우 예외 처리
+        if (!currentReceiverId) {
+            console.error("Receiver ID가 설정되지 않았습니다.");
+            return;
+        }
+
+        // accessToken을 쿠키에서 가져오기
+        const accessToken = getAccessTokenFromCookies();
+
+        if (!accessToken) {
+            console.error("로그인된 사용자가 없습니다.");
+            return;
+        }
+
+        // JWT 토큰에서 senderId 추출 (기존 코드의 getMemberId 함수처럼)
+        const senderId = getSenderIdFromToken(accessToken); // 이 함수는 토큰에서 senderId를 추출하는 함수
+        if (!senderId) {
+            console.error("senderId가 유효하지 않습니다.");
+            return;
+        }
+        console.log("Receiver ID:", currentReceiverId);
+        console.log("Sender ID:", senderId);
+        console.log("Message:", message);
+
+        if (message && currentChatRoomId && currentReceiverId && senderId) {
+            const payload = {
+                chatRoomId: currentChatRoomId,
+                senderId: senderId,
+                receiverId: currentReceiverId,
+                message: message
+            };
+
+            // WebSocket이 열린 상태에서만 메시지를 보냄
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify(payload));
+                messageInput.value = ""; // 입력 필드 초기화
+            } else {
+                console.error("WebSocket 연결이 열려 있지 않습니다.");
+            }
+        } else {
+            console.error("채팅방 ID 또는 수신자 ID가 설정되지 않았습니다.");
         }
     }
 
-    // 채팅방 목록
-    function loadChatRoomList() {
-        const chatRoomList = document.getElementById("chatRoomList");
-        // 예시니까 지워
-        const chatRooms = ['user2', 'user3','sk'];
-        chatRoomList.innerHTML = '';
-        chatRooms.forEach(room => {
-            const listItem = document.createElement("li");
-            listItem.textContent = room;
-            listItem.onclick = function() {
-                connectToChat(room);
-            };
-            chatRoomList.appendChild(listItem);
-        });
+    // JWT 토큰에서 senderId 추출
+    function getSenderIdFromToken(token) {
+        const base64Url = token.split('.')[1]; // 토큰의 payload 부분을 가져옴
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // URL-safe base64 -> 일반 base64로 변환
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+        return payload.sub;  // 'sub'는 JWT에서 회원 ID로 사용되는 부분입니다.
+    }
+
+    // 메시지 불러오기 (예시로 임의로 데이터를 로드)
+    function loadMessages() {
+        const chatRoomId = currentChatRoomId;
+        const messagesDiv = document.getElementById("messages");
+        // 예시로 채팅 메시지를 로드, 실제로는 서버에서 가져와야 합니다.
+        // const messages = [
+        //     { senderId: 'user2', message: '안녕하세요!' },
+        //     { senderId: 'user1', message: '안녕하세요! 어떻게 도와드릴까요?' }
+        // ];
+        // messages.forEach(msg => {
+        //     const messageElement = document.createElement("div");
+        //     messageElement.textContent = `${msg.senderId}: ${msg.message}`;
+        //     messagesDiv.appendChild(messageElement);
+        // });
+        // messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        // 서버에서 채팅 메시지를 가져오는 요청
+        fetch(`/api/chat/messages?chatRoomId=${chatRoomId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getAccessTokenFromCookies()}` // JWT 토큰을 사용한 인증
+            }
+        })
+            .then(response => response.json())
+            .then(messages => {
+                // 메시지를 화면에 출력
+                messagesDiv.innerHTML = ''; // 기존 메시지 비우기
+                messages.forEach(msg => {
+                    const messageElement = document.createElement("div");
+
+                    const senderId = msg.senderId;
+                    const message = msg.message;
+
+                    // 로그인된 사용자의 ID와 비교하여 메시지를 처리
+                    const currentUserId = getCurrentUserId(); // 로그인된 사용자의 ID
+
+                    // 보낸 사람(senderId)에 따라 출력 형식 결정
+                    if (senderId === currentUserId) {
+                        messageElement.textContent = `You: ${message}`; // 자신이 보낸 메시지
+                    } else {
+                        messageElement.textContent = `${senderId}: ${message}`; // 다른 사용자가 보낸 메시지
+                    }
+
+                    messagesDiv.appendChild(messageElement); // 메시지 출력
+                });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight; // 자동 스크롤
+            })
+            .catch(error => {
+                console.error("메시지를 불러오는 중 오류가 발생했습니다.", error);
+            });
     }
 
     // 모달 열기
     function openChatModal() {
+        console.log("모달 열기 함수 호출됨");
         document.getElementById('chatModal').style.display = 'block';
         document.getElementById('chatRoomListContainer').style.display = 'none';
     }
@@ -170,6 +339,40 @@
         document.getElementById('chatModal').style.display = 'none';
         document.getElementById('chatRoomListContainer').style.display = 'block';
     }
+    // 나가기 버튼 클릭 시
+    function leaveChatRoom() {
+        // WebSocket 연결 종료
+        if (socket) {
+            socket.close();
+            console.log("WebSocket 연결 종료");
+
+            // UI에서 채팅방 제거
+            closeChatModal();
+
+            deleteChatRoom(currentChatRoomId);
+
+            // 채팅방 ID와 수신자 ID 초기화
+            currentChatRoomId = null;
+            currentReceiverId = null;
+
+            // // 채팅 메시지 영역 초기화
+            // const messagesDiv = document.getElementById("messages");
+            // messagesDiv.innerHTML = "";  // 모든 메시지 삭제
+            //
+            // // 메시지 입력란 초기화
+            // const messageInput = document.getElementById("messageInput");
+            // messageInput.value = "";  // 입력 필드 초기화
+        }
+    }
+    // 채팅방 삭제
+    function deleteChatRoom(chatRoomId) {
+        // 채팅방 목록에서 해당 채팅방을 찾아 삭제
+        chatRooms = chatRooms.filter(room => room.chatRoomId !== chatRoomId);
+
+        // 채팅방 목록 UI 갱신
+        loadChatRoomList();
+    }
+
 
     window.onload = function() {
         loadChatRoomList();
