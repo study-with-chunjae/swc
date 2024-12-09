@@ -16,4 +16,20 @@ public class AdminController {
     public String main() {
         return "admin/main";
     }
+    @GetMapping("/memberList")
+    public String memberList() {
+        return "admin/memberList";
+    }
+    @GetMapping("/bbsList")
+    public String bbsList() {
+        return "admin/bbsList";
+    }
+    @GetMapping("/qnaList")
+    public String qnaList() {
+        return "admin/qnaList";
+    }
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "admin/dashboard";
+    }
 }
