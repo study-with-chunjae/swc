@@ -8,6 +8,7 @@ import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.domain.Share;
 import net.fullstack7.swc.dto.*;
+import net.fullstack7.swc.mapper.PostMapper;
 import net.fullstack7.swc.repository.PostRepository;
 import net.fullstack7.swc.repository.ShareRepository;
 import net.fullstack7.swc.repository.ThumbUpRepository;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class PostServiceImpl implements PostServiceIf {
     private final PostRepository postRepository;
     private final ShareRepository shareRepository;
     private final ThumbUpRepository thumbUpRepository;
+    private final PostMapper postMapper;
     private final FileUploadUtil fileUploadUtil;
     private final ModelMapper modelMapper;
     private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -66,27 +69,17 @@ public class PostServiceImpl implements PostServiceIf {
             return null;
         }
     }
-
+    @Transactional
     @Override
     public PostDTO viewPost(int postId) {
         try {
-            return modelMapper.map(postRepository.findById(postId).orElseThrow(), PostDTO.class);
+            //return modelMapper.map(postRepository.findById(postId).orElseThrow(), PostDTO.class);
+            return modelMapper.map(postRepository.viewPost(postId), PostDTO.class);
         }catch(Exception e){
             log.error(e.getMessage());
             return null;
         }
     }
-
-    @Override
-    public Post viewPost2(int postId) {
-        try {
-            return postRepository.findById(postId).orElseThrow();
-        }catch(Exception e){
-            log.error(e.getMessage());
-            return null;
-        }
-    }
-
 
     @Override
     public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType) {
@@ -99,6 +92,24 @@ public class PostServiceImpl implements PostServiceIf {
                     , createdAt.plusDays(1)
                     , START_OF_TODAY
                     , END_OF_TODAY
+            );
+            LogUtil.log("list", postList);
+            return postList.stream().map(post -> modelMapper.map(post, PostMainDTO.class)).toList();
+        }catch(Exception e){
+            log.error("mainPost 에러 발생 : {}",e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public List<PostMainDTO> mainPostList(LocalDateTime selectedDate, String memberId, Integer todayType) {
+        LogUtil.logLine("PostService -> mainPostList");
+        try{
+            Member member = Member.builder().memberId(memberId).build();
+            List<Post> postList = postRepository.findByMemberAndTodayTypeAndDisplayAtAfterAndDisplayEndBefore(member
+                    , todayType
+                    , selectedDate
+                    , selectedDate
             );
             LogUtil.log("list", postList);
             return postList.stream().map(post -> modelMapper.map(post, PostMainDTO.class)).toList();
@@ -256,11 +267,56 @@ public class PostServiceImpl implements PostServiceIf {
         }
     }
 
+    @Override
+    public int totalCount(PageDTO<PostDTO> pageDTO, String memberId) {
+        try{
+            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+            return postMapper.totalCount(validatedPageDTO.getSearchField(),
+                    validatedPageDTO.getSearchValue(),
+                    validatedPageDTO.getSortField(),
+                    validatedPageDTO.getSortDirection(),
+                    validatedPageDTO.getSearchDateBegin(),
+                    validatedPageDTO.getSearchDateEnd(),
+                    memberId
+            );
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return -1;
+        }
+
+    }
+
+    @Override
+    public PageDTO<PostDTO> postList(PageDTO<PostDTO> pageDTO, String memberId) {
+        LogUtil.logLine("PostService -> sortAndSearch");
+        try {
+            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+            List<PostDTO> dtoList = postMapper.postList(
+                    Map.of(
+                            "searchField", validatedPageDTO.getSearchField(),
+                            "searchValue", validatedPageDTO.getSearchValue(),
+                            "sortField", validatedPageDTO.getSortField(),
+                            "sortDirection", validatedPageDTO.getSortDirection(),
+                            "searchDateBegin", validatedPageDTO.getSearchDateBegin(),
+                            "searchDateEnd", validatedPageDTO.getSearchDateEnd(),
+                            "memberId", memberId,
+                            "offset",validatedPageDTO.getOffset(),
+                            "pageSize", validatedPageDTO.getPageSize()
+                    )
+            ).stream().map(p -> modelMapper.map(p, PostDTO.class)).toList();
+            pageDTO.setDtoList(dtoList);
+            return pageDTO;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
 
     private Page<Post> getPagePost(PageDTO<PostDTO> pageDTO, String memberId){
         LogUtil.logLine("PostService -> getPagePost");
         try {
-            return postRepository.searchAndSort(pageDTO.getPageable(),
+            return postRepository
+                    .searchAndSort(pageDTO.getSortPageable(),
                     pageDTO.getSearchField(),
                     pageDTO.getSearchValue(),
                     pageDTO.getSortField(),

@@ -1,13 +1,12 @@
 package net.fullstack7.swc.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack7.swc.domain.Post;
-import net.fullstack7.swc.domain.QPost;
-import net.fullstack7.swc.domain.QShare;
-import net.fullstack7.swc.domain.Share;
+import net.fullstack7.swc.domain.*;
 import net.fullstack7.swc.dto.PageDTO;
+import net.fullstack7.swc.dto.PostListDTO;
 import net.fullstack7.swc.util.LogUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +32,7 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                                     String sortDirection, String searchDateBegin, String searchDateEnd, String memberId) {
         LogUtil.logLine("PostRepository -> searchAndSort");
         QPost qPost = QPost.post;
+        QThumbUp qThumbUp = QThumbUp.thumbUp;
         JPQLQuery<Post> query = from(qPost);
         BooleanBuilder bb = new BooleanBuilder();
         //검색
@@ -50,7 +50,12 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                 LocalDate.parse(searchDateEnd, FORMATTER).atStartOfDay().plusDays(1))
         );
         bb.and(qPost.member.memberId.eq(memberId));
-        log.info("searchField : {}, searchValue : {}, sortField : {}, sortDirection : {}, searchDateBegin : {}, searchDateEnd : {}"
+        log.info("searchField : {}" +
+                        ", searchValue : {}" +
+                        ", sortField : {}" +
+                        ", sortDirection : {}" +
+                        ", searchDateBegin : {}" +
+                        ", searchDateEnd : {}"
         ,searchField, searchValue,sortField,sortDirection,searchDateBegin,searchDateEnd);
         query.where(bb);
         //정렬
@@ -60,15 +65,22 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                     query.orderBy(sortDirection.equals("desc")?qPost.createdAt.desc():qPost.createdAt.asc());
                     break;
                 case "thumbUps" :
-                    query.orderBy(sortDirection.equals("desc")?qPost.thumbUps.size().desc():qPost.thumbUps.size().asc());
+                    query.leftJoin(qPost.thumbUps,qThumbUp);
+                    query.groupBy(qPost.postId);
+                    query.orderBy(sortDirection.equals("desc")?qThumbUp.count().desc():qThumbUp.count().asc());
                     break;
                 default : break;
             }
         }
         //페이징
         log.info("fetchCount before pagination : {}",query.fetchCount());
+        LogUtil.log("this.getQuerydsl()",Objects.requireNonNull(this.getQuerydsl()));
         Objects.requireNonNull(this.getQuerydsl()).applyPagination(pageable, query);
         List<Post> posts = query.fetch();
+        LogUtil.log("pageSearchImpl : posts",posts);
+        for(Post post : posts){
+            LogUtil.log("thumbUp",post.getThumbUps());
+        }
         int total = (int) query.fetchCount();
         log.info("fetchCount after pagination : {}",query.fetchCount());
         return new PageImpl<>(posts, pageable, total);

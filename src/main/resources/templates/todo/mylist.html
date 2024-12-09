@@ -228,8 +228,11 @@
                 </div>
 
                 <div class="button-section">
+
                     <input class="sort-btn" type="radio" name="sortField" value="createdAt" th:selected="${pageDTO.sortField == 'createdAt'}">등록순
-                    <input class="sort-btn" type="radio" name="sortField" value="thumbUp" th:selected="${pageDTO.sortField == 'thumbUp'}">좋아요순
+                    <input class="sort-btn" type="radio" name="sortField" value="thumbUps" th:selected="${pageDTO.sortField == 'thumbUps'}">좋아요순
+                    <input type = "radio" name="sortDirection" value="desc" th:selected="${pageDTO.sortDirection == 'desc'}">내림차순
+                    <input type = "radio" name="sortDirection" value="asc" th:selected="${pageDTO.sortDirection == 'asc'}">오름차순
                     <select name="pageSize" id="pageSize" class="view-count-select">
                         <option value="5" th:selected="${pageDTO.pageSize == 5}">5개씩보기</option>
                         <option value="10" th:selected="${pageDTO.pageSize == 10}">10개씩보기</option>
@@ -260,7 +263,7 @@
                         <td th:text="${post.postId}"></td>
                         <td th:text="${post.title}"></td>
                         <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
-                        <td th:text="${post.thumbUps.size()}"></td>
+                        <td th:text="${post.thumbUpCount}"></td>
                         <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
                         <td th:text="${post.displayAt + ' ~ ' + post.displayEnd}"></td>
                     </tr>

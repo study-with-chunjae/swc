@@ -8,14 +8,13 @@ import net.fullstack7.swc.domain.ThumbUp;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Log4j2
-public class PostDTO {
+public class PostListDTO {
     private Integer postId;
     private String title;
     private String content;
@@ -26,7 +25,7 @@ public class PostDTO {
     private String topics; //분야
     private String hashtag; //해시태그
     private String image;
-    private List<ThumbUp> thumbUps;
+    private Integer thumbUps;
     private List<Share> shares;
     private Member member;
     private int thumbUpCount;
