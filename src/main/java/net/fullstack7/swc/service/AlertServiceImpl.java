@@ -33,13 +33,23 @@ public class AlertServiceImpl implements AlertServiceIf {
 
         return new AlertDTO(alert);
     }
-
+    //  미확인 알림리스트
     @Override
     @Transactional(readOnly = true)
     public List<AlertDTO> readAlerts(String memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
         List<Alert> alerts = alertRepository.findByMemberAndMsgReadFalseOrderByRegDateDesc(member);
+        return alerts.stream().map(AlertDTO::new).toList();
+    }
+
+    //전체리스트
+    @Override
+    @Transactional(readOnly = true)
+    public List<AlertDTO> readAllAlerts(String memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+        List<Alert> alerts = alertRepository.findByMemberOrderByRegDateDesc(member);
         return alerts.stream().map(AlertDTO::new).toList();
     }
 

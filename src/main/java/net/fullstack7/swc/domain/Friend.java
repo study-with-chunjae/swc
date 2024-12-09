@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 public class Friend {
@@ -29,13 +31,15 @@ public class Friend {
     private Member requester; //친구요청한사람 아이디
 
     private Integer status; //수락아직안함 0 수락 1
+    private LocalDateTime regDate;
 
     public Friend() {}
 
-    public Friend(final Member receiver, final Member requester, final Integer status) {
+    public Friend(final Member receiver, final Member requester, final Integer status, final LocalDateTime regDate) {
         this.receiver = receiver;
         this.requester = requester;
         this.status = status;
+        this.regDate = regDate;
     }
 
     public void allow(){

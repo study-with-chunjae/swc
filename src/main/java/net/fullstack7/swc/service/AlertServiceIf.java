@@ -9,6 +9,7 @@ import java.util.List;
 public interface AlertServiceIf {
     AlertDTO registAlert(Member member, AlertType type, String message, String url);
     List<AlertDTO> readAlerts(String memberId);
+    List<AlertDTO> readAllAlerts(String memberId);
     void checkRead(Integer alertId, String memberId);
     int unreadCount(String memberId);
     void allCheckRead(String memberId);

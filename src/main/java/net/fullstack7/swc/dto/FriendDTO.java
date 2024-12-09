@@ -2,6 +2,8 @@ package net.fullstack7.swc.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +15,6 @@ public class FriendDTO {
     private String requester; // 신청자
     private String requesterName;
     private Integer status;
+    private LocalDateTime regDate;
 
 }

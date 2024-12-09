@@ -1,52 +1,47 @@
-
 <div th:fragment="alert">
-    <button id="alertButton" onclick="openAlertPopup()">알림 (<span id="unreadCount">0</span>)</button>
+    <button id="alertButton" onclick="openAlertPopup()">알림 (<span id="unreadCount" th:text="${unreadCount}"></span>)</button>
 
     <div id="alertPopup" style="display:none; position:absolute; top:50px; right:50px; background:#fff; border:1px solid #ccc; padding:10px;">
         <h3>알림 목록</h3>
-        <ul>
-            <li th:each="alert : ${alerts}">
-                <span th:text="${alert.message}"></span> (<span th:text="${alert.type}"></span>)
-                <button th:attr="onclick='markRead(' + ${alert.alertId} + ', \'[[${memberId}]]\')'">Mark as Read</button>
-            </li>
-            <li th:if="${#lists.isEmpty(alerts)}">알림이 없습니다</li>
+        <ul id="alertList">
+            <li id="noAlertMsg">알림이 없습니다</li>
         </ul>
     </div>
 
-
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.js}"></script>
+    <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.js}"></script>
 
     <script>
         var memberId = '[[${memberId}]]';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/alerts/unreadCount?memberId=' + memberId)
+        document.addEventListener('DOMContentLoaded', function () {
+            // 페이지 로딩 후 unreadCount 가져오기
+            fetch('/alert/unreadCount?memberId=' + memberId)
                 .then(res => res.json())
                 .then(count => {
                     document.getElementById('unreadCount').textContent = count;
                 });
         });
 
+
         function openAlertPopup() {
-            fetch('/alerts/markAllAsRead?memberId=' + memberId, { method:'POST' })
+            fetch('/alert/allRead?memberId=' + memberId, { method:'POST' })
                 .then(res => res.text())
                 .then(data => {
                     document.getElementById('unreadCount').textContent = '0';
-
                     loadAlerts();
-
                     document.getElementById('alertPopup').style.display = 'block';
                 });
         }
 
         function loadAlerts() {
-            fetch('/alerts?memberId=' + memberId)
+            fetch('/alert/list?memberId=' + memberId)
                 .then(res => res.json())
                 .then(alerts => {
                     let list = document.getElementById('alertList');
                     let noAlertMsg = document.getElementById('noAlertMsg');
 
+                    // 기존 리스트 아이템 제거
                     while (list.firstChild) {
                         list.removeChild(list.firstChild);
                     }
@@ -55,7 +50,6 @@
                         alerts.forEach(alert => {
                             let li = document.createElement('li');
                             li.textContent = alert.message + " (" + alert.type + ")";
-
                             list.appendChild(li);
                         });
                     } else {
@@ -74,6 +68,7 @@
             stompClient.subscribe('/user/' + memberId + '/queue/alerts', function (message) {
                 let alertData = JSON.parse(message.body);
 
+                // 실시간 알림 도착 시 unreadCount 증가
                 let countElem = document.getElementById('unreadCount');
                 let currentCount = parseInt(countElem.textContent) || 0;
                 countElem.textContent = currentCount + 1;
@@ -94,12 +89,5 @@
             });
         });
 
-        function markRead(alertId, memberId) {
-            fetch('/alerts/read?alertId=' + alertId + '&memberId=' + memberId, {
-                method: 'POST'
-            }).then(r => r.text()).then(res => {
-                console.log(res);
-            });
-        }
     </script>
 </div>
