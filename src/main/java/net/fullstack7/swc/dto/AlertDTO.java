@@ -21,6 +21,7 @@ public class AlertDTO {
     private String url;
     private boolean msgRead;
     private LocalDateTime regDate;
+    private int unreadCount;
 
     public AlertDTO(Alert alert) {
         this.alertId = alert.getAlertId();

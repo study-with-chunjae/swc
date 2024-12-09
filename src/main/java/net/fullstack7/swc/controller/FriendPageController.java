@@ -2,6 +2,7 @@ package net.fullstack7.swc.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.AlertDTO;
 import net.fullstack7.swc.dto.FriendDTO;
@@ -22,6 +23,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/friendList")
 @RequiredArgsConstructor
+@Log4j2
 public class FriendPageController {
     private final FriendServiceIf friendService;
     private final CookieUtil cookieUtil;
@@ -38,7 +40,7 @@ public class FriendPageController {
     ) {
 
         String memberId = getMemberIdInJwt(request);
-
+        log.info("회원아이디{}",memberId);
         Pageable pageable = PageRequest.of(page, size);
         List<Member> searchResults = friendService.searchFriends(keyword, size, page); // 매개변수 순서 확인
         model.addAttribute("searchResults", searchResults);

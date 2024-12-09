@@ -12,5 +12,4 @@ public interface AlertRepository extends JpaRepository<Alert, Integer> {
     int countByMemberAndMsgReadFalse(Member member);
     // 전체리스트
     List<Alert> findByMemberOrderByRegDateDesc(Member member);
-
 }
