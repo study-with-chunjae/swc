@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +34,10 @@ public class FriendServiceImpl implements FriendServiceIf {
     @Override
     @Transactional
     public void sendFriendRequest(String requesterId, FriendDTO friendDTO) {
+        // 본인에게 금지( 테스트 후 살리기)
+        if (requesterId.equals(friendDTO.getReceiver())) {
+            throw new RuntimeException("본인에게 친구 요청을 할 수 없습니다.");
+        }
         Member requester = memberRepository.findById(requesterId)
                 .orElseThrow(() -> new RuntimeException("요청자 회원이 존재하지 않습니다."));
         Member receiver = memberRepository.findById(friendDTO.getReceiver())
@@ -48,11 +53,11 @@ public class FriendServiceImpl implements FriendServiceIf {
             throw new RuntimeException("이미 친구 요청을 보냈거나 친구 관계입니다.");
         }
 
-        Friend friend = new Friend(receiver, requester, 0);
+        Friend friend = new Friend(receiver, requester, 0, LocalDateTime.now());
         friendRepository.save(friend);
 
          String message = requester.getName() + "님이 친구 요청을 보냈습니다.";
-        alertService.registAlert(receiver, AlertType.FRIEND_REQUEST, message, "/friend/request");
+        alertService.registAlert(receiver, AlertType.FRIEND_REQUEST, message, "/friend/test");
     }
 
     @Override
@@ -71,7 +76,7 @@ public class FriendServiceImpl implements FriendServiceIf {
         friendRepository.save(friend);
 
          String message = receiverId + "님이 친구 요청을 수락했습니다.";
-        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/accepted");    }
+        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/test");    }
 
     @Override
     @Transactional
@@ -126,8 +131,8 @@ public class FriendServiceImpl implements FriendServiceIf {
     public List<FriendDTO> getFriends(String memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
-        List<Friend> friends = friendRepository.findByRequesterOrReceiverAndStatus(
-                member, member, 1);
+        List<Friend> friends = friendRepository.findByRequesterOrReceiver(
+                member, member);
         return friends.stream().map(friend -> {
             FriendDTO dto = new FriendDTO();
             dto.setFriendId(friend.getFriendId());
@@ -153,4 +158,5 @@ public class FriendServiceImpl implements FriendServiceIf {
         return friendRepository.findNotSharedFriends(postId, memberId).stream().map(f -> modelMapper.map(f,FriendShareDTO.class)).toList();
     }
     //강감찬 추가
+
 }

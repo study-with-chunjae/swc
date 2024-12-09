@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AlertRepository extends JpaRepository<Alert, Integer> {
+    // 미확인 리스트
     List<Alert> findByMemberAndMsgReadFalseOrderByRegDateDesc(Member member);
     int countByMemberAndMsgReadFalse(Member member);
+    // 전체리스트
+    List<Alert> findByMemberOrderByRegDateDesc(Member member);
+
 }
