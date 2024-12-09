@@ -74,16 +74,41 @@ public class PostController {
         return "main/main";
     }
 
+//    @CheckJwtToken
+//    @GetMapping("/list")
+//    public String list(@Valid PageDTO<PostDTO> pageDTO,
+//                       BindingResult bindingResult,
+//                       Model model,
+//                       RedirectAttributes redirectAttributes,
+//                       HttpServletRequest req) {
+//        LogUtil.logLine(CONTROLLER_NAME + "list");
+//        if(bindingResult.hasErrors()){
+//            pageDTO = PageDTO.<PostDTO>builder().build();
+//        }
+//        pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
+//        String memberId = getMemberIdInJwt(req);
+//        pageDTO = postService.sortAndSearch(pageDTO,memberId);
+//        model.addAttribute("pageDTO",pageDTO);
+//        model.addAttribute("viewType","my");
+//        return "todo/mylist";
+//    }
+
     @CheckJwtToken
     @GetMapping("/list")
-    public String list(@Valid PageDTO<PostDTO> pageDTO, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes, HttpServletRequest req) {
+    public String list(@Valid PageDTO<PostDTO> pageDTO,
+                       BindingResult bindingResult,
+                       Model model,
+                       RedirectAttributes redirectAttributes,
+                       HttpServletRequest req) {
         LogUtil.logLine(CONTROLLER_NAME + "list");
         if(bindingResult.hasErrors()){
             pageDTO = PageDTO.<PostDTO>builder().build();
         }
         pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
         String memberId = getMemberIdInJwt(req);
-        pageDTO = postService.sortAndSearch(pageDTO,memberId);
+        int totalCount = postService.totalCount(pageDTO,memberId);
+        pageDTO.setTotalCount(totalCount);
+        pageDTO = postService.postList(pageDTO,memberId);
         model.addAttribute("pageDTO",pageDTO);
         model.addAttribute("viewType","my");
         return "todo/mylist";
@@ -130,7 +155,7 @@ public class PostController {
             return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.", DEFAULT_REDIRECT,redirectAttributes);
         }
         String memberId = getMemberIdInJwt(req);
-        Post postDTO = postService.viewPost2(postId);
+        PostDTO postDTO = postService.viewPost(postId);
         LogUtil.log("postDTO",postDTO);
         LogUtil.log("shares",postDTO.getShares());
         model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");

@@ -26,7 +26,7 @@ public interface FriendRepository extends JpaRepository<Friend, Integer> {
     @Query(value = "SELECT f "
             + "FROM Friend f "
             + "LEFT JOIN Share s ON (f.receiver.memberId = s.member.memberId OR f.requester.memberId = s.member.memberId) AND s.post.postId = :postId "
-            + "WHERE (f.receiver.memberId = :memberId OR f.requester.memberId=:memberId) AND s IS NULL"
+            + "WHERE (f.status = 1) AND (f.receiver.memberId = :memberId OR f.requester.memberId=:memberId) AND s IS NULL"
     )
     List<Friend> findNotSharedFriends(Integer postId, String memberId);
     //강감찬 추가

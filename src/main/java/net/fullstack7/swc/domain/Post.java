@@ -36,11 +36,11 @@ public class Post {
     @ToString.Exclude
     private Member member;
 
-    @OneToMany
+    @OneToMany(mappedBy = "post")
     @ToString.Exclude
     private List<ThumbUp> thumbUps;
 
-    @OneToMany
+    @OneToMany(mappedBy = "post")
     @ToString.Exclude
     private List<Share> shares;
 }
