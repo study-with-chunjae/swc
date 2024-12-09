@@ -22,6 +22,13 @@ public class AlertServiceImpl implements AlertServiceIf {
     private final AlertRepository alertRepository;
     private final MemberRepository memberRepository;
 
+    // 알림 등록하는 메서드 이거임
+    /*
+    String message = receiverId + "님이 친구 요청을 수락했습니다.";
+    alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/test");
+    이런식으로 메세지 쓰고 호출해서 알림받을 사람 아이디, 타입, msg, 이동할 링크 넣으셈
+    아직 링크 이동은 귀찮아서 안해놓았지만 추후에 해보겠음
+    */
     @Override
     @Transactional
     public AlertDTO registAlert(Member member, AlertType type, String message, String url) {
@@ -29,7 +36,8 @@ public class AlertServiceImpl implements AlertServiceIf {
         alertRepository.save(alert);
 
         // 실시간 전송
-        messagingTemplate.convertAndSendToUser(member.getMemberId(), "/queue/alerts", new AlertDTO(alert));
+        messagingTemplate.convertAndSend("/topic/"+member.getMemberId(), new AlertDTO(alert));
+        log.info("알림확인 {}: {}", member.getMemberId(), new AlertDTO(alert));
 
         return new AlertDTO(alert);
     }

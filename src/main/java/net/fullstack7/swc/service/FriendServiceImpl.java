@@ -57,7 +57,7 @@ public class FriendServiceImpl implements FriendServiceIf {
         friendRepository.save(friend);
 
          String message = requester.getName() + "님이 친구 요청을 보냈습니다.";
-        alertService.registAlert(receiver, AlertType.FRIEND_REQUEST, message, "/friend/test");
+        alertService.registAlert(receiver, AlertType.FRIEND_REQUEST, message, "/friendList/list");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class FriendServiceImpl implements FriendServiceIf {
         friendRepository.save(friend);
 
          String message = receiverId + "님이 친구 요청을 수락했습니다.";
-        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/test");    }
+        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friendList/list");    }
 
     @Override
     @Transactional
