@@ -19,15 +19,15 @@ public class Member {
         this.memberId = memberId;
     }
     @Id
-    @Column(name = "memberId", nullable = false, length = 50)//회원 id
+    @Column(name = "memberId", nullable = false, length = 50) // 회원 id
     private String memberId;
-    @Column(name = "pwd", nullable = false, length = 300)//비밀번호
+    @Column(name = "pwd", nullable = true, length = 300) // 비밀번호
     private String pwd;
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-    @Column(name = "email", nullable = false, length = 100, unique = true)//이메일 (고유)
+    @Column(name = "email", nullable = false, length = 100, unique = true) // 이메일 (고유)
     private String email;
-    @Column(name = "phone", nullable = false, length = 11, columnDefinition = "CHAR(11)")//핸드폰 번호
+    @Column(name = "phone", nullable = true, length = 11, columnDefinition = "CHAR(11)") // 핸드폰 번호
     private String phone;
     @Column(name="status", nullable = false, length = 1, columnDefinition = "CHAR(1) default 'Y'")
     private String status; // 맴버 상태 <- 기본값 Y : 활성화, N : 비활성화(관리자 비활성화 포함), O : 6개월 이상 로그인 이력X, P : 5회 이상 로그인 실패 비활성화, D : 탈퇴

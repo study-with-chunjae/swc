@@ -23,8 +23,6 @@ document.getElementById("signinForm").addEventListener("submit", async (e) => {
         console.log("비밀번호 변경 페이지로 이동");
         window.location.href = "/sign/forgotPasswordChange";
       } else {
-        document.getElementById("signinForm").reset();
-        document.getElementById("memberInfo").style.display = "block";
         location.href = "/post/main";
       }
     } else {
