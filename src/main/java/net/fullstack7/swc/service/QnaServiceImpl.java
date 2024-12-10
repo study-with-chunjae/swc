@@ -65,12 +65,12 @@ public class QnaServiceImpl implements QnaServiceIf {
 
         parent.addReply(reply);
 
-        qnaRepository.save(parent); // Cascade.ALL 덕분에 reply도 저장됨
+        qnaRepository.save(parent);
 
-        // 이메일 발송
-        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
-            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
-        }
+        // 이메일 발송( 집에서 확인 )
+//        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
+//            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
+//        }
     }
 
     @Override

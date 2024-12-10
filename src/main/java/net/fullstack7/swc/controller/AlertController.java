@@ -18,7 +18,6 @@ import java.util.List;
 public class AlertController {
 
     private final AlertServiceIf alertService;
-    private final MemberRepository memberRepository;
 
     @GetMapping("/list")
     public List<AlertDTO> getAllAlerts(@RequestParam String memberId) {
