@@ -154,10 +154,9 @@ header {
   display: block;
 }
 
-/* Dropdown Menu */
 .dropdown {
   position: absolute;
-  top: 100%;
+  top: 40%;
   left: 0;
   display: none;
   background-color: #fff;
@@ -189,7 +188,7 @@ header {
 
 .tooltip {
   visibility: hidden;
-  width: 80px;
+  width: 68px;
   background-color: black;
   color: white;
   text-align: center;
@@ -198,8 +197,7 @@ header {
   position: absolute;
   z-index: 1;
   bottom: 125%;
-  left: 50%;
-  margin-left: -40px;
+  left: -30%;
   opacity: 0;
   transition: opacity 0.3s;
 }
