@@ -2,34 +2,148 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>쪽지 목록</title>
+    <title>보낸 쪽지 목록</title>
+    <style>
+        /* 전체 body 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 페이지 제목 스타일 */
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* 테이블 스타일 */
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        td a {
+            text-decoration: none;
+            color: #28a745;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        /* 체크박스 스타일 */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* 버튼 스타일 */
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* '쪽지 목록이 없습니다.' 메시지 스타일 */
+        .no-messages {
+            color: #888;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        /* 폼 스타일 */
+        form {
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 30px;
+        }
+
+        /* '삭제' 버튼 위치를 오른쪽으로 배치 */
+        .delete-button {
+            float: right;
+            background-color: #dc3545;
+        }
+
+        /* 네비게이션 버튼 */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* 모바일 대응을 위한 반응형 스타일 */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
 </head>
 <body>
+
 <h1>보낸 쪽지 목록</h1>
 
-<div th:if="${#lists.isEmpty(messages)}">
+<div th:if="${#lists.isEmpty(messages)}" class="no-messages">
+    <p>보낸 쪽지 목록이 없습니다.</p>
     <button type="submit">삭제</button>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>
-                <input type="checkbox" id="select" onclick="toggleSelectAll()" />
-            </th>
-            <th>번호</th>
-            <th>보낸사람</th>
-            <th>제목</th>
-            <th>날짜</th>
-            <th>읽음 여부</th>
-        </tr>
-        </thead>
-    </table>
-    <p>쪽지 목록이 없습니다.</p>
 </div>
 
 <div th:unless="${#lists.isEmpty(messages)}">
     <form method="post" th:action="@{/message/send/delete}" onsubmit="return validateForm()">
-        <button type="submit">삭제</button>
-        <table border="1">
+        <button type="submit" class="delete-button">삭제</button>
+        <table>
             <thead>
             <tr>
                 <th>
@@ -38,21 +152,18 @@
                 <th>번호</th>
                 <th>받는사람</th>
                 <th>제목</th>
-                <!--                <th>내용</th>-->
                 <th>날짜</th>
                 <th>읽음 여부</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="message, iterStat : ${messages}">
-                <td>
+                <td class="checkbox-container">
                     <input type="checkbox" name="messageIds" th:value="${message.id}" class="messageCheckbox"/>
                 </td>
                 <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${iterStat.index + 1}"></a></td>
                 <td th:text="${message.receiverId}"></td>
                 <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${message.title}"></a></td>
-                <!--                <td th:text="${message.content}"></td>-->
-                <!--                <td th:text="${message.regDate}"></td>-->
                 <td th:text="${#temporals.format(message.regDate, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${message.isRead ? '읽음' : '안 읽음'}"></td>
             </tr>
@@ -60,8 +171,12 @@
         </table>
     </form>
 </div>
-<button type="button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
 
+<!-- 네비게이션 버튼 -->
+<div class="navigation-buttons">
+    <button type="button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
+    <button type="button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>
+</div>
 
 <script>
     function toggleSelectAll() {
@@ -73,7 +188,7 @@
     }
 
     function validateForm(){
-        const selectMessages = document.querySelector('.messageCheckbox:checked');
+        const selectMessages = document.querySelectorAll('.messageCheckbox:checked');
         if(selectMessages.length === 0){
             alert('삭제할 쪽지를 선택해주세요.');
             return false;
@@ -81,5 +196,6 @@
         return true;
     }
 </script>
+
 </body>
 </html>
