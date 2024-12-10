@@ -28,46 +28,42 @@ document.getElementById("signinForm").addEventListener("submit", async (e) => {
     } else {
       const errorMessage = await response.text();
       alert(errorMessage);
-      document.getElementById("signinError").style.display = "block";
-      document.getElementById("signinError").textContent = errorMessage;
     }
   } catch (error) {
     alert(error.message);
-    document.getElementById("signinError").style.display = "block";
-    document.getElementById("signinError").textContent = error.message;
   }
 });
 
 // 로그인 스크립트 끗
 
 // 비동기 방식으로 토큰 전송
-async function sendTokenAsync() {
-  try {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("accessToken="))
-      ?.split("=")[1];
-
-    if (!token) {
-      alert("토큰이 없습니다. 로그인이 필요합니다.");
-      return;
-    }
-
-    const response = await fetch("/sign/cookie-test", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `accessToken=${token}`,
-    });
-
-    if (response.ok) {
-      const result = await response.text();
-      alert("토큰 전송 성공\n" + result);
-    } else {
-      throw new Error("토큰 전송 실패");
-    }
-  } catch (error) {
-    alert(error.message);
-  }
-}
+// async function sendTokenAsync() {
+//   try {
+//     const token = document.cookie
+//       .split("; ")
+//       .find((row) => row.startsWith("accessToken="))
+//       ?.split("=")[1];
+//
+//     if (!token) {
+//       alert("토큰이 없습니다. 로그인이 필요합니다.");
+//       return;
+//     }
+//
+//     const response = await fetch("/sign/cookie-test", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//       },
+//       body: `accessToken=${token}`,
+//     });
+//
+//     if (response.ok) {
+//       const result = await response.text();
+//       alert("토큰 전송 성공\n" + result);
+//     } else {
+//       throw new Error("토큰 전송 실패");
+//     }
+//   } catch (error) {
+//     alert(error.message);
+//   }
+// }
