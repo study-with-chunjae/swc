@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{main/layout.html}"
+>
+  <head>
+    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
+  </head>
+  <div layout:fragment="mainContent" class="fontQnsvlf">
+    <div th:style="'display:flex;align-items:center; height:100%; color:#fff;'">
+      <div>
+        <h2 th:style="'font-size:50px;'">에러 발생</h2>
+        <div th:text="${errors}" th:style="'font-size:40px;'"></div>
+        <div>
+          <button th:style="'width:100px; height:50px; background-color: #fff; border:1px solid #fff; font-size:20px;'" th:onclick="'main();'">메인으로</button>
+        </div>
+      </div>
+    </div>
+      <div>
+        <script th:inline="javascript">
+          function main(){
+            location.href='/';
+          }
+        </script>
+        <script
+          th:src="@{/assets/js/main.js}"
+          layout:fragment="mainscript"
+          th:inline="javascript"
+        ></script>
+      </div>
+</div>
+
+</body>
+</html>
