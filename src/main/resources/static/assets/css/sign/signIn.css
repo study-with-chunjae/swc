@@ -1,0 +1,112 @@
+@font-face {
+  font-family: "HakgyoansimBunpilR";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBunpilR.woff2")
+  format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: "HakgyoansimBunpilR", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f3cd99;
+  color: white;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.signBackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+
+.signHeader {
+  width: 1150px;
+  height: 200px;
+  background-image: url("/assets/public/main1.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.signContainer {
+  width: 1150px;
+  height: 745px;
+  background-image: url("/assets/public/main2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+input.custom-input {
+  width: 300px;
+  height: 50px;
+  border: none;
+  border-bottom: 1px solid white;
+  background-color: transparent;
+  padding: 10px 10px 0 10px;
+  color: white;
+  font-size: 20px;
+  font-family: "HakgyoansimBunpilR";
+}
+
+input.custom-input:focus {
+  outline: none;
+  border-color: white;
+}
+
+input::placeholder {
+  color: white;
+}
+
+.signInContent {
+  margin-top: 50px;
+  margin-left: 80px;
+}
+
+.flex {
+  display: flex;
+}
+
+.btn {
+  background: none;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  font-family: "HakgyoansimBunpilR";
+}
+
+.btn:hover {
+  color: #ffcc00;
+  transition: color 0.3s ease;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.ccenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.OAuthArea {
+  margin-top: 40px;
+}
