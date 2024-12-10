@@ -2,6 +2,7 @@ package net.fullstack7.swc.mapper;
 
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.dto.PageDTO;
+import net.fullstack7.swc.dto.PostDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,5 +20,5 @@ public interface PostMapper {
                    @Param("searchDateEnd") String searchDateEnd,
                    @Param("memberId") String memberId
                    );
-    List<Post> postList(Map<String,Object> map);
+    List<PostDTO> postList(Map<String,Object> map);
 }

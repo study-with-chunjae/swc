@@ -120,31 +120,22 @@
 
       <h2>오늘의 학습</h2>
       <section class="content3" style="margin-top: 23px">
-
         <div class="weekday-container">
-
           <input type="date" class="styled-date">
           <button class="arrow up">▲</button>
           <ul id="weekday-list" class="weekday-list">
             <!-- Days will be dynamically injected here -->
           </ul>
           <button class="arrow down">▼</button>
-
           <p id="today" style="margin-top: 10px; font-size: 16px; text-align: center;"></p>
-
-
         </div>
-
-        <div><script th:src="@{/assets/js/main.js}" layout:fragment="mainscript"  th:inline="javascript"></script></div>
       </section>
-
-
       <div class="slider-container">
         <div class="slider-wrapper">
           <div class="slider" id="slider">
             <article class="learning-card" th:each="post, status:${postMainDTOList}">
-                <div class="thumbnail">
-                  <img th:src="${post.image}" alt="Thumbnail">
+              <div class="thumbnail">
+                <img th:src="${post.image}" alt="Thumbnail">
                 <p class="category" th:text="${post.topics}"></p>
                 <p class="category" th:text="${post.hashtag}"></p>
               </div>
@@ -165,9 +156,13 @@
           <!-- Dots will be dynamically added here -->
         </div>
       </div>
+      <div>
+        <script th:inline="javascript">
+          let baseDate = new Date([[${createdAt}]]);
+        </script>
+        <script th:src="@{/assets/js/main.js}" layout:fragment="mainscript"  th:inline="javascript"></script>
 
-
-
+      </div>
     </section>
   </div>
 </div>

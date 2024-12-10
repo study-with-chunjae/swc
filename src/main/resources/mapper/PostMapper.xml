@@ -32,7 +32,7 @@
         </where>
     </select>
     <select id="postList">
-        SELECT p.*, COUNT(t.postId) as thumbUpCount
+        SELECT p.*, t.*, COUNT(t.postId) as thumbUpCount
         FROM post p
         LEFT JOIN thumbUp t ON p.postId = t.postId
         <where>
@@ -62,8 +62,8 @@
         </where>
         GROUP BY p.postId
         <choose>
-            <when test="sortType == 'thumbUps'">
-                ORDER BY thumbUpCount DESC, p.createdAt DESC
+            <when test="sortField == 'thumbUps'">
+                ORDER BY thumbUpCount ${sortDirection}, p.createdAt DESC
             </when>
             <otherwise>
                 ORDER BY p.createdAt DESC

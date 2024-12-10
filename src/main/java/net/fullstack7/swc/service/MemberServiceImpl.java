@@ -118,7 +118,7 @@ public class MemberServiceImpl implements MemberServiceIf {
                 member.getPhone(),
                 member.getSocial(),
                 member.getStatus(),
-//                member.getMemberProfile().getPath() != null ? member.getMemberProfile().getPath() : null
+                //member.getMemberProfile().getPath() != null ? member.getMemberProfile().getPath() : null
 
                 null
         );
