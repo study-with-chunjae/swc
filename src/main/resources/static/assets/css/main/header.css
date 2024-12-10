@@ -1,0 +1,224 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 1150px;
+  background-color: #f3cd99;
+}
+
+.tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.tabs li {
+  margin-right: 15px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+}
+
+.tabs .active {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info span {
+  margin-right: 10px;
+}
+
+.login-btn {
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #F3CD99;
+  position: relative;
+}
+
+/*상단 서치바 부분*/
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 5px 10px;
+  width: 490px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 16px;
+  padding: 5px 10px;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+}
+
+.search-bar button:hover {
+  color: #000;
+}
+
+.search-bar input::placeholder {
+  color: #aaa;
+}
+
+/* General Styles */
+.tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabs li {
+  margin-right: 15px;
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+}
+
+.tabs .active {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 5px 10px;
+  background-color: #fff;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 16px;
+  padding: 5px 10px;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.search-bar img {
+  width: 20px;
+}
+
+/* User Info Styles */
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  cursor: pointer;
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  margin-right: 10px;
+  position: relative;
+}
+
+.user-name:hover + .dropdown,
+.dropdown:hover {
+  display: block;
+}
+
+/* Dropdown Menu */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 130px;
+  z-index: 1000;
+  padding: 0;
+}
+
+.dropdown li {
+  list-style: none;
+}
+
+.dropdown li a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  text-align: center;
+  color: #333;
+  font-size: 14px;
+}
+
+.dropdown li a:hover {
+  background-color: #f1f1f1;
+  color: #000;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 80px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -40px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.login-btn:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.layoutHeader {
+    width: 1150px;
+    height: 152px;
+    background-image: url("/assets/public/mainHeaderArea.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
