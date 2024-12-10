@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QnA 답변 등록</title>
+</head>
+<body>
+<h1>QnA 답변 등록</h1>
+<form th:action="@{/api/qna/{qnaId}/reply(qnaId=${qnaId})}" method="post" th:object="${qnaDTO}">
+    <label for="content">답변 내용:</label>
+    <textarea id="content" name="content" th:field="*{content}" required maxlength="1000"></textarea><br><br>
+
+    <button type="submit">답변 등록</button>
+</form>
+</body>
+</html>
