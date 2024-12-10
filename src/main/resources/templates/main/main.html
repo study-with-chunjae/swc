@@ -53,12 +53,14 @@
       <div class="slider-container">
         <div class="slider-wrapper">
           <div class="slider" id="slider">
+
             <article
               class="learning-card"
+              th:if="${!postMainDTOList.isEmpty()}"
               th:each="post, status:${postMainDTOList}"
             >
               <div class="thumbnail">
-                <img th:src="${post.image}" alt="Thumbnail" />
+                <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
                 <p class="category" th:text="${post.topics}"></p>
                 <p class="category" th:text="${post.hashtag}"></p>
               </div>
@@ -69,7 +71,16 @@
                   <th:block th:each="share, status:${post.shares}">
                     <div th:text="${share}"></div>
                   </th:block>
+                  <div class="thumbUps" th:text="${post.thumbUps}"></div>
                 </div>
+              </div>
+            </article>
+            <article
+                    class="learning-card"
+                    th:if="${postMainDTOList.isEmpty()}"
+            >
+              <div class="info">
+                <h3 class="title" th:text="'등록된 오늘의학습이 없습니다.'"></h3>
               </div>
             </article>
             <!-- 추가적으로 더 많은 <article> 요소를 등록 -->

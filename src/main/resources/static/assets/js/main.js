@@ -63,11 +63,13 @@ async function getMainPosts(element) {
         const result = await response.json();
         console.log(result);
         slider.innerHTML = ''; // 기존 내용을 초기화
-        for (let mainPost of result.data) {
-            slider.innerHTML += `
+        const postList = result.data;
+        if(postList.length > 0) {
+            for (let mainPost of result.data) {
+                slider.innerHTML += `
 				<article class="learning-card">
 					<div class="thumbnail">
-						<img src="${mainPost.image}" alt="Thumbnail">
+						<img src="${mainPost.image==null?'/upload/images/default_image.jpg':mainPost.image}" alt="Thumbnail">
 						<p class="category">${mainPost.topics}</p>
 						<p class="category">${mainPost.hashtag}</p>
 					</div>
@@ -76,12 +78,21 @@ async function getMainPosts(element) {
 						<p class="description">${mainPost.content}</p>
 						<div class="shared-by">
             `;
-            for (let share of mainPost.shares) {
-                slider.innerHTML += `${share}<br>`;
-            }
-            slider.innerHTML += `
+                for (let share of mainPost.shares) {
+                    slider.innerHTML += `${share}<br>`;
+                }
+                slider.innerHTML += `
 						</div>
 						<div class="thumbUps">${mainPost.thumbUps}</div>
+					</div>
+                </article>
+            `;
+            }
+        }else{
+            slider.innerHTML += `
+				<article class="learning-card">
+					<div class="info">
+						<h3 class="title">등록된 오늘의학습이 없습니다.</h3>
 					</div>
                 </article>
             `;
