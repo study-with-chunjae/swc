@@ -106,5 +106,6 @@ public class JwtTokenProvider {
     Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     return claims.get("status", String.class);
   }
+
 }
 
