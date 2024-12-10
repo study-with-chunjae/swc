@@ -24,6 +24,8 @@ public class PostMainDTO {
     private String topics; //분야
     private String hashtag; //해시태그
     private String image;
-    private List<ThumbUp> thumbUps;
-    private List<Share> shares;
+    //private List<ThumbUp> thumbUps;
+    private Integer thumbUps;
+    //private List<Share> shares;
+    private List<String> shares;
 }
