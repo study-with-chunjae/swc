@@ -98,6 +98,11 @@
       filter: invert(0.5); /* 캘린더 아이콘 색 조정 (선택 사항) */
     }
 
+    .selected{
+      background-color: #e8f4fc;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 <body>
@@ -144,7 +149,7 @@
                 <p class="description" th:text="${post.content}"></p>
                 <div class="shared-by">
                   <th:block th:each="share, status:${post.shares}">
-                    <div th:text="${share.member.name}"></div>
+                    <div th:text="${share}"></div>
                   </th:block>
                 </div>
               </div>
