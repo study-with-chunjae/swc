@@ -5,6 +5,10 @@ import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Message;
 import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.repository.MessageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,6 +46,7 @@ public class MessageService {
     public List<Message> getSenderMessageList(String memberId) {
         return messageRepository.findBySenderId(memberId);
     }
+
 
     // 메시지 인덱스로 조회
     public Message getMessageById(Long messageId) {
@@ -84,6 +89,8 @@ public class MessageService {
         }
         return message;
     }
+
+
 
 }
 

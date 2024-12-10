@@ -13,10 +13,7 @@ import net.fullstack7.swc.util.CookieUtil;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -31,6 +28,11 @@ public class MessageController {
     private final MemberServiceIf memberService;
     private final CookieUtil cookieUtil;
     private final MessageRepository messageRepository;
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public String handleGetRequest() {
+        return "redirect:/message/list"; // 삭제 페이지로 직접 GET 요청하면 리다이렉트
+    }
 
     private String getMemberIdInJwt(HttpServletRequest req) {
         String accessToken = cookieUtil.getCookieValue(req, "accessToken");
@@ -58,7 +60,6 @@ public class MessageController {
     @GetMapping("/list")
     public String messageList(Model model, HttpServletRequest req) {
         String memberId = getMemberIdInJwt(req);
-
         if (memberId == null) {
             return "redirect:/sign/signIn";
         }
@@ -67,20 +68,12 @@ public class MessageController {
         return "message/list";
     }
 
-    //상세
-//    @GetMapping("/view")
-//    public String messageView(@RequestParam Long messageId, Model model) {
-//        Message message = messageService.getMessageById(messageId);
-//        model.addAttribute("message", message);
-//        return "message/view";
-//    }
-
     // 쪽지 작성
     @GetMapping("/regist")
     public String showRegistForm(Model model, HttpServletRequest req) {
         String senderId = getMemberIdInJwt(req);
-        log.info("senderId"+senderId);
-        if(senderId == null) {
+        log.info("senderId" + senderId);
+        if (senderId == null) {
             return "redirect:/sign/signIn";
         }
         model.addAttribute("senderId", senderId);
@@ -91,31 +84,32 @@ public class MessageController {
     @PostMapping("/regist")
     public String registMessage(@RequestParam String receiverId, @RequestParam String content, @RequestParam String title, @RequestParam LocalDateTime regDate, HttpServletRequest req, Model model) {
         String senderId = getMemberIdInJwt(req);
-        log.info("senderId"+senderId);
+//        log.info("senderId" + senderId);
 
-        if(senderId == null) {
+        if (senderId == null) {
             return "redirect:/sign/signIn";
         }
-
-        try{
+        try {
             messageService.sendMessage(senderId, receiverId, content, title, regDate);
             return "redirect:/message/list";
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", "받는 사람을 찾을 수 없습니다.");
-            return "message/regist";
-        }
-        catch (Exception e) {
-            model.addAttribute("error", "등록에 실패하였습니다.");
+                model.addAttribute("errorReceiverId", true);
+                return "message/regist";
+        } catch (Exception e) {
+            model.addAttribute("error", true);
             return "message/regist";
         }
     }
 
     //삭제
     @PostMapping("/delete")
-    public String messageDelete(@RequestParam List<Long> messageIds, HttpServletRequest req) {
+    public String messageDelete(@RequestParam(value = "messageIds", required = false) List<Long> messageIds, HttpServletRequest req) {
         String memberId = getMemberIdInJwt(req);
         if (memberId == null) {
             return "redirect:/sign/signIn";
+        }
+        if(messageIds == null || messageIds.isEmpty()){
+            return "redirect:/message/list";
         }
         messageService.deleteMessages(messageIds);
         return "redirect:/message/list";
@@ -141,10 +135,19 @@ public class MessageController {
 
     //상세(누르면 읽음처리까지)
     @GetMapping("/view")
-    public String viewMessage(@RequestParam Long messageId, Model model) {
+    public String viewMessage(@RequestParam(required = false) Long messageId, Model model, HttpServletRequest req) {
+        String memberId = getMemberIdInJwt(req);
+        if (memberId == null) {
+            return "redirect:/sign/signIn";
+        }
+        if(messageId == null) {
+            model.addAttribute("errorMessage", "잘못된 접근입니다.");
+            return "message/send/list";
+        }
         Message message = messageService.getMessageById(messageId);
         if(message == null){
-            throw new IllegalArgumentException("쪽지를 찾을 수 없습니다.");
+            model.addAttribute("errorMessage", "쪽지를 찾을 수 없습니다.");
+            return "message/list";
         }
         if(!message.isRead()){
             message.setRead(true);
