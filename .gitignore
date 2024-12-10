@@ -1,4 +1,4 @@
-ELP.md
+HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -34,6 +34,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### npm ###
+package.json
+package-lock.json
+node_modules/
 
 ### test ###
 /src/test/*
