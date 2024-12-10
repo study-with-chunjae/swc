@@ -23,11 +23,6 @@
     color: white;
 }
 
-.content {
-    margin-left: 160px;
-    padding: 10px;
-}
-
 .learning-card {
     border-radius: 8px;
     padding: 10px;
@@ -89,9 +84,9 @@
 }
 
 .shared-learning .thumbnail-group img {
-    width: 210px;
-    height: 210px;
-    margin-right: 5px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     background: #ddd;
     display: inline-block;
 }
@@ -188,11 +183,14 @@
 }
 
 .button {
-    background-color: white;
+    background-color: transparent;
+    border: 1px dotted white;
+    color: white;
     padding: 3px;
     border-radius: 3px;
     margin-top: 10px;
     cursor: pointer;
+    width: 100%;
 }
 
 .slider-container {
@@ -215,7 +213,6 @@
 .learning-card {
     flex: 0 0 100%; /* Each card takes full width */
     margin: 18px 10px;
-    background-color: white;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -251,3 +248,75 @@
     background-color: #007bff; /* Highlight color for active slide */
 }
 
+.styled-date {
+    appearance: none; /* 기본 브라우저 스타일 제거 */
+    border: 1px solid black; /* 테두리 설정 */
+    border-radius: 5px; /* 부드러운 모서리 */
+    padding: 10px; /* 안쪽 여백 */
+    font-size: 16px; /* 글자 크기 */
+    color: #555; /* 글자 색 */
+    background-color: #f9f9f9; /* 배경색 */
+    outline: none; /* 포커스 테두리 제거 */
+    transition: border-color 0.3s, box-shadow 0.3s; /* 부드러운 효과 */
+}
+
+.styled-date:hover {
+    border-color: #888; /* 호버 시 테두리 색 변경 */
+}
+
+.styled-date:focus {
+    border-color: #0fbc8c; /* 포커스 시 테두리 색 변경 */
+    box-shadow: 0 0 5px rgba(15, 188, 140, 0.5); /* 포커스 시 그림자 효과 */
+}
+
+.styled-date::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.5);
+}
+
+.content1 {
+    width: 200px;
+    height: 600px;
+    margin-top: 30px;
+    margin-left: 20px;
+    border-radius: 15px;
+    color: white;
+    border: 3px dotted white;
+    display: flex;
+    justify-content: center;
+}
+
+.content2 {
+    width: 850px;
+    height: 600px;
+    border-radius: 15px;
+    border: 3px dotted white;
+    margin-top: 30px;
+    margin-left: 15px;
+    padding: 10px;
+    color: white;
+}
+
+.content3 {
+    border-radius: 15px;
+}
+
+.flex {
+    display: flex;
+}
+
+.fontQnsvlf {
+    font-family: "HakgyoansimBunpilR";
+}
+
+.studyDream {
+    margin-top: 20px;
+}
+
+.studyDreamContent {
+    align-items: center;
+    width: 150px;
+    border: 1px dashed white;
+    height: 150px;
+    padding: 5px;
+}
