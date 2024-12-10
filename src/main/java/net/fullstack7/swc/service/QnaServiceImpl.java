@@ -26,7 +26,8 @@ public class QnaServiceImpl implements QnaServiceIf {
                 qnaDTO.getTitle(),
                 qnaDTO.getContent(),
                 qnaDTO.getEmail(),
-                qnaDTO.getPassword()
+                qnaDTO.getPassword(),
+                qnaDTO.getRegDate()
         );
 
         Qna savedQna = qnaRepository.save(qna);
@@ -61,7 +62,8 @@ public class QnaServiceImpl implements QnaServiceIf {
                 qnaDTO.getTitle(),
                 qnaDTO.getContent(),
                 parent.getEmail(),
-                parent.getPassword());
+                parent.getPassword(),
+                parent.getRegDete());
 
         parent.addReply(reply);
 
@@ -95,6 +97,13 @@ public class QnaServiceImpl implements QnaServiceIf {
         return rootQnaList.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public QnaDTO adminViewQna(Integer qnaId) {
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 QnA가 존재하지 않습니다."));
+        return convertToDTO(qna);
     }
 
     // Qna 엔티티를 QnaDTO로 변환

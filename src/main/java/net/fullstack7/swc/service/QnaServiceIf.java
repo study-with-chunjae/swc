@@ -10,4 +10,5 @@ public interface QnaServiceIf {
     void addReply(QnaDTO qnaDTO, boolean isAdmin); // 관리자 답변
     void deleteQna(Integer qnaId, String password, boolean isAdmin); // 글 삭제
     List<QnaDTO> listQna();
+    QnaDTO adminViewQna(Integer qnaId);
 }

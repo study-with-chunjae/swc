@@ -5,18 +5,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.AdminDTO;
 import net.fullstack7.swc.dto.AdminMemberDTO;
+import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.AdminServiceIf;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.QnaServiceIf;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -76,10 +76,28 @@ public class AdminController {
         return "admin/memberList";
     }
 
+    @PostMapping("/{memberId}/status")
+    public ResponseEntity<String> updateMemberStatus(@PathVariable("memberId") String memberId,
+                                                     @RequestParam String status) {
+        int updatedCnt = memberService.updateStatusByMemberId(status, memberId);
+        if (updatedCnt > 0) {
+            return ResponseEntity.ok(memberId + "회원 상태 변경완료");
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 회원을 찾을 수 없습니다.");
+        }
+    }
+
     @GetMapping("/qnaList")
     public String qnaList(Model model) {
         model.addAttribute("qnaList", qnaService.listQna());
         return "admin/qnaList";
+    }
+
+    @GetMapping("/qnaView/{qnaId}")
+    public String qnaView(@PathVariable Integer qnaId,Model model) {
+        QnaDTO qnaDTO = qnaService.adminViewQna(qnaId);
+        model.addAttribute("qna", qnaDTO);
+        return "admin/qnaView";
     }
 
 }

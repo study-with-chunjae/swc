@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class Qna {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Qna> replies = new ArrayList<>();
 
+    private LocalDateTime regDete;
+
     // 일단 회원qna 생각없음
 //    @ManyToOne
 //    @JoinColumn(name = "questionerId")
@@ -42,11 +45,12 @@ public class Qna {
 //    private Member questioner;
 
 
-    public Qna(String title, String content, String email, String password) {
+    public Qna(String title, String content, String email, String password, LocalDateTime regDete) {
         this.title = title;
         this.content = content;
         this.email = email;
         this.password = password;
+        this.regDete = LocalDateTime.now();
         this.answered = false;
     }
 
@@ -57,6 +61,7 @@ public class Qna {
         reply.parent = this;
         this.replies.add(reply);
         this.answered = true;
+        this.regDete = LocalDateTime.now();
     }
 
 }

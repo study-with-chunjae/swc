@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -386,6 +387,27 @@ public class MemberServiceImpl implements MemberServiceIf {
         }
 
         return members.map(member -> modelMapper.map(member, AdminMemberDTO.class));
+    }
+
+// 이게 진짜임
+    @Override
+    @Transactional
+    public int updateMemberStatus(){
+        LocalDateTime cutoffDate = LocalDateTime.now().minus(6, ChronoUnit.MONTHS);
+        return memberRepository.updateStatusForMembers(cutoffDate);
+    }
+    // 테스트
+//    @Override
+//    @Transactional
+//    public int updateMemberStatus(){
+//        LocalDateTime cutoffDate = LocalDateTime.now().minus(1, ChronoUnit.MINUTES);
+//        return memberRepository.updateStatusForMembers(cutoffDate);
+//    }
+
+    @Transactional
+    @Override
+    public int updateStatusByMemberId(String status, String memberId) {
+        return memberRepository.updateStatusByMemberId(status, memberId);
     }
     //관리자(수진)
 
