@@ -45,7 +45,7 @@
                         p.content LIKE CONCAT('%', #{searchValue}, '%')
                     </when>
                     <when test="searchField == 'topics'">
-                        p.topics = #{searchValue}
+                        p.topics LIKE CONCAT('%', #{searchValue}, '%')
                     </when>
                     <when test="searchField == 'hashtag'">
                         p.hashtag LIKE CONCAT('%', #{searchValue}, '%')
@@ -63,10 +63,10 @@
         GROUP BY p.postId
         <choose>
             <when test="sortField == 'thumbUps'">
-                ORDER BY thumbUpCount ${sortDirection}, p.createdAt DESC
+                    ORDER BY thumbUpCount ${sortDirection}, p.createdAt DESC
             </when>
             <otherwise>
-                ORDER BY p.createdAt DESC
+                ORDER BY p.createdAt ${sortDirection}
             </otherwise>
         </choose>
         LIMIT #{offset}, #{pageSize}

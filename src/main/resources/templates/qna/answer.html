@@ -2,15 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>QnA 답변 등록</title>
+    <title>답변 등록</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>QnA 답변 등록</h1>
-<form th:action="@{/api/qna/{qnaId}/reply(qnaId=${qnaId})}" method="post" th:object="${qnaDTO}">
-    <label for="content">답변 내용:</label>
-    <textarea id="content" name="content" th:field="*{content}" required maxlength="1000"></textarea><br><br>
+<div class="container mt-4">
+    <h1>답변 등록</h1>
+    <form th:action="@{'/qna/' + ${qnaId} + '/regist'}" method="post">
+        <!-- CSRF 토큰 -->
 
-    <button type="submit">답변 등록</button>
-</form>
+        <div class="mb-3">
+            <label for="title" class="form-label">답변 제목:</label>
+            <input type="text" class="form-control" id="title" name="title" th:value="${qnaDTO.title}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">답변 내용:</label>
+            <textarea class="form-control" id="content" name="content" rows="5" th:text="${qnaDTO.content}" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">답변 등록</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS 및 의존성 스크립트 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

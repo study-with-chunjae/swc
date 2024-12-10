@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>QnA 작성</h1>
-<form th:action="@{/api/qna/regist}" method="post" th:object="${qnaDTO}">
+<form th:action="@{/qna/regist}" method="post" th:object="${qnaDTO}">
     <label for="title">제목:</label>
     <input type="text" id="title" name="title" th:value="${title}" required maxlength="100"><br><br>
 

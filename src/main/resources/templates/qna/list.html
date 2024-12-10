@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>QnA 리스트</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         table {
             width: 100%;
@@ -25,28 +27,103 @@
     </style>
 </head>
 <body>
-<h1>QnA 리스트</h1>
-<a href="/qna/regist">글 작성</a>
-<table>
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>제목</th>
-        <th>답변 여부</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="qna : ${qnaList}">
-        <td th:text="${qna.qnaId}"></td>
-        <td>
-            <a th:href="@{'/qna/view/' + ${qna.qnaId}}" th:text="${qna.title}"></a>
-            <div th:if="${qna.replies.size() > 0}" class="reply">
-                <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></span>
-            </div>
-        </td>
-        <td th:text="${qna.answered} ? '답변 완료' : '미답변'"></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container mt-4">
+    <h1>QnA 리스트</h1>
+    <a href="/qna/regist" class="btn btn-primary mb-3">글 작성</a>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>이메일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="qna : ${qnaList}">
+            <td th:text="${qna.qnaId}"></td>
+            <td>
+                <!-- 비밀번호 입력 모달을 여는 링크로 변경 -->
+                <a href="#" th:attr="data-qna-id=${qna.qnaId}" class="open-password-modal" th:text="${qna.title}"></a>
+                <div th:if="${qna.replies.size() > 0}" class="reply">
+                    <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></span>
+                </div>
+            </td>
+            <td>
+                <span th:text="${qna.email != null and #strings.contains(qna.email, '@') ?
+                        (#strings.length(qna.email) > 3 ?
+                         #strings.substring(qna.email,0,3) + '**' +
+                         #strings.substring(qna.email, #strings.indexOf(qna.email, '@')): qna.email): ''}">
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 비밀번호 입력 모달 -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="passwordForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordModalLabel">비밀번호 입력</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">비밀번호:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="alert alert-danger d-none" id="passwordError">
+                        비밀번호가 일치하지 않습니다.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">확인</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS 및 의존성 스크립트 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery (선택 사항: Bootstrap 5는 jQuery 의존성이 없지만, 편의성을 위해 사용 가능) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 모달 열기 이벤트 핸들러
+        $('.open-password-modal').on('click', function(event) {
+            event.preventDefault();
+            var qnaId = $(this).data('qna-id');
+            console.log("Clicked QnA ID:", qnaId); // 디버깅용 로그
+            $('#passwordError').addClass('d-none'); // 오류 메시지 숨기기
+            // 폼의 action을 동적으로 설정
+            $('#passwordForm').attr('action', '/qna/view/' + qnaId + '/password');
+            console.log("Form action set to:", $('#passwordForm').attr('action')); // 디버깅용 로그
+            var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+        });
+
+        // URL 파라미터를 통해 모달 자동 열기 및 오류 메시지 표시
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('view')) {
+            var qnaId = urlParams.get('view');
+            console.log("URL view param QnA ID:", qnaId); // 디버깅용 로그
+            if (qnaId) {
+                if (urlParams.get('error') === 'password') {
+                    $('#passwordError').removeClass('d-none');
+                } else {
+                    $('#passwordError').addClass('d-none');
+                }
+                // 폼의 action을 설정
+                $('#passwordForm').attr('action', '/qna/view/' + qnaId + '/password');
+                var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+                passwordModal.show();
+            }
+        }
+    });
+</script>
 </body>
 </html>

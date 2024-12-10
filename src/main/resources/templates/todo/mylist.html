@@ -154,7 +154,7 @@
             margin-top: 10px;
         }
 
-        .pagination button {
+        .page-btn.active {
             padding: 5px 10px;
             background-color: #007BFF;
             color: #fff;
@@ -165,6 +165,16 @@
             transition: background-color 0.3s ease;
         }
 
+         .page-btn {
+            padding: 5px 10px;
+            background-color: #fff;
+            color: #007BFF;
+            border: 1px solid #007BFF;
+            border-radius: 4px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
         .pagination button:hover {
             background-color: #0056b3;
         }
@@ -204,7 +214,6 @@
             font-size: 14px;
         }
 
-
     </style>
 </head>
 
@@ -228,11 +237,11 @@
                 </div>
 
                 <div class="button-section">
-
-                    <input class="sort-btn" type="radio" name="sortField" value="createdAt" th:checked="${pageDTO.sortField == 'createdAt'}">등록순
-                    <input class="sort-btn" type="radio" name="sortField" value="thumbUps" th:checked="${pageDTO.sortField == 'thumbUps'}">좋아요순
-                    <input type = "radio" name="sortDirection" value="desc" th:checked="${pageDTO.sortDirection == 'desc'}">내림차순
-                    <input type = "radio" name="sortDirection" value="asc" th:checked="${pageDTO.sortDirection == 'asc'}">오름차순
+                    <button class="sort-btn" id="sortCreatedAt">등록순</button>
+                    <button class="sort-btn" id="sortThumbUp">좋아요순</button>
+                    <input type="hidden" id="sortField" name="sortField" th:value="${pageDTO.sortField}" >
+                    <input type = "hidden" id="sortDirection" name="sortDirection" th:value="${pageDTO.sortDirection}">
+                    <input type = "hidden" id="pageNo" name="pageNo" th:value = "${pageDTO.pageNo}">
                     <select name="pageSize" id="pageSize" class="view-count-select">
                         <option value="5" th:selected="${pageDTO.pageSize == 5}">5개씩보기</option>
                         <option value="10" th:selected="${pageDTO.pageSize == 10}">10개씩보기</option>
@@ -265,7 +274,7 @@
                         <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
                         <td th:text="${post.thumbUpCount}"></td>
                         <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
-                        <td th:text="${post.displayAt + ' ~ ' + post.displayEnd}"></td>
+                        <td th:text="${#temporals.format(post.displayAt,'yyyy-MM-dd') + ' ~ ' + #temporals.format(post.displayEnd,'yyyy-MM-dd')}"></td>
                     </tr>
                     <!-- Additional rows as needed -->
                     </tbody>
@@ -280,21 +289,43 @@
                     <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
                 </div>
                 <script th:inline="javascript">
+                    const formObj = document.querySelector("form");
                     let pageBtn = document.querySelectorAll(".page-btn");
-
                     for(let i of pageBtn){
                         i.addEventListener("click",(e)=>{
                             e.preventDefault();
                             e.stopPropagation();
-                            const num = e.target.getAttribute("data-num");
-                            const formObj = document.querySelector("form");
-                            formObj.innerHTML += `<input type='hidden' name='pageNo' value='${num}'>`;
+                            formObj.pageNo.value = e.target.getAttribute("data-num");
                             formObj.submit();
                         });
                     }
                     function view(postId){
                         location.href="/post/view?postId="+postId;
                     }
+                    const sortCreatedAt = document.querySelector("#sortCreatedAt");
+                    const sortThumbUp = document.querySelector("#sortThumbUp");
+                    const sortField = document.querySelector("#sortField");
+                    const sortDirection = document.querySelector("#sortDirection");
+                    sortCreatedAt.addEventListener("click",()=>{
+                       sortField.value="createdAt";
+                       if(sortDirection.value==='desc'){
+                           sortDirection.value = 'asc';
+                       }else{
+                            sortDirection.value = 'desc';
+                       }
+                       formObj.pageNo.value=1;
+                       formObj.submit();
+                    });
+                    sortThumbUp.addEventListener("click",()=>{
+                        sortField.value="thumbUps";
+                        if(sortDirection.value==='desc'){
+                            sortDirection.value = 'asc';
+                        }else{
+                            sortDirection.value = 'desc';
+                        }
+                        formObj.pageNo.value=1;
+                        formObj.submit();
+                    });
                 </script>
             </div>
     </div>

@@ -15,10 +15,10 @@
     <button type="button" onclick="window.location.href='/message/list';">목록으로</button>
     <button type="submit">삭제</button>
 </div>
-<!-- 읽음 처리 -->
-<form action="#" th:action="@{/message/markAsRead}" method="post">
+<!-- 안읽음 처리 -->
+<form action="#" th:action="@{/message/markAsUnRead}" method="post">
     <input type="hidden" th:value="${message.id}" name="messageId" />
-    <button type="submit">읽음 처리</button>
+    <button type="submit">안 읽음</button>
 </form>
 </body>
 </html>

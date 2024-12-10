@@ -94,7 +94,22 @@ public class PostServiceImpl implements PostServiceIf {
                     , END_OF_TODAY
             );
             LogUtil.log("list", postList);
-            return postList.stream().map(post -> modelMapper.map(post, PostMainDTO.class)).toList();
+            return postList.stream().map(post -> PostMainDTO.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .todayType(post.getTodayType())
+                    .displayAt(post.getDisplayAt())
+                    .displayEnd(post.getDisplayEnd())
+                    .createdAt(post.getCreatedAt())
+                    .topics(post.getTopics())
+                    .hashtag(post.getHashtag())
+                    .image(post.getImage())
+                    .shares(
+                            post.getShares().stream().map(s -> s.getMember().getMemberId()).toList()
+                    )
+                    .thumbUps(post.getThumbUps().size())
+                    .build()).toList();
         }catch(Exception e){
             log.error("mainPost 에러 발생 : {}",e.getMessage());
             return null;
@@ -298,7 +313,7 @@ public class PostServiceImpl implements PostServiceIf {
                             "sortField", validatedPageDTO.getSortField(),
                             "sortDirection", validatedPageDTO.getSortDirection(),
                             "searchDateBegin", validatedPageDTO.getSearchDateBegin(),
-                            "searchDateEnd", validatedPageDTO.getSearchDateEnd(),
+                            "searchDateEnd", LocalDate.parse(validatedPageDTO.getSearchDateEnd(),FORMATTER).plusDays(1).atStartOfDay(),
                             "memberId", memberId,
                             "offset",validatedPageDTO.getOffset(),
                             "pageSize", validatedPageDTO.getPageSize()

@@ -153,11 +153,22 @@
             margin-top: 10px;
         }
 
-        .pagination button {
+        .page-btn.active {
             padding: 5px 10px;
             background-color: #007BFF;
             color: #fff;
             border: none;
+            border-radius: 4px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .page-btn {
+            padding: 5px 10px;
+            background-color: #fff;
+            color: #007BFF;
+            border: 1px solid #007BFF;
             border-radius: 4px;
             margin: 0 5px;
             cursor: pointer;
@@ -187,6 +198,15 @@
             border: 1px solid #007BFF;
             background-color: #007BFF;
             color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .sort-btn.active {
+            padding: 5px 15px;
+            border: 1px solid #007BFF;
+            background-color: #fff;
+            color: #007BFF;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -227,8 +247,8 @@
                 </div>
 
                 <div class="button-section">
-                    <button type="button" class="sort-btn" th:onclick="|location.href='/post/sharelist?type=my'|">내가한 공유</button>
-                    <button type="button" class="sort-btn" th:onclick="|location.href='/post/sharelist?type=others'|">내가 받은 공유</button>
+                    <button type="button" th:class="${type == 'my'? 'sort-btn active':'sort-btn'}" th:onclick="|location.href='/post/sharelist?type=my'|">내가한 공유</button>
+                    <button type="button" th:class="${type == 'others'? 'sort-btn active':'sort-btn'}" th:onclick="|location.href='/post/sharelist?type=others'|">내가 받은 공유</button>
                     <select name="pageSize" id="pageSize" class="view-count-select">
                         <option value="5" th:selected="${pageDTO.pageSize == 5}">5개씩보기</option>
                         <option value="10" th:selected="${pageDTO.pageSize == 10}">10개씩보기</option>

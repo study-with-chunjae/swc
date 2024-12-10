@@ -43,6 +43,7 @@ function initSliders(){
 
 async function getMainPosts(element) {
     const createdAt = element.getAttribute("data-date-format");
+    console.log(createdAt);
     try {
         const response = await fetch(`/posts/my-posts/main-posts/${createdAt}`, {
             method: 'GET',
@@ -50,21 +51,18 @@ async function getMainPosts(element) {
                 'Content-Type': 'application/json',
             },
         });
-
+        let slider = document.querySelector("#slider");
         if (!response.ok) {
             console.log("response not ok");
             const error = await response.json();
             console.log(error.message);
-            alert(error.message);
+            slider.innerHTML = '';
             return;
         }
-
         console.log("response ok");
         const result = await response.json();
         console.log(result);
-        let slider = document.querySelector("#slider");
         slider.innerHTML = ''; // 기존 내용을 초기화
-
         for (let mainPost of result.data) {
             slider.innerHTML += `
 				<article class="learning-card">
@@ -79,10 +77,11 @@ async function getMainPosts(element) {
 						<div class="shared-by">
             `;
             for (let share of mainPost.shares) {
-                slider.innerHTML += `${share.member.name}<br>`;
+                slider.innerHTML += `${share}<br>`;
             }
             slider.innerHTML += `
 						</div>
+						<div class="thumbUps">${mainPost.thumbUps}</div>
 					</div>
                 </article>
             `;
@@ -90,7 +89,7 @@ async function getMainPosts(element) {
         initSliders();
     } catch (error) {
         console.log(error);
-        location.href = "/post/main?createdAt=" + createdAt;
+        //location.href = "/post/main?createdAt=" + createdAt;
     }
 }
 
@@ -108,71 +107,84 @@ function getWeekNumber(date) {
     return Math.ceil(offsetDate / 7); // 몇째 주인지 계산
 }
 
-// Function to render weekdays based on the base date
+function getMondayOfWeek(date) {
+    const day = date.getDay(); // 일=0, 월=1, ... 토=6
+    // day가 0(일요일)일 경우 월요일은 date에서 -6일,
+    // 그 외에는 (1 - day)일 이동해 월요일을 구한다.
+    const diff = (day === 0 ? -6 : 1 - day);
+    const monday = new Date(date);
+    monday.setDate(date.getDate() + diff);
+    return monday;
+}
+
+// 기존 today 하이라이트 로직 + selected 클래스 추가
 function renderWeekdays(inputDate) {
     weekdayList.innerHTML = "";
+    // 해당 주의 월요일부터 시작
+    const mondayOfWeek = getMondayOfWeek(inputDate);
+    baseDate = mondayOfWeek;
     for (let i = 0; i < 7; i++) {
-        const date = new Date(inputDate);
-        date.setDate(inputDate.getDate() + i); // Calculate each date in the 7-day range
+        const date = new Date(mondayOfWeek);
+        date.setDate(mondayOfWeek.getDate() + i);
         const dayIndex = date.getDay();
-        const month = date.getMonth() + 1; // Month is zero-based
+        const month = date.getMonth() + 1;
         const day = date.getDate();
+
         const li = document.createElement("li");
         li.textContent = `${month}월 ${day}일(${weekdays[dayIndex]})`;
-        li.setAttribute("data-date", `${month}월 ${day}일`); // Store the date as a data attribute
-        //데이터 불러올 날짜 형식의 값 data attribute에 저장(yyyy-MM-dd)
+        li.setAttribute("data-date", `${month}월 ${day}일`);
         li.setAttribute("data-date-format", `${date.getFullYear()}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
         li.classList.add("post-date");
-        li.setAttribute("data-month", `${month}월`); // Store the month as a data attribute
-        // Highlight today if within the current week range
+        li.setAttribute("data-month", `${month}월`);
+
+        // 오늘 날짜 하이라이트
         if (date.toDateString() === new Date().toDateString()) {
-            li.classList.add("today");
-            // Add calendar icon for today's date
             const calendarIcon = document.createElement("span");
             calendarIcon.textContent = " 📅";
             calendarIcon.classList.add("calendar-icon");
             li.appendChild(calendarIcon);
-            // Display today's date initially
-            const weekNumber = getWeekNumber(date); // Calculate the week number for today
-            todayDisplay.innerHTML = `<b>${month}월 ${day}일(${weekdays[dayIndex]})</b> <br> (${month}월, ${weekNumber}주) 📅`;
         }
-        // Add event listener to display clicked date, month, and week info
+
+        // 날짜 클릭 시 selected 스타일 추가
         li.addEventListener("click", function () {
-            const clickedDate = new Date(inputDate);
-            clickedDate.setDate(inputDate.getDate() + i); // Adjust date for each list item
-            const weekNumber = getWeekNumber(clickedDate); // Calculate the week number
-            todayDisplay.innerHTML = `<b>${this.getAttribute("data-date")}(${this.textContent})</b> <br> (${this.getAttribute("data-month")}, ${weekNumber}주)`;
+            // 모든 post-date에서 selected 클래스 제거
+            document.querySelectorAll(".post-date").forEach(el => el.classList.remove("selected"));
+            this.classList.add("selected");
+            const clickedDate = new Date(mondayOfWeek);
+            clickedDate.setDate(mondayOfWeek.getDate() + i);
+            const weekNumber = getWeekNumber(clickedDate);
+            todayDisplay.innerHTML = `<b>${this.getAttribute("data-date")}</b> <br> (${this.getAttribute("data-month")}, ${weekNumber}주)`;
         });
+
         weekdayList.appendChild(li);
+        initSliders();
     }
+
     let postDate = document.querySelectorAll(".post-date");
-    console.log(postDate);
     for (let i of postDate) {
         i.addEventListener("click", async (event) => {
-            const createdAt = event.target.getAttribute("data-date-format");
             await getMainPosts(event.target);
         });
     }
 }
 
-document.addEventListener("DOMContentLoaded",(e)=>{
+// 나머지 코드(이벤트 핸들러, init 등)는 기존과 동일하게 유지
+// baseDate를 기준으로 최초 렌더
+document.addEventListener("DOMContentLoaded", (e) => {
     renderWeekdays(baseDate);
+    document.querySelectorAll(".post-date").forEach(el => {
+        if(el.getAttribute("data-date-format")===new Date().toISOString().slice(0, 10)) {
+            el.classList.add("selected");
+        }
+    });
 });
 
 upButton.addEventListener("click", function () {
-    baseDate.setDate(baseDate.getDate() - 7); // Move 7 days back
+    baseDate.setDate(baseDate.getDate() - 7);
     renderWeekdays(baseDate);
 });
 
 downButton.addEventListener("click", function () {
-    baseDate.setDate(baseDate.getDate() + 7); // Move 7 days forward
+    baseDate.setDate(baseDate.getDate() + 7);
     renderWeekdays(baseDate);
 });
-
-let postDate = document.querySelectorAll(".post-date");
-for(let i of postDate){
-    i.addEventListener("click",(e)=>{
-        const inputDate = new Date(e.target.getAttribute("data-date-format"));
-        renderWeekdays(inputDate);
-    });
-}

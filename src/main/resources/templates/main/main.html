@@ -67,7 +67,7 @@
                 <p class="description" th:text="${post.content}"></p>
                 <div class="shared-by">
                   <th:block th:each="share, status:${post.shares}">
-                    <div th:text="${share.member.name}"></div>
+                    <div th:text="${share}"></div>
                   </th:block>
                 </div>
               </div>
@@ -90,6 +90,8 @@
         ></script>
       </div>
     </section>
-    </div>
   </div>
+</div>
+
+</body>
 </html>

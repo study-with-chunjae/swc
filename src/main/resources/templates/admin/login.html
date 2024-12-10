@@ -1,0 +1,28 @@
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{/admin/main.html}"
+>
+
+<div layout:fragment="admincontent">
+    <h3>로그인</h3>
+    <form th:action="@{/admin/login}" method="post">
+        <h1 class="h3 mb-4 fw-normal">관리자 로그인</h1>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" id="adminId" name="adminId" placeholder="관리자 아이디" required>
+            <label for="adminId">관리자 아이디</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required>
+            <label for="password">비밀번호</label>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-dark" type="submit">로그인</button>
+    </form>
+</div>

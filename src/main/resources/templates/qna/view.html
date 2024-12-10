@@ -11,30 +11,31 @@
     </style>
 </head>
 <body>
-<h1>QnA 상세보기</h1>
-<div>
-    <h2 th:text="${qna.title}"></h2>
-    <p th:text="${qna.content}"></p>
-    <p th:text="${qna.email} != null ? '이메일: ' + ${qna.email} : ''"></p>
-    <p th:text="${qna.answered} ? '답변 완료' : '미답변'"></p>
+<div class="container mt-4">
+    <h1>QnA 상세보기</h1>
+    <div>
+        <h2 th:text="${qna.title}"></h2>
+        <p th:text="${qna.content}"></p>
+        <p th:if="${qna.email != null}" th:text="'이메일: ' + ${qna.email}"></p>
+        <p th:text="${qna.answered} ? '답변 완료' : '미답변'"></p>
 
-    <div th:if="${qna.replies.size() > 0}">
-        <h3>답변:</h3>
-        <div th:each="reply : ${qna.replies}" class="reply">
-            <p th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></p>
+        <div th:if="${qna.replies.size() > 0}">
+            <h3>답변:</h3>
+            <div th:each="reply : ${qna.replies}" class="reply">
+                <p th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></p>
+            </div>
         </div>
-    </div>
 
-    <div th:if="${!qna.answered}">
-        <a th:href="@{'/qna/answer/' + ${qna.qnaId}}">답변 등록</a>
+        <div th:if="${!qna.answered}">
+            <a th:href="@{'/qna/answer/' + ${qna.qnaId}}" class="btn btn-secondary">답변 등록</a>
+        <form th:action="@{'/qna/delete/' + ${qna.qnaId}}" method="post" class="d-inline">
+        <form th:action="@{'/qna/delete/' + ${qna.qnaId}}" method="post" class="mt-3">
+            <input type="hidden" name="_method" value="delete"/>
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</button>
+        </form>
     </div>
-
-    <form th:action="@{'/api/qna/' + ${qna.qnaId}}" method="post">
-        <input type="hidden" name="_method" value="delete"/>
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">삭제하기</button>
-    </form>
 </div>
 </body>
 </html>

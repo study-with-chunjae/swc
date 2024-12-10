@@ -57,8 +57,10 @@ public class PostRestController {
             String memberId = cookieUtil.getMemberIdInJwt(memberService,request);
             List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
             if(postMainDTOList==null || postMainDTOList.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("조회된 내용이 없습니다."));
+                return ResponseEntity.ok(ApiResponse.success("조회된 내용이 없습니다.", postMainDTOList));
             }
+            LogUtil.log("postList",postMainDTOList);
+            LogUtil.log("response",ApiResponse.success("조회성공", postMainDTOList));
             return ResponseEntity.ok(ApiResponse.success("조회성공", postMainDTOList));
         }catch(Exception e) {
             LogUtil.log(e.toString(),e.getMessage());
