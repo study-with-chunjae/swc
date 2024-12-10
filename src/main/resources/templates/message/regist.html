@@ -13,8 +13,7 @@
     </th:block>
 <form action="/message/regist" method="post">
     <div>
-        <label for="senderId">보낸사람</label>
-        <input type="text" id="senderId" name="senderId" th:value="${senderId}" readonly />
+        <input type="text" id="senderId" name="senderId" th:value="${senderId}" hidden readonly />
     </div>
 
     <div>
@@ -23,8 +22,17 @@
     </div>
 
     <div>
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="" required />
+    </div>
+
+    <div>
         <label for="content">내용</label>
         <textarea id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
+    </div>
+
+    <div>
+        <input type="hidden" id="regDate" name="regDate" th:value="${T(java.time.LocalDateTime).now()}" placeholder="등록일" required />
     </div>
 
     <div>
