@@ -42,8 +42,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
       throw new Error("회원가입 실패");
     }
   } catch (error) {
-    document.getElementById("signupError").style.display = "block";
-    document.getElementById("signupError").textContent = error.message;
+    alert(error.message)
   }
 });
 
@@ -94,7 +93,8 @@ function validateEmail(input) {
     messageEl.style.display = "block";
     return false;
   } else {
-    messageEl.style.display = "none";
+    messageEl.style.color = "white";
+    messageEl.textContent = "이메일 인증을 계속해주세요.";
     return true;
   }
 }
@@ -168,7 +168,7 @@ async function verifyEmail() {
     });
 
     if (response.ok) {
-      messageEl.style.color = "green";
+      messageEl.style.color = "white";
       messageEl.textContent = "이메일 인증이 완료되었습니다.";
       isEmailVerified = true;
       clearInterval(timerInterval);
@@ -194,7 +194,8 @@ document
     if (pwd !== pwdConfirm) {
       messageEl.style.display = "block";
     } else {
-      messageEl.style.display = "none";
+      messageEl.style.color = "white";
+      messageEl.textContent = "완료";
     }
   });
 
@@ -207,7 +208,8 @@ function validatePassword(input) {
   ) {
     messageEl.style.display = "block";
   } else {
-    messageEl.style.display = "none";
+    messageEl.style.color = "white";
+    messageEl.textContent = "완료";
   }
 }
 
@@ -220,7 +222,8 @@ function validateName(input) {
     messageEl.textContent = "이름을 정확히 입력해주세요.";
     return false;
   } else {
-    messageEl.style.display = "none";
+    messageEl.style.color = "white";
+    messageEl.textContent = "완료";
     return true;
   }
 }
@@ -230,6 +233,7 @@ function validatePhone(input) {
   if (!input.value.match(/^\d{11}$/)) {
     messageEl.style.display = "block";
   } else {
-    messageEl.style.display = "none";
+    messageEl.style.color = "white";
+    messageEl.textContent = "완료";
   }
 }

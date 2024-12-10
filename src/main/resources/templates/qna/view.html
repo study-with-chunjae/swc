@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QnA 상세보기</title>
+    <style>
+        .reply {
+            margin-left: 20px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+<h1>QnA 상세보기</h1>
+<div>
+    <h2 th:text="${qna.title}"></h2>
+    <p th:text="${qna.content}"></p>
+    <p th:text="${qna.email} != null ? '이메일: ' + ${qna.email} : ''"></p>
+    <p th:text="${qna.answered} ? '답변 완료' : '미답변'"></p>
+
+    <div th:if="${qna.replies.size() > 0}">
+        <h3>답변:</h3>
+        <div th:each="reply : ${qna.replies}" class="reply">
+            <p th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></p>
+        </div>
+    </div>
+
+    <div th:if="${!qna.answered}">
+        <a th:href="@{'/qna/answer/' + ${qna.qnaId}}">답변 등록</a>
+    </div>
+
+    <form th:action="@{'/api/qna/' + ${qna.qnaId}}" method="post">
+        <input type="hidden" name="_method" value="delete"/>
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">삭제하기</button>
+    </form>
+</div>
+</body>
+</html>

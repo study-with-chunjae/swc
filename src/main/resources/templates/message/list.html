@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>쪽지 목록</title>
+</head>
+<body>
+<h1>쪽지 목록</h1>
+
+<div th:if="${#lists.isEmpty(messages)}">
+    <p>쪽지 목록이 없습니다.</p>
+</div>
+
+<div th:unless="${#lists.isEmpty(messages)}">
+    <form method="post" th:action="@{/message/delete}">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>선택</th>
+                <th>번호</th>
+                <th>보낸사람</th>
+                <th>내용</th>
+                <th>읽음 여부</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="message, iterStat : ${messages}">
+                <td>
+                    <input type="checkbox" name="messageIds" th:value="${message.id}" />
+                </td>
+                <td><a th:href="@{/message/view?messageId={id}(id=${message.id})}" th:text="${iterStat.index + 1}"></a></td>
+                <td th:text="${message.senderId}"></td>
+                <td th:text="${message.content}"></td>
+                <td th:text="${message.isRead ? '읽음' : '안 읽음'}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="submit">삭제</button>
+    </form>
+</div>
+
+<a href="/message/regist" style="display:block; margin-top: 20px;">
+    <button>쪽지 쓰기</button>
+</a>
+</body>
+</html>
