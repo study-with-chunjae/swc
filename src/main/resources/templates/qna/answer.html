@@ -1,55 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>qna작성</title>
-<meta charset="UTF-8">
-
-
+    <meta charset="UTF-8">
+    <title>QnA 답변 등록</title>
 </head>
 <body>
-<h1>QnA 작성</h1>
-<form id="createQnaForm">
-    <label for="title">제목:</label>
-    <input type="text" id="title" name="title" required maxlength="100"><br>
+<h1>QnA 답변 등록</h1>
+<form th:action="@{/api/qna/{qnaId}/reply(qnaId=${qnaId})}" method="post" th:object="${qnaDTO}">
+    <label for="content">답변 내용:</label>
+    <textarea id="content" name="content" th:field="*{content}" required maxlength="1000"></textarea><br><br>
 
-    <label for="question">질문 내용:</label>
-    <textarea id="question" name="question" required maxlength="1000"></textarea><br>
-
-    <label for="email">이메일:</label>
-    <input type="email" id="email" name="email" required><br>
-
-    <label for="password">비밀번호:</label>
-    <input type="password" id="password" name="password" required><br>
-
-    <button type="button" onclick="submitQna()">작성하기</button>
+    <button type="submit">답변 등록</button>
 </form>
-
-<script>
-    function submitQna() {
-        const formData = {
-            title: document.getElementById("title").value,
-            question: document.getElementById("question").value,
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value
-        };
-
-        fetch('/api/qna', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert('QnA가 작성되었습니다. ID: ' + data);
-                window.location.href = `/qna/${data}`;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('작성에 실패했습니다.');
-            });
-    }
-</script>
 </body>
 </html>

@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import net.fullstack7.swc.domain.Qna;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.repository.QnaRepository;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     public Integer registQna(QnaDTO qnaDTO) {
         Qna qna = new Qna(
                 qnaDTO.getTitle(),
-                qnaDTO.getQuestion(),
+                qnaDTO.getContent(),
                 qnaDTO.getEmail(),
                 qnaDTO.getPassword()
         );
@@ -44,29 +45,31 @@ public class QnaServiceImpl implements QnaServiceIf {
             }
         }
 
-        return QnaDTO.builder()
-                .qnaId(qna.getQnaId())
-                .title(qna.getTitle())
-                .question(qna.getQuestion())
-                .answer(qna.getAnswer())
-                .answered(qna.isAnswered())
-                .email(qna.getEmail())
-                .build();
+        return convertToDTO(qna);
     }
 
     @Override
-    public void answerQna(QnaDTO qnaDTO, boolean isAdmin) {
-        if(!isAdmin) {
+    public void addReply(QnaDTO qnaDTO, boolean isAdmin) {
+        if (!isAdmin) {
             throw new SecurityException("관리자만 답변할 수 있습니다.");
         }
 
-        Qna qna = qnaRepository.findById(qnaDTO.getQnaId())
-                .orElseThrow(() -> new IllegalArgumentException("QnA가 존재하지 않습니다."));
-        qna.addAnswer(qnaDTO.getAnswer());
+        Qna parent = qnaRepository.findById(qnaDTO.getParentId())
+                .orElseThrow(() -> new IllegalArgumentException("원글이 존재하지 않습니다."));
+
+        Qna reply = new Qna(
+                qnaDTO.getTitle(),
+                qnaDTO.getContent(),
+                parent.getEmail(),
+                parent.getPassword());
+
+        parent.addReply(reply);
+
+        qnaRepository.save(parent); // Cascade.ALL 덕분에 reply도 저장됨
 
         // 이메일 발송
-        if (qna.getEmail() != null && !qna.getEmail().isEmpty()) {
-            sendMail(qna.getEmail(), qna.getTitle(), qnaDTO.getAnswer());
+        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
+            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
         }
     }
 
@@ -75,7 +78,7 @@ public class QnaServiceImpl implements QnaServiceIf {
         Qna qna = qnaRepository.findById(qnaId)
                 .orElseThrow(() -> new IllegalArgumentException("QnA가 존재하지 않습니다."));
 
-        if(!isAdmin) {
+        if (!isAdmin) {
             // 비밀번호 검증
             if (qna.getPassword() == null || !qna.getPassword().equals(password)) {
                 throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -85,6 +88,38 @@ public class QnaServiceImpl implements QnaServiceIf {
         qnaRepository.delete(qna);
     }
 
+    @Override
+    public List<QnaDTO> listQna() {
+        List<Qna> rootQnaList = qnaRepository.findAllRootQna();
+
+        return rootQnaList.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Qna 엔티티를 QnaDTO로 변환
+    private QnaDTO convertToDTO(Qna qna) {
+        List<QnaDTO> replies = qna.getReplies().stream()
+                .map(reply -> QnaDTO.builder()
+                        .qnaId(reply.getQnaId())
+                        .title(reply.getTitle())
+                        .content(reply.getContent())
+                        .answered(reply.isAnswered())
+                        .parentId(qna.getQnaId())
+                        .build())
+                .collect(Collectors.toList());
+
+        return QnaDTO.builder()
+                .qnaId(qna.getQnaId())
+                .title(qna.getTitle())
+                .content(qna.getContent())
+                .answered(qna.isAnswered())
+                .email(qna.getEmail())
+                .replies(replies)
+                .build();
+    }
+
+    // 이메일 발송 메서드
     private void sendMail(String toEmail, String subject, String answerContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);

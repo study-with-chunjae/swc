@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 public class Qna {
@@ -13,9 +16,7 @@ public class Qna {
     @Column(nullable = false, columnDefinition = "VARCHAR(100)", length = 100)
     private String title;
     @Column(nullable = false, columnDefinition = "TEXT", length = 1000)
-    private String question; //질문
-    @Column(nullable = false, columnDefinition = "TEXT", length = 1000)
-    private String answer; //답변
+    private String content; //내용
 
     // 비회원 작성용 필드
     @Column(nullable = true, length = 100)
@@ -27,6 +28,13 @@ public class Qna {
     @Column(nullable = false)
     private boolean answered;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Qna parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Qna> replies = new ArrayList<>();
+
     // 일단 회원qna 생각없음
 //    @ManyToOne
 //    @JoinColumn(name = "questionerId")
@@ -34,20 +42,21 @@ public class Qna {
 //    private Member questioner;
 
 
-    public Qna(String title, String question, String answer, String email) {
+    public Qna(String title, String content, String email, String password) {
         this.title = title;
-        this.question = question;
-        this.answer = answer;
+        this.content = content;
         this.email = email;
         this.password = password;
         this.answered = false;
-
     }
 
-    public void addAnswer(String answer) {
-        this.answer = answer;
+    public Qna() {
+
+    }
+    public void addReply(Qna reply) {
+        reply.parent = this;
+        this.replies.add(reply);
         this.answered = true;
     }
+
 }
-
-

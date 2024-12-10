@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QnA 리스트</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .reply {
+            margin-left: 20px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+<h1>QnA 리스트</h1>
+<a href="/qna/regist">글 작성</a>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>답변 여부</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="qna : ${qnaList}">
+        <td th:text="${qna.qnaId}"></td>
+        <td>
+            <a th:href="@{'/qna/view/' + ${qna.qnaId}}" th:text="${qna.title}"></a>
+            <div th:if="${qna.replies.size() > 0}" class="reply">
+                <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></span>
+            </div>
+        </td>
+        <td th:text="${qna.answered} ? '답변 완료' : '미답변'"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

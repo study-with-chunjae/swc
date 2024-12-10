@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.QnaServiceIf;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/qna")
 @Log4j2
 @RequiredArgsConstructor
@@ -15,7 +14,7 @@ public class QnaRestController {
     private final QnaServiceIf qnaService;
 
     // QnA 작성
-    @PostMapping
+    @PostMapping("/regist")
     public Integer registQna(@RequestBody QnaDTO qnaDTO) {
         return qnaService.registQna(qnaDTO);
     }
@@ -28,11 +27,11 @@ public class QnaRestController {
         return qnaService.viewQna(qnaId, password, isAdmin);
     }
 
-    // 관리자가 답변 등록
-    @PostMapping("/answer")
-    public void answerQna(@RequestBody QnaDTO qnaDTO,
-                          @RequestParam(defaultValue = "false") boolean isAdmin) {
-        qnaService.answerQna(qnaDTO, isAdmin);
+    // 답글 작성
+    @PostMapping("/{qnaId}/reply")
+    public void addReply(@PathVariable Integer qnaId, @RequestBody QnaDTO qnaDTO) {
+        qnaDTO.setParentId(qnaId); // 부모 ID 설정
+        qnaService.addReply(qnaDTO, true); // 관리자 여부를 true로 설정 (실제 환경에서는 인증을 통해 설정)
     }
 
     // QnA 삭제

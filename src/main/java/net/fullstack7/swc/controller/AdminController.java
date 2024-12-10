@@ -17,15 +17,15 @@ public class AdminController {
         return "admin/main";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "admin/login";
-    }
-
-    @GetMapping("/logout")
-    public String logout() {
-        return "admin/login";
-    }
+//    @GetMapping("/login")
+//    public String login() {
+//        return "admin/login";
+//    }
+//
+//    @GetMapping("/logout")
+//    public String logout() {
+//        return "admin/login";
+//    }
 
     @GetMapping("/memberList")
     public String memberList() {
