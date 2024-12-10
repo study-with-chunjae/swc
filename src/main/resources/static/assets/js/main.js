@@ -105,7 +105,6 @@ async function getMainPosts(element) {
     } catch (error) {
         console.log(error);
         //location.href = "/post/main?createdAt=" + createdAt;
-
     }
 }
 
