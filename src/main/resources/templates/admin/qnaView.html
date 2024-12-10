@@ -27,6 +27,7 @@
         </div>
 
         <div th:if="${!qna.answered}">
+            <a th:href="@{'/qna/answer/' + ${qna.qnaId}}" class="btn btn-secondary">답변 등록</a>
             <form th:action="@{'/qna/delete/' + ${qna.qnaId}}" method="post" class="d-inline">
                     <input type="hidden" name="_method" value="delete"/>
                     <label for="password">비밀번호:</label>

@@ -8,58 +8,78 @@
 <h1>보낸 쪽지 목록</h1>
 
 <div th:if="${#lists.isEmpty(messages)}">
+    <button type="submit">삭제</button>
     <table border="1">
-    <thead>
-    <tr>
-        <th>선택</th>
-        <th>번호</th>
-        <th>보낸사람</th>
-        <th>내용</th>
-        <th>읽음 여부</th>
-    </tr>
-    </thead>
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="select" onclick="toggleSelectAll()" />
+            </th>
+            <th>번호</th>
+            <th>보낸사람</th>
+            <th>제목</th>
+            <th>날짜</th>
+            <th>읽음 여부</th>
+        </tr>
+        </thead>
     </table>
     <p>쪽지 목록이 없습니다.</p>
 </div>
 
 <div th:unless="${#lists.isEmpty(messages)}">
-    <form method="post" th:action="@{/message/delete}">
+    <form method="post" th:action="@{/message/send/delete}" onsubmit="return validateForm()">
+        <button type="submit">삭제</button>
         <table border="1">
             <thead>
             <tr>
-                <th>선택</th>
+                <th>
+                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" />
+                </th>
                 <th>번호</th>
-                <th>보낸사람</th>
-                <th>내용</th>
+                <th>받는사람</th>
+                <th>제목</th>
+                <!--                <th>내용</th>-->
+                <th>날짜</th>
                 <th>읽음 여부</th>
             </tr>
             </thead>
-            <tbody th:if="${!#lists.isEmpty(messages)}">
+            <tbody>
             <tr th:each="message, iterStat : ${messages}">
                 <td>
-                    <input type="checkbox" name="messageIds" th:value="${message.id}" />
+                    <input type="checkbox" name="messageIds" th:value="${message.id}" class="messageCheckbox"/>
                 </td>
                 <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${iterStat.index + 1}"></a></td>
-                <td th:text="${message.senderId}"></td>
-                <td th:text="${message.content}"></td>
+                <td th:text="${message.receiverId}"></td>
+                <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${message.title}"></a></td>
+                <!--                <td th:text="${message.content}"></td>-->
+                <!--                <td th:text="${message.regDate}"></td>-->
+                <td th:text="${#temporals.format(message.regDate, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${message.isRead ? '읽음' : '안 읽음'}"></td>
             </tr>
             </tbody>
         </table>
-
-        <div th:if="${#lists.isEmpty(messages)}">
-            <p>쪽지 목록이 없습니다.</p>
-        </div>
-
-        <div th:unless="${#lists.isEmpty(messages)}">
-            <button type="submit">삭제</button>
-        </div>
     </form>
 </div>
 <button type="button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
 
-<a href="/message/regist" style="display:block; margin-top: 20px;">
-    <button>쪽지 쓰기</button>
-</a>
+
+<script>
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.messageCheckbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+
+    function validateForm(){
+        const selectMessages = document.querySelector('.messageCheckbox:checked');
+        if(selectMessages.length === 0){
+            alert('삭제할 쪽지를 선택해주세요.');
+            return false;
+        }
+        return true;
+    }
+</script>
 </body>
 </html>

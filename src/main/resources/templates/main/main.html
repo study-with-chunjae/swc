@@ -19,7 +19,7 @@
         </div>
         <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 30px"></div>
         <div>
-            <button class="button"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="20px" /> 친구 추가</button>
+            <button class="button"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="15px" /> 친구 추가</button>
             <button class="button">✉️ 쪽지 보내기</button>
         </div>
         <div class="studyDream center">
@@ -36,7 +36,7 @@
 
     <section class="content2">
       <h2>오늘의 학습</h2>
-      <section class="content3" style="margin-top: 23px">
+      <section class="content3" style="margin-top: 20px">
         <div class="weekday-container">
           <input type="date" class="styled-date" />
           <button class="arrow up">▲</button>
@@ -46,7 +46,7 @@
           <button class="arrow down">▼</button>
           <p
             id="today"
-            style="margin-top: 10px; font-size: 16px; text-align: center"
+            style="font-size: 16px; text-align: center"
           ></p>
         </div>
       </section>
@@ -89,7 +89,8 @@
         <div class="slider-indicators">
           <!-- Dots will be dynamically added here -->
         </div>
-      </div>
+      </section>
+      
       <div>
         <script th:inline="javascript">
           let baseDate = new Date([[${createdAt}]]);

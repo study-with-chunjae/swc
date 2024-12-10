@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +16,19 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     // 이메일로 회원 찾기
     Optional<Member> findByEmail(String email);
 
-    //친구
+    //친구(수진)
     @Query("SELECT m FROM Member m WHERE m.memberId LIKE %:keyword% OR m.name LIKE %:keyword%")
     List<Member> findById(String keyword, Pageable pageable);
-
+    //친구(수진)
     Member findByMemberId(String memberId);
+
+    //관리자(수진)
+    Page<Member> findAll(Pageable pageable);
+    Page<Member> findByMemberIdContaining(String memberId, Pageable pageable);
+    Page<Member> findByNameContaining(String name, Pageable pageable);
+    Page<Member> findByStatus(String status, Pageable pageable);
+    Page<Member> findByMemberIdContainingOrNameContainingOrStatus(
+            String memberId, String name, String status, Pageable pageable
+    );
+    //관리자(수진)
 }
