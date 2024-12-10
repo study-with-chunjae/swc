@@ -6,11 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.config.JwtTokenProvider;
 import net.fullstack7.swc.domain.Member;
+import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.MemberDTO;
 import net.fullstack7.swc.repository.MemberRepository;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +37,9 @@ public class MemberServiceImpl implements MemberServiceIf {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    //관리자(수진)
+    private final ModelMapper modelMapper;
+    //관리자(수진)
 
     @Autowired
     private JavaMailSender mailSender;
@@ -351,4 +358,35 @@ public class MemberServiceImpl implements MemberServiceIf {
             throw new RuntimeException("이미 사용 중인 이메일입니다.");
         }
     }
+
+    //관리자(수진)
+    @Override
+    public Page<AdminMemberDTO> getAllMembers(String searchType, String keyword, Pageable pageable) {
+        Page<Member> members;
+
+        if (searchType == null || searchType.isBlank()) {
+            searchType = "all";
+        }
+        if (keyword == null) {
+            keyword = "";
+        }
+
+        switch (searchType) {
+            case "memberId":
+                members = memberRepository.findByMemberIdContaining(keyword, pageable);
+                break;
+            case "name":
+                members = memberRepository.findByNameContaining(keyword, pageable);
+                break;
+            case "status":
+                members = memberRepository.findByStatus(keyword, pageable);
+                break;
+            default:
+                members = memberRepository.findAll(pageable);
+        }
+
+        return members.map(member -> modelMapper.map(member, AdminMemberDTO.class));
+    }
+    //관리자(수진)
+
 }

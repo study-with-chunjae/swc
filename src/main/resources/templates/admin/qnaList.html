@@ -5,9 +5,34 @@
 >
 
 <div layout:fragment="admincontent">
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .reply {
+            margin-left: 20px;
+            color: gray;
+        }
+    </style>
+
     <div class="container mt-4">
         <h1>QnA 리스트</h1>
         <table class="table table-bordered">
+
+
+
             <thead>
             <tr>
                 <th>번호</th>
@@ -22,7 +47,7 @@
                     <!-- 비밀번호 입력 모달을 여는 링크로 변경 -->
                     <a href="#" th:attr="data-qna-id=${qna.qnaId}" class="open-password-modal" th:text="${qna.title}"></a>
                     <div th:if="${qna.replies.size() > 0}" class="reply">
-                        <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></span>
+                        <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.title}"></span>
                     </div>
                 </td>
                 <td>
