@@ -2,9 +2,18 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>쪽지 상세보기</title>
 </head>
 <body>
+<h1>보낸 쪽지 상세보기</h1>
 
+<p>보낸 사람: <span th:text="${message.senderId}"></span></p>
+<p>내용: <span th:text="${message.content}"></span></p>
+<p>읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
+
+<div>
+    <button type="button" onclick="window.location.href='/message/send/list';">목록으로</button>
+    <button type="submit">삭제</button>
+</div>
 </body>
 </html>
