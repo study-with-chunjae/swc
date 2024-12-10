@@ -7,10 +7,14 @@
 <body>
 <h1>쪽지 상세보기</h1>
 
-<p>발신자: <span th:text="${message.senderId}"></span></p>
+<p>보낸 사람: <span th:text="${message.senderId}"></span></p>
 <p>내용: <span th:text="${message.content}"></span></p>
 <p>읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
 
+<div>
+    <button type="button" onclick="window.location.href='/message/list';">목록으로</button>
+    <button type="submit">삭제</button>
+</div>
 <!-- 읽음 처리 -->
 <form action="#" th:action="@{/message/markAsRead}" method="post">
     <input type="hidden" th:value="${message.id}" name="messageId" />

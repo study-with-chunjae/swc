@@ -1,15 +1,13 @@
 package net.fullstack7.swc.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Table(name = "messages")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
