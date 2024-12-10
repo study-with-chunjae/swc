@@ -70,9 +70,9 @@ public class QnaServiceImpl implements QnaServiceIf {
         qnaRepository.save(parent);
 
         // 이메일 발송( 집에서 확인 )
-//        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
-//            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
-//        }
+        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
+            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
+        }
     }
 
     @Override
@@ -132,7 +132,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     private void sendMail(String toEmail, String subject, String answerContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
-        message.setSubject("QnA 답변: " + subject);
+        message.setSubject("SWC QnA 답변 : " + subject);
         message.setText("답변 내용:\n" + answerContent);
         mailSender.send(message);
     }

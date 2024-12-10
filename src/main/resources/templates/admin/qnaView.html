@@ -27,13 +27,13 @@
         </div>
 
         <div th:if="${!qna.answered}">
-            <a th:href="@{'/qna/answer/' + ${qna.qnaId}}" class="btn btn-secondary">답변 등록</a>
-            <form th:action="@{'/qna/delete/' + ${qna.qnaId}}" method="post" class="d-inline">
-                    <input type="hidden" name="_method" value="delete"/>
-                    <label for="password">비밀번호:</label>
-                    <input type="password" id="password" name="password" required>
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</button>
-                </form>
+            <a th:href="@{'/admin/qnaAnswer/' + ${qna.qnaId}}" class="btn btn-secondary">답변 등록</a>
+<!--            <form th:action="@{'/qna/delete/' + ${qna.qnaId}}" method="post" class="d-inline">-->
+<!--                    <input type="hidden" name="_method" value="delete"/>-->
+<!--                    <label for="password">비밀번호:</label>-->
+<!--                    <input type="password" id="password" name="password" required>-->
+<!--                    <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</button>-->
+<!--                </form>-->
         </div>
     </div>
 </div>

@@ -44,7 +44,7 @@ public class AdminController {
         try {
             if (adminService.login(adminDTO.getAdminId(), adminDTO.getPassword())) {
                 session.setAttribute("admin", adminDTO.getAdminId());
-                return "redirect:/admin/dashboard";
+                return "redirect:/admin/memberList";
             }
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -54,14 +54,9 @@ public class AdminController {
     }
 
     @GetMapping("/logout")
-    public String login(HttpSession session) {
+    public String logout(HttpSession session) {
         session.invalidate();
-        return "admin/login";
-    }
-
-    @GetMapping("/bbsList")
-    public String bbsList() {
-        return "admin/bbsList";
+        return "redirect:/admin/login";
     }
 
     @GetMapping("/memberList")
@@ -70,6 +65,8 @@ public class AdminController {
                           @PageableDefault(size = 10) Pageable pageable,
                           Model model) {
         Page<AdminMemberDTO> memberPage = memberService.getAllMembers(searchType, keyword, pageable);
+
+
         model.addAttribute("memberPage", memberPage);
         model.addAttribute("searchType", searchType);
         model.addAttribute("keyword", keyword);
@@ -100,4 +97,21 @@ public class AdminController {
         return "admin/qnaView";
     }
 
+    // 답변 등록 페이지 이동
+    @GetMapping("/qnaAnswer/{qnaId}")
+    public String answerQnaPage(@PathVariable Integer qnaId, Model model) {
+        model.addAttribute("qnaId", qnaId);
+        model.addAttribute("qnaDTO", new QnaDTO());
+        return "admin/qnaAnswer";
+    }
+
+    // **답변 등록 처리 메서드 추가**
+    @PostMapping("/{qnaId}/regist")
+    public String registAnswer(@PathVariable Integer qnaId,
+                               @ModelAttribute QnaDTO qnaDTO,
+                               Model model) {
+        qnaDTO.setParentId(qnaId);
+        qnaService.addReply(qnaDTO, true);
+        return "redirect:/admin/qnaList";
+    }
 }
