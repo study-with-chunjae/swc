@@ -107,11 +107,6 @@ async function getMainPosts(element) {
         //location.href = "/post/main?createdAt=" + createdAt;
 
     }
-    initSliders();
-  } catch (error) {
-    console.log(error);
-    //location.href = "/post/main?createdAt=" + createdAt;
-  }
 }
 
 const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
