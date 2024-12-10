@@ -29,22 +29,22 @@ public class MainController {
 
     @GetMapping("/sign/signUp")
     public String signUp() {
-        return "/sign/signUp";
+        return "sign/signUp";
     }
 
     @GetMapping("/sign/signIn")
     public String signIn() {
-        return "/sign/signIn";
+        return "sign/signIn";
     }
 
     @GetMapping("/sign/forgotPassword")
     public String forgotPassword() {
-        return "/sign/forgotPassword";
+        return "sign/forgotPassword";
     }
 
     @GetMapping("/sign/forgotPasswordChange")
     public String forgotPasswordChange() {
-        return "/sign/forgotPasswordChange";
+        return "sign/forgotPasswordChange";
     }
 
     @GetMapping("/sign/loginSuccess")
@@ -72,6 +72,6 @@ public class MainController {
     @GetMapping("/sign/loginFailure")
     public String loginFailure(Model model) {
         model.addAttribute("error", "로그인 실패");
-        return "/sign/in";
+        return "sign/signIn";
     }
 }
