@@ -38,7 +38,7 @@
             <div id="shared-list-container">
                 <th:block th:each="share, status : ${postDTO.shares}">
                     <div>
-                        <span th:text="${share.member.memberId + #temporals.format(share.createdAt,'yyyy-MM-dd')}"></span>
+                        <span th:text="${share.member.memberId +' '+ #temporals.format(share.createdAt,'yyyy-MM-dd')}"></span>
                         <button th:if="${viewType == 'my'}" th:data-postId="${postDTO.postId}" th:data-sharedId="${share.member.memberId}" th:text="X" th:onclick="'deleteShare(this);'"></button>
                     </div>
                 </th:block>
