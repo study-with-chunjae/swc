@@ -14,64 +14,8 @@ import net.fullstack7.swc.service.CustomOAuth2UserService;
 @Log4j2
 @Controller
 public class MainController {
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final JwtTokenProvider jwtTokenProvider;
-
-    public MainController(CustomOAuth2UserService customOAuth2UserService, JwtTokenProvider jwtTokenProvider) {
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
     @GetMapping("/")
     public String main() {
         return "main";
-    }
-
-    @GetMapping("/sign/signUp")
-    public String signUp() {
-        return "sign/signUp";
-    }
-
-    @GetMapping("/sign/signIn")
-    public String signIn() {
-        return "sign/signIn";
-    }
-
-    @GetMapping("/sign/forgotPassword")
-    public String forgotPassword() {
-        return "sign/forgotPassword";
-    }
-
-    @GetMapping("/sign/forgotPasswordChange")
-    public String forgotPasswordChange() {
-        return "sign/forgotPasswordChange";
-    }
-
-    @GetMapping("/sign/loginSuccess")
-    public String loginSuccess(Model model, @AuthenticationPrincipal OAuth2User principal, HttpServletResponse response) {
-
-        String token = jwtTokenProvider.createToken(
-            principal.getAttribute("email"),
-            principal.getAttribute("name"),
-            principal.getAttribute("email"),
-            null,
-            "google",
-            "Y",
-            principal.getAttribute("picture")
-        );
-
-        Cookie cookie = new Cookie("accessToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
-        response.addCookie(cookie);
-
-        return "redirect:/post/main";
-    }
-
-    @GetMapping("/sign/loginFailure")
-    public String loginFailure(Model model) {
-        model.addAttribute("error", "로그인 실패");
-        return "sign/signIn";
     }
 }
