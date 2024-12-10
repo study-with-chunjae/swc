@@ -65,13 +65,18 @@
           </button>
         </div>
         <div class="user-info">
-          <a href="#" class="user-name" th:text="${memberDTO.name}"></a>
+          <a
+            href="/myPage/myPageInfo"
+            class="user-name"
+            th:text="${memberDTO.name}"
+          ></a>
           <ul class="dropdown">
-            <li><a href="#">나의 정보</a></li>
-            <li><a href="#">친구 목록</a></li>
-            <li><a href="#">쪽지 목록</a></li>
+            <li><a href="/myPage/myPageInfo">나의 정보</a></li>
+            <li><a href="/myPage/myPageFriend">친구 목록</a></li>
+            <li><a href="/myPage/myPageMessage">쪽지 목록</a></li>
           </ul>
-<!--          <button class="alertIcon"></button>-->
+          <button class="alertIcon"></button>
+          <div class="alertCount">9</div>
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
               src="/assets/public/exitDoor.png"

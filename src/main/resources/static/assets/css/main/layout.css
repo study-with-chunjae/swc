@@ -1,7 +1,7 @@
 @font-face {
   font-family: "HakgyoansimBunpilR";
   src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBunpilR.woff2")
-  format("woff2");
+    format("woff2");
   font-weight: normal;
   font-style: normal;
 }
@@ -30,8 +30,55 @@
   height: 650px;
 }
 
-/*.alertIcon {*/
-/*  background-image: url("/assets/public/alertIcon.png");*/
-/*  width: 20px;*/
-/*  height: 20px;*/
-/*}*/
+.alertIcon {
+  background-image: url("/assets/public/alerty.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  margin: 0 10px 0 10px;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 0);
+  }
+  25% {
+    transform: translate(-1px, 0);
+  }
+  50% {
+    transform: translate(1px, 0);
+  }
+  75% {
+    transform: translate(-1px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.alertActive {
+  animation: shake 0.5s;
+  animation-iteration-count: infinite;
+}
+
+.alertCount {
+  width: 18px;
+  height: 18px;
+  color: white;
+  background-color: #E85B6C;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  right: 22px;
+  bottom: 10px;
+  line-height: 100;
+  opacity: 0;
+}
