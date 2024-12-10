@@ -64,7 +64,7 @@
             /></a>
           </button>
         </div>
-        <div class="user-info">
+        <div class="user-info" th:if="${memberDTO != null}">
           <a href="#" class="user-name" th:text="${memberDTO.name}"></a>
           <ul class="dropdown">
             <li><a href="#">나의 정보</a></li>
