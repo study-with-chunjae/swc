@@ -23,7 +23,17 @@
           </div>
           <div>
             <button class="button" th:data-member-id="${memberDTO.memberId}" onclick="handleFriendRequest(this)"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="15px" /> 친구 추가</button>
-            <button class="button">✉️ 쪽지 보내기</button>
+            <button class="button" th:data-member-id="${memberDTO.memberId}" onclick="sendMessage(this)">✉️ 쪽지 보내기</button>
+            <div><script>
+              function sendMessage(button) {
+                var receiverId = button.getAttribute('data-member-id');
+                if(!receiverId){
+                  alert("받는 사람의 ID가 없습니다.");
+                  return;
+                }
+                window.location.href = "/message/regist?receiverId=" + receiverId;
+              }
+            </script></div>
             <button class="button" id="registBtn">📝 학습 등록</button>
             <div><script>
               const registBtn = document.getElementById("registBtn")
@@ -71,6 +81,7 @@
                   <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
                   <p class="category" th:text="${post.topics}"></p>
                   <p class="category" th:text="${post.hashtag}"></p>
+                  <div class="thumbUps">❤️ 좋아요 [[${post.thumbUps}]]</div>
                 </div>
                 <div class="info">
                   <h3 class="title" th:text="${post.title}"></h3>
@@ -79,7 +90,6 @@
                     <th:block th:each="share, status:${post.shares}">
                       <div th:text="${share}"></div>
                     </th:block>
-                    <div class="thumbUps" th:text="${post.thumbUps}"></div>
                   </div>
                 </div>
               </article>
@@ -108,33 +118,6 @@
         layout:fragment="mainscript"
         th:inline="javascript"
       ></script>
-      <script>
-        function sendFriendRequest(button) {
-          const receiverId = button.getAttribute('data-member-id');
-          console.log("친구신청확인"+receiverId);
-          fetch('/friend/request', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ receiver: receiverId })
-          })
-                  .then(response => {
-                    if (!response.ok) {
-                      return response.text().then(text => { throw new Error(text) });
-                    }
-                    return response.text();
-                  })
-                  .then(message => {
-                    alert(message);
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || '친구 요청에 실패했습니다.');
-                  });
-        }
-        // 친구검색추가(수진)
-      </script>
     </div>
     </section>
   </div>

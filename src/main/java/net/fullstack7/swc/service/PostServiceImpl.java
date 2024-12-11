@@ -61,9 +61,12 @@ public class PostServiceImpl implements PostServiceIf {
                     .content(postRegisterDTO.getContent())
                     .todayType(postRegisterDTO.getTodayType())
                     .createdAt(LocalDateTime.now())
-                    .displayEnd(LocalDate.parse(postRegisterDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
-                    .topics(postRegisterDTO.getTopics())
-                    .displayAt(LocalDate.parse(postRegisterDTO.getDisplayAt(),FORMATTER).atStartOfDay())
+                    .displayEnd(
+                        postRegisterDTO.getDisplayEnd()!=null ? LocalDate.parse(postRegisterDTO.getDisplayEnd(),FORMATTER).atStartOfDay() : null
+                    )
+                    .displayAt(
+                        postRegisterDTO.getDisplayAt()!=null ? LocalDate.parse(postRegisterDTO.getDisplayAt(),FORMATTER).atStartOfDay() : null
+                    )
                     .hashtag(postRegisterDTO.getHashtag())
                     .image(postRegisterDTO.getNewImagePath()!=null?postRegisterDTO.getNewImagePath().replace("\\","/"):null)
                     .member(Member.builder().memberId(memberId).build())
@@ -146,7 +149,6 @@ public class PostServiceImpl implements PostServiceIf {
                     .displayAt(post.getDisplayAt())
                     .displayEnd(post.getDisplayEnd())
                     .createdAt(post.getCreatedAt())
-                    .topics(post.getTopics())
                     .hashtag(post.getHashtag())
                     .image(post.getImage())
                     .shares(
@@ -285,7 +287,6 @@ public class PostServiceImpl implements PostServiceIf {
                     .displayAt(LocalDate.parse(postModifyDTO.getDisplayAt(),FORMATTER).atStartOfDay())
                     .displayEnd(LocalDate.parse(postModifyDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
                     .hashtag(postModifyDTO.getHashtag())
-                    .topics(postModifyDTO.getTopics())
                     .image(postModifyDTO.getNewImagePath())
                     .member(Member.builder().memberId(memberId).build())
                     .createdAt(post.getCreatedAt())

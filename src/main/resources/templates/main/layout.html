@@ -50,20 +50,6 @@
       .search-results .load-more-button:hover {
         background-color: #e0e0e0;
       }
-/*알림팝업*/
-      #alertPopup{
-        display: none;
-        position: absolute;
-        top: 200px;
-        right: 50px;
-        width: 400px;
-        height: auto;
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 10px;
-        z-index: 1000; /* 모달이 다른 요소들 위에 표시되도록 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
       /*친구검색추가(수진)*/
     </style>
   </head>
@@ -130,8 +116,8 @@
             <li><a href="/message/list">쪽지 목록</a></li>
           </ul>
 <!--          알림추가(수진)-->
-          <button class="alertIcon" onclick="openAlertPopup()"></button>
-          <div class="alertCount" id="unreadCount" th:text="${unreadCount}"></div>
+          <button class="alertIcon" ></button>
+          <div class="alertCount" ></div>
 <!--          알림추가(수진)-->
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
@@ -144,17 +130,7 @@
         </div>
       </header>
     </div>
-<!--    알림팝업-->
-    <div id="alertPopup">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>알림 목록</h3>
-        <button onclick="closeAlertPopup()" style="background: transparent; border: none; font-size: 16px; cursor: pointer;">&times;</button>
-      </div>
-      <ul id="alertList">
-        <li id="noAlertMsg">알림이 없습니다</li>
-      </ul>
-    </div>
-    <!--    알림팝업-->
+
     <div class="center">
       <div class="contentArea">
         <div layout:fragment="mainContent" class="mainContent"></div>
@@ -308,9 +284,7 @@
                     alert(error.message || '친구 요청에 실패했습니다.');
                   });
         }
-        // 친구검색추가(수진)
       </script>
-
     </th:block>
   </body>
 </html>

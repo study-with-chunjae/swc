@@ -10,4 +10,6 @@ import java.util.List;
 public interface FriendMapper {
     List<FriendListDTO> friendList(@Param("pageDTO") PageDTO<FriendListDTO> pageDTO, @Param("memberId") String memberId);
     int totalCount(@Param("pageDTO") PageDTO<FriendListDTO> pageDTO, @Param("memberId") String memberId);
+    List<FriendListDTO> friendRequestList(@Param("pageDTO") PageDTO<FriendListDTO> pageDTO, @Param("memberId") String memberId);
+    int requestTotalCount(@Param("pageDTO") PageDTO<FriendListDTO> pageDTO, @Param("memberId") String memberId);
 }
