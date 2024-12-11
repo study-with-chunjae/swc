@@ -78,6 +78,10 @@
         <div class="header">
           <p>친구 목록 리스트</p>
         </div>
+        <form action="/myPage/friend">
+          <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO.searchValue}">
+          <input class="search-btn" type="submit" value="검색">
+        </form>
         <div>
           <!-- Example person card -->
           <div class="person-card" th:each="friend, status : ${pageDTO.dtoList}">
@@ -87,11 +91,32 @@
             <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">친구 삭제</button>
           </div>
           <!-- 한 페이지에 7명씩 -->
+          <div class="pagination">
+            <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+            <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+              <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+            </th:block>
+            <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
+          </div>
         </div>
       </div>
 
     </div>
   </div>
+  <script th:inline="javascript">
+    let pageBtn = document.querySelectorAll(".page-btn");
+
+    for(let i of pageBtn){
+      i.addEventListener("click",(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const num = e.target.getAttribute("data-num");
+        const formObj = document.querySelector("form");
+        formObj.innerHTML += `<input type='hidden' name='pageNo' value='${num}'>`;
+        formObj.submit();
+      });
+    }
+  </script>
 </div>
 
 </html>

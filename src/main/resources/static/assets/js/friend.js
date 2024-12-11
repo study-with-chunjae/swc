@@ -116,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 친구 요청 수락 함수
-    window.acceptFriendRequest = function(friendId) {
+    window.acceptFriendRequest = function(element) {
+        const friendId = element.getAttribute("data-idx");
         fetch(`/friend/accept/${friendId}`, {
             method: 'POST',
             headers: {
@@ -132,10 +133,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(message => {
                 alert(message);
                 // 해당 친구 요청을 리스트에서 제거
-                const button = document.querySelector(`button.button-accept[onclick="acceptFriendRequest(${friendId})"]`);
-                if (button) {
-                    button.parentElement.remove();
-                }
+                //const button = document.querySelector(`button.button-accept[onclick="acceptFriendRequest(${element})"]`);
+                //if (button) {
+                //    element.parentElement.parentElement.remove();
+                //}
+                location.reload();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -144,7 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 친구 요청 거절 함수
-    window.rejectFriendRequest = function(friendId) {
+    window.rejectFriendRequest = function(element) {
+        const friendId = element.getAttribute("data-idx");
         fetch(`/friend/reject/${friendId}`, {
             method: 'POST',
             headers: {
@@ -160,10 +163,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(message => {
                 alert(message);
                 // 해당 친구 요청을 리스트에서 제거
-                const button = document.querySelector(`button.button-reject[onclick="rejectFriendRequest(${friendId})"]`);
-                if (button) {
-                    button.parentElement.remove();
-                }
+                //const button = document.querySelector(`button.button-reject[onclick="rejectFriendRequest(${element})"]`);
+                //if (button) {
+                //element.parentElement.parentElement.remove();
+                //}
+                location.reload();
             })
             .catch(error => {
                 console.error('Error:', error);
