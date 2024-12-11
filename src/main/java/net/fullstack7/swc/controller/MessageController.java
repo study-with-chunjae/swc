@@ -56,13 +56,6 @@ public class MessageController {
             return null;
         }
     }
-    //목록
-//    @GetMapping("/list")
-//    public String chatList(Model model, @RequestParam String receiverId) {
-//        List<Message> messageList = messageService.getMessageList(receiverId);
-//        model.addAttribute("messages", messageList);
-//        return "message/list";
-//    }
     //받은쪽지목록
     @GetMapping("/list")
     public String messageList(Model model, HttpServletRequest req,

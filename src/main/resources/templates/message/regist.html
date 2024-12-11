@@ -1,57 +1,210 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:layout="http://www.ultrag.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{main/layout.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>쪽지 작성</title>
+    <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F3CD99;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-info {
+            margin-bottom: 20px;
+        }
+
+        .message-info p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .message-info span {
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        /* 목록으로 버튼 */
+        .list-button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: #dc3545;
+            width: 150px;
+            height: 10%;
+        }
+        #dc3545
+        #28a745
+        .list-button:hover {
+            background-color: #218838;
+        }
+
+        /* 등록 버튼 */
+        .delete-button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: seagreen;
+            width: 150px;
+        }
+
+        .delete-button:hover {
+            background-color: #218838;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+
+        .message-info p {
+            margin-bottom: 60px;
+        }
+
+        .container {
+            text-decoration: black;
+        }
+
+        input[type="text"], textarea {
+            width: 80%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            color: #333;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+            outline: none;
+        }
+
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: #aaa;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .message-info p, .message-info .input-wrapper {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .message-info p span {
+            margin-left: 10px;
+        }
+
+        .input-wrapper {
+            flex-grow: 1;
+            display: inline-block;
+            width: 100%;
+        }
+    </style>
 </head>
-<body>
-<section class="content" layout:fragment="maincontent">
-<h1>쪽지 작성</h1>
-<form action="/message/regist" method="post">
-    <div>
-        <input type="text" id="senderId" name="senderId" th:value="${senderId}" hidden readonly />
+<div layout:fragment="mainContent" class="fontQnsvlf">
+    <div class="flex">
+        <div class="myPageLeft">
+            <h2 class="textCenter">마이페이지</h2>
+            <div>
+                <ul class="myPageNav">
+                    <li><a href="/myPage/info"><span>내 정보</span></a></li>
+                    <li><a href="/myPage/myPageFollowList"><span>친구 요청</span></a></li>
+                    <li><a href="/myPage/friend"><span>친구 목록</span></a></li>
+                    <li><a href="/message/list"><span class="here">쪽지 목록</span></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="myPageRight">
+            <h1>쪽지 작성</h1>
+
+            <div class="container">
+                <form method="post" th:action="@{/message/regist}">
+                    <div class="message-info">
+<!--                        <p>보낸 사람 <span th:text="${senderId}"></span></p>-->
+                        <p class="input-wrapper">
+                            <span style="margin-right: 10px;">받는 사람</span>
+                            <input type="text" id="receiverId" name="receiverId" required placeholder="받는 사람을 입력하세요" />
+                        </p>
+                        <p class="input-wrapper">
+                            <span style="margin-right: 10px;">제목</span>
+                            <input type="text" id="title" name="title" required placeholder="제목을 입력하세요" />
+                        </p>
+                        <p class="input-wrapper">
+                            <span style="margin-right: 10px;">내용</span>
+                            <textarea id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
+                        </p>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="list-button" type="button" onclick="window.location.href='/message/list';">목록으로</button>
+
+                        <input type="hidden" id="senderId" name="senderId" th:value="${senderId}" />
+                        <input type="hidden" id="regDate" name="regDate" th:value="${T(java.time.LocalDateTime).now()}" />
+                        <button type="submit" class="delete-button">보내기</button>
+                    </div>
+                </form>
+
+                <th:block th:if="${errorReceiverId}">
+                    <script type="text/javascript">
+                        alert("받는 사람을 찾을 수 없습니다.");
+                    </script>
+                </th:block>
+
+                <th:block th:if="${error}">
+                    <script type="text/javascript">
+                        alert("쪽지 등록에 실패하였습니다.");
+                    </script>
+                </th:block>
+
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label for="receiverId">받는사람</label>
-        <input type="text" id="receiverId" name="receiverId" placeholder="" required />
-    </div>
-
-    <div>
-        <label for="title">제목</label>
-        <input type="text" id="title" name="title" placeholder="" required />
-    </div>
-
-    <div>
-        <label for="content">내용</label>
-        <textarea id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
-    </div>
-
-    <div>
-        <input type="hidden" id="regDate" name="regDate" th:value="${T(java.time.LocalDateTime).now()}" placeholder="등록일" required />
-    </div>
-
-    <div>
-        <button type="submit">보내기</button>
-        <button type="button" onclick="window.location.href='/message/list';">취소</button>
-    </div>
-
-</form>
-<!--    <th:block th:if="${errorReceiverId}">-->
-<!--        <script type="text/javascript">-->
-<!--            alert("받는 사람을 찾을 수 없습니다.");-->
-<!--        </script>-->
-<!--    </th:block>-->
-    <th:block th:if="${error}">
-        <script type="text/javascript">
-            alert("쪽지 등록에 실패하였습니다.");
-        </script>
-    </th:block>
-
-<!--    <script type="text/javascript" th:if="${errorReceiverId}">-->
-<!--        alert("받는 사람을 찾을 수 없습니다.");-->
-<!--    </script>-->
-
-</section>
-</body>
+</div>
 </html>
