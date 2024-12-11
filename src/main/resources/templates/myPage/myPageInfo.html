@@ -16,12 +16,12 @@
           <ul class="myPageNav">
             <li>
               <a href="/myPage/info">
-                <span>내 정보</span>
+                <span class="here">내 정보</span>
               </a>
             </li>
             <li>
               <a href="/myPage/followList">
-                <span class="here">친구 요청</span>
+                <span>친구 요청</span>
               </a>
             </li>
             <li>
@@ -40,12 +40,33 @@
 
       <div class="myPageRight">
         <h2>내 정보</h2>
-        <div class="myInfoIntroduce">
-          <div class="introduceItem">이름 : <span>한덕용</span></div>
-          <div class="introduceItem"></div>
-          <div class="introduceItem"></div>
-          <div class="introduceItem"></div>
-          <div class="introduceItem"></div>
+        <div class="flex">
+          <div class="myInfoIntroduce">
+            <div class="introduceItem">
+              이름 : <span th:text="${name}"></span>
+            </div>
+            <div class="introduceItem">
+              이메일 : <span th:text="${email}"></span>
+            </div>
+            <div class="introduceItem">
+              번호 : <span th:text="${phone}"></span>
+            </div>
+            <div class="introduceItem">
+              자기소개 : <span th:text="${myInfo}"></span>
+            </div>
+          </div>
+          <div><button></button></div>
+        </div>
+
+        <div>
+          <div>
+            최근 로그인 :
+            <span th:text="${lastLogin}" class="time"></span>
+          </div>
+          <div>
+            마지막 수정 :
+            <span th:text="${updatedAt}" class="time"></span>
+          </div>
         </div>
       </div>
     </div>
