@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.fullstack7.swc.mapper.FriendMapper">
+    <select id="totalCount" parameterType="net.fullstack7.swc.dto.PageDTO">
+        SELECT COUNT(DISTINCT f.friendId)
+        FROM friend f
+        INNER JOIN `member` m ON (f.requesterId = m.memberId OR f.receiverId = m.memberId) AND m.memberId != #{memberId}
+        INNER JOIN `member` m2 ON (f.requesterId = m2.memberId OR f.receiverId = m2.memberId) AND m2.memberId = #{memberId}
+        WHERE (f.requesterId = #{memberId} OR f.receiverId = #{memberId})
+        <if test="pageDTO.searchValue != null">
+            AND (m.memberId LIKE CONCAT('%', #{pageDTO.searchValue}, '%') OR m.`name` LIKE CONCAT('%', #{pageDTO.searchValue}, '%'))
+        </if>
+    </select>
+    <select id="friendList" parameterType="net.fullstack7.swc.dto.PageDTO">
+        SELECT f.friendId as friendId, f.regDate as regDate, f.`status` as status, m.memberId as othersId, m.`name` as othersName, m2.memberId as myId, m2.`name` as myName
+        FROM friend f
+        INNER JOIN `member` m ON (f.requesterId = m.memberId OR f.receiverId = m.memberId) AND m.memberId != #{memberId}
+        INNER JOIN `member` m2 ON (f.requesterId = m2.memberId OR f.receiverId = m2.memberId) AND m2.memberId = #{memberId}
+        WHERE (f.requesterId = #{memberId} OR f.receiverId = #{memberId})
+        <if test="pageDTO.searchValue != null">
+            AND (m.memberId LIKE CONCAT('%', #{pageDTO.searchValue}, '%') OR m.`name` LIKE CONCAT('%', #{pageDTO.searchValue}, '%'))
+        </if>
+        ORDER BY regDate DESC
+        LIMIT #{pageDTO.offset}, #{pageDTO.pageSize}
+    </select>
+</mapper>

@@ -6,9 +6,13 @@ import net.fullstack7.swc.domain.AlertType;
 import net.fullstack7.swc.domain.Friend;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
+import net.fullstack7.swc.dto.FriendListDTO;
 import net.fullstack7.swc.dto.FriendShareDTO;
+import net.fullstack7.swc.dto.PageDTO;
+import net.fullstack7.swc.mapper.FriendMapper;
 import net.fullstack7.swc.repository.FriendRepository;
 import net.fullstack7.swc.repository.MemberRepository;
+import net.fullstack7.swc.util.LogUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +31,9 @@ public class FriendServiceImpl implements FriendServiceIf {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
     private final AlertServiceIf alertService; // 알림 기능 통합 시 사용
+
     //강감찬추가
+    private final FriendMapper friendMapper;
     private final ModelMapper modelMapper;
     //강감찬추가
 
@@ -156,6 +162,27 @@ public class FriendServiceImpl implements FriendServiceIf {
     @Override
     public List<FriendShareDTO> notSharedFriends(Integer postId,String memberId) {
         return friendRepository.findNotSharedFriends(postId, memberId).stream().map(f -> modelMapper.map(f,FriendShareDTO.class)).toList();
+    }
+    @Override
+    public PageDTO<FriendListDTO> getFriendList(PageDTO<FriendListDTO> pageDTO, String memberId) {
+        LogUtil.logLine("FriendService getFriendList");
+        try{
+            pageDTO.setDtoList(friendMapper.friendList(pageDTO,memberId));
+            return pageDTO;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+    @Override
+    public int getTotalCount(PageDTO<FriendListDTO> pageDTO, String memberId) {
+        LogUtil.logLine("FriendService getTotalCount");
+        try{
+            return friendMapper.totalCount(pageDTO,memberId);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return -1;
+        }
     }
     //강감찬 추가
 
