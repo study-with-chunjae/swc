@@ -118,33 +118,6 @@
         layout:fragment="mainscript"
         th:inline="javascript"
       ></script>
-      <script>
-        function sendFriendRequest(button) {
-          const receiverId = button.getAttribute('data-member-id');
-          console.log("친구신청확인"+receiverId);
-          fetch('/friend/request', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ receiver: receiverId })
-          })
-                  .then(response => {
-                    if (!response.ok) {
-                      return response.text().then(text => { throw new Error(text) });
-                    }
-                    return response.text();
-                  })
-                  .then(message => {
-                    alert(message);
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || '친구 요청에 실패했습니다.');
-                  });
-        }
-        // 친구검색추가(수진)
-      </script>
     </div>
     </section>
   </div>
