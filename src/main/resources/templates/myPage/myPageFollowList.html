@@ -46,11 +46,14 @@
         <div class="header">
           <p>친구 요청 리스트</p>
         </div>
+        <form action="/myPage/followList" class="search-form">
+          <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO?.searchValue}">
+          <input class="search-btn" type="submit" value="검색">
+        </form>
+
+
         <div style="min-height: 420px;">
-          <form action="/myPage/followList">
-            <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO?.searchValue}">
-            <input class="search-btn" type="submit" value="검색">
-          </form>
+
           <!-- Example person card -->
           <div class="person-card" th:each="request, status : ${pageDTO.dtoList}">
             <span class="name" th:text="${request.othersId} + ' (' + ${request.othersName} + ')' "></span>
@@ -61,15 +64,16 @@
           </div>
 
         </div>
+        <div class="pagination">
+          <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+          <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+            <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+          </th:block>
+          <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
+        </div>
 
       </div>
-      <div class="pagination">
-        <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
-        <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
-          <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
-        </th:block>
-        <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
-      </div>
+
       <script th:src="@{/assets/js/friend.js}"></script>
       <script th:inline="javascript">
         let pageBtn = document.querySelectorAll(".page-btn");
