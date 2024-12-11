@@ -8,46 +8,14 @@
     <link th:href="@{/assets/css/main/main.css}" rel="stylesheet"/>
     <link th:href="@{/assets/css/main/header.css}" rel="stylesheet"/>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
-            background-image: url('/assets/public/back.png'); /* Removed trailing slash */
-            background-size: cover; /* Ensures the image covers the container */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-        }
-        .all {
-            max-width: 1280px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-        }
-
-        .content {
-            max-width: 1280px;
-            margin: auto;
-            padding: 20px;
-            background-image: url('/assets/public/mainback.png'); /* Removed trailing slash */
-            background-size: cover; /* Ensures the image covers the container */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-        }
 
         .content2 {
-            max-width: 1280px;
+            min-width: 990px;
             margin: 30px;
             padding: 20px;
             background-color: rgba(255, 255, 255);
-            height: 600px;
+            min-height: 500px;
             border-radius: 8px;
             color : #000;
         }
@@ -205,8 +173,7 @@
 </style>
 </head>
 <body>
-<div class="all">
-    <div class="meinContent" style="height: 840px;" layout:fragment="mainContent">
+<div layout:fragment="mainContent">
         <div class="content2">
             <form method="post" enctype="multipart/form-data">
                 <table>
@@ -328,7 +295,6 @@
             </form>
 
         </div>
-    </div>
 </div>
 
 </body>
