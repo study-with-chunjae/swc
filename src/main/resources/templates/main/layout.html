@@ -116,8 +116,8 @@
             <li><a href="/message/list">쪽지 목록</a></li>
           </ul>
 <!--          알림추가(수진)-->
-          <button class="alertIcon" ></button>
-          <div class="alertCount" ></div>
+          <button class="alertIcon" id="alertButton" onclick="openAlertPopup()" ></button>
+          <div class="unreadCount" id="unreadCount"></div>
 <!--          알림추가(수진)-->
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
@@ -131,6 +131,19 @@
       </header>
     </div>
 
+<!--    알림  모달-->
+    <div id="alertPopup">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>알림 목록</h3>
+        <button onclick="closeAlertPopup()" style="background: transparent; border: none; font-size: 16px; cursor: pointer;">&times;</button>
+      </div>
+      <ul id="alertList">
+        <li id="noAlertMsg">알림이 없습니다</li>
+      </ul>
+    </div>
+<!--    알림-->
+
+
     <div class="center">
       <div class="contentArea">
         <div layout:fragment="mainContent" class="mainContent"></div>
@@ -138,6 +151,8 @@
     </div>
 
     <th:block layout:fragment="script">
+      <script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+      <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
       <script
         src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
       ></script>
@@ -283,6 +298,159 @@
                     console.error('Error:', error);
                     alert(error.message || '친구 요청에 실패했습니다.');
                   });
+        }
+
+// 알림시작
+        let memberId = "[[${memberId}]]";
+
+        document.addEventListener("DOMContentLoaded", function () {
+          // 페이지 로딩 후 unreadCount 가져오기
+          fetch("/alert/unreadCount?memberId=" + memberId)
+                  .then((res) => res.json())
+                  .then((count) => {
+                    var unreadCountSpan = document.getElementById("unreadCount");
+                    unreadCountSpan.textContent = count;
+
+                    if (count == 0) {
+                      unreadCountSpan.classList.add("hidden");
+                    } else {
+                      unreadCountSpan.classList.remove("hidden");
+                    }
+
+                  })
+                  .catch((error) => {
+                    console.error("Error fetching unread count:", error);
+                  });
+
+          // 초기 알림 목록 로드
+          loadAlerts();
+
+          // 외부 클릭 시 모달 닫기
+          window.addEventListener("click", function(event) {
+            var alertPopup = document.getElementById("alertPopup");
+            var alertButton = document.getElementById("alertButton");
+            if (alertPopup.style.display === "block" && !alertPopup.contains(event.target) && event.target !== alertButton) {
+              closeAlertPopup();
+            }
+          });
+        });
+
+        function openAlertPopup() {
+          fetch("/alert/allRead?memberId=" + memberId, { method: "POST" })
+                  .then((res) => res.text())
+                  .then((data) => {
+                    if (data === "ok") {
+                      var unreadCountSpan = document.getElementById("unreadCount");
+                      unreadCountSpan.textContent = "0";
+                      unreadCountSpan.classList.add("hidden"); // 숨기기
+                      loadAlerts();
+                      document.getElementById("alertPopup").style.display = "block";
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error marking all as read:", error);
+                  });
+        }
+
+        function closeAlertPopup() {
+          document.getElementById("alertPopup").style.display = "none";
+        }
+
+        function loadAlerts() {
+          fetch("/alert/list?memberId=" + memberId)
+                  .then((res) => res.json())
+                  .then((alerts) => {
+                    let list = document.getElementById("alertList");
+                    let noAlertMsg = document.getElementById("noAlertMsg");
+
+                    // 기존 리스트 아이템 제거
+                    while (list.firstChild) {
+                      list.removeChild(list.firstChild);
+                    }
+
+                    if (alerts.length > 0) {
+                      alerts.forEach((alert) => {
+                        let li = document.createElement("li");
+
+                        // <a> 태그 생성
+                        let a = document.createElement("a");
+                        a.href = alert.url;
+                        a.textContent = alert.message;
+                        a.style.textDecoration = "none";
+                        a.style.color = "black";
+                        a.style.textDecoration = "underline";
+
+                        li.appendChild(a);
+                        list.appendChild(li);
+                      });
+                    } else {
+                      let li = document.createElement("li");
+                      li.id = "noAlertMsg";
+                      li.textContent = "알림이 없습니다";
+                      list.appendChild(li);
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error fetching alerts:", error);
+                  });
+        }
+
+        let socket = new SockJS("/ws-stomp");
+        let stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+                {},
+                function () {
+                  console.log("Connected to STOMP");
+
+                  stompClient.subscribe("/topic/" + memberId, function (message) {
+                    let alertData = JSON.parse(message.body);
+                    console.log("Received alert:", alertData);
+
+                    // 알림 메시지와 URL, 타입을 전달
+                    displayNotification(alertData.message, alertData.url, alertData.type);
+
+                    // 미확인 갯수확인
+                    fetch("/alert/unreadCount?memberId=" + memberId)
+                            .then((res) => res.json())
+                            .then((count) => {
+                              let unreadCountSpan = document.getElementById("unreadCount");
+                              unreadCountSpan.textContent = count;
+
+                              if (count == 0) {
+                                unreadCountSpan.classList.add("hidden");
+                              } else {
+                                unreadCountSpan.classList.remove("hidden");
+                              }
+                            })
+                            .catch((error) => {
+                              console.error("Error fetching unread count:", error);
+                            });
+                  });
+                },
+                function (error) {
+                  console.error("STOMP connection error:", error);
+                }
+        );
+
+        // 알림 메시지를 화면에 표시하는 함수
+        function displayNotification(message, url, type) {
+          let notificationList = document.getElementById("alertList");
+          let li = document.createElement("li");
+
+          // <a> 태그 생성
+          let a = document.createElement("a");
+          a.href = url;
+          a.textContent = message;
+          a.style.textDecoration = "none"; // 스타일 조정 (선택 사항)
+          a.style.color = "blue"; // 스타일 조정 (선택 사항)
+          a.target = "_blank"; // 새 탭에서 열기 (선택 사항)
+
+          // <a> 태그와 타입을 <li>에 추가
+          li.appendChild(a);
+          li.appendChild(document.createTextNode(" (" + type + ")"));
+
+          notificationList.prepend(li); // 새 알림을 상단에 추가
         }
       </script>
     </th:block>
