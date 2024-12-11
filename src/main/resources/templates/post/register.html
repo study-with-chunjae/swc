@@ -117,17 +117,18 @@
 
         inputElement.addEventListener('keydown', (event) => {
             handleInput(event);
+            event.target.focus();
         });
 
         function handleInput(event) {
             const input = event.target;
             const value = input.value.trim();
 
-            if ((event.key === 'Enter' || event.key === ',') && value && tags.length < 4) {
+            if (event.key === 'Enter' && value && tags.length < 4) {
+                event.preventDefault();
                 if (value.length <= 10) {
                     addTag(value.startsWith('#') ? value : `#${value}`);
                     input.value = '';
-                    event.preventDefault();
                 } else {
                     alert('Each tag can be up to 10 characters long.');
                 }
@@ -135,7 +136,9 @@
         }
 
         function addTag(value) {
-            if (tags.includes(value)) return;
+            if(value==null||value==='') return;
+            if(tags.includes(value)) return;
+            if(tags.length>=4) return;
             tags.push(value);
 
             const tagContainer = document.getElementById('tag-container');

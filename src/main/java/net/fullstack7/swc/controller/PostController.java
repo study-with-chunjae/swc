@@ -161,7 +161,7 @@ public class PostController {
         model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
         model.addAttribute("postDTO",postDTO);
         model.addAttribute("thumbUp",thumbUpService.isExist(postId,memberId)?"1":"0");
-        return "post/view";
+        return "todo/view";
     }
 
     @CheckJwtToken(redirectUri = DEFAULT_REDIRECT)
@@ -177,7 +177,7 @@ public class PostController {
                 .name(memberInfo.get("name"))
                 .build();
         model.addAttribute("memberDTO", memberDTO);
-        return "post/register";
+        return "todo/regist";
     }
 
     @CheckJwtToken(redirectUri = DEFAULT_REDIRECT)
@@ -188,14 +188,15 @@ public class PostController {
                                HttpServletRequest req, Model model){
         LogUtil.logLine(CONTROLLER_NAME + "register");
         if(bindingResult.hasErrors()){
-            return errorUtil.redirectWithError(DEFAULT_REDIRECT,redirectAttributes,bindingResult);
+            return errorUtil.redirectWithError("/post/register",redirectAttributes,bindingResult);
         }
         String memberId = getMemberIdInJwt(req);
         Post post = postService.registerPost(postRegisterDTO, memberId);
         if(post==null){
-            return errorUtil.redirectWithError("게시글등록 실패",DEFAULT_REDIRECT,redirectAttributes);
+            redirectAttributes.addFlashAttribute("postDTO",postRegisterDTO);
+            return errorUtil.redirectWithError("게시글등록 실패","/post/register",redirectAttributes);
         }
-        return "redirect:/post/list";
+        return "redirect:/post/view?postId="+post.getPostId();
     }
 
     @CheckJwtToken

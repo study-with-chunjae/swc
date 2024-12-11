@@ -19,7 +19,15 @@ public class GlobalExceptionHandler {
           org.springframework.http.converter.HttpMessageNotReadableException.class,
           org.springframework.validation.BindException.class,
           jakarta.validation.ConstraintViolationException.class,
-          IllegalArgumentException.class
+          IllegalArgumentException.class,
+          NumberFormatException.class,
+          org.springframework.expression.spel.SpelEvaluationException.class,
+          org.thymeleaf.exceptions.TemplateProcessingException.class,
+          org.attoparser.ParseException.class,
+          org.thymeleaf.exceptions.TemplateInputException.class,
+          jakarta.servlet.ServletException.class,
+          RuntimeException.class,
+          org.springframework.web.servlet.resource.NoResourceFoundException.class
   })
   public String handleBadRequest(Exception e, Model model) {
     log.error("Bad request error: {}", e.getMessage());
