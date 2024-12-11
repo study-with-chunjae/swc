@@ -45,6 +45,7 @@
             <tr>
                 <th>회원 ID</th>
                 <th>이름</th>
+                <th>이메일</th>
                 <th>상태</th>
                 <th>가입일</th>
                 <th>최종 로그인</th>
@@ -54,6 +55,7 @@
             <tr th:each="member : ${memberPage.content}">
                 <td th:text="${member.memberId}"></td>
                 <td th:text="${member.name}"></td>
+                <td th:text="${member.email}"></td>
                 <td>
                 <select th:data-member-id="${member.memberId}" th:value="${member.status}" class="status-dropdown">
                     <option value="Y" th:selected="${member.status == 'Y'}">활성화</option>
@@ -77,7 +79,7 @@
         <span th:if="${memberPage.hasPrevious()}">
             <a th:href="@{/admin/memberList(page=${memberPage.number - 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}">이전</a>
         </span>
-            <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages)}">
+            <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages -1)}">
             <a th:href="@{/admin/memberList(page=${page}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}"
                th:text="${page + 1}"></a>
         </span>

@@ -1,14 +1,71 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>답변 등록</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-4">
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{/admin/main.html}"
+>
+<div layout:fragment="admincontent">
+    <style>
+
+        /* 폼 스타일 */
+        .container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-family: 'Arial', sans-serif;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #6c757d;
+            outline: none;
+            box-shadow: 0 0 5px #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #5a6268;
+        }
+    </style>
     <h1>답변 등록</h1>
+    <div class="container mt-4">
     <form th:action="@{'/admin/' + ${qnaId} + '/regist'}" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">답변 제목:</label>
@@ -23,8 +80,4 @@
         <button type="submit" class="btn btn-primary">답변 등록</button>
     </form>
 </div>
-
-<!-- Bootstrap JS 및 의존성 스크립트 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
