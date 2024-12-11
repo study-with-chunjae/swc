@@ -5,16 +5,23 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.fullstack7.swc.domain.AlertType;
+import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Message;
+import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.repository.MessageRepository;
+import net.fullstack7.swc.service.AlertServiceImpl;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.MessageService;
 import net.fullstack7.swc.util.CookieUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +35,8 @@ public class MessageController {
     private final MemberServiceIf memberService;
     private final CookieUtil cookieUtil;
     private final MessageRepository messageRepository;
+    private final AlertServiceImpl alertService;
+    private final MemberRepository memberRepository;
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String handleGetRequest() {
@@ -47,8 +56,6 @@ public class MessageController {
             return null;
         }
     }
-
-
     //목록
 //    @GetMapping("/list")
 //    public String chatList(Model model, @RequestParam String receiverId) {
@@ -58,13 +65,24 @@ public class MessageController {
 //    }
     //받은쪽지목록
     @GetMapping("/list")
-    public String messageList(Model model, HttpServletRequest req) {
+    public String messageList(Model model, HttpServletRequest req,
+                              @RequestParam(value= "page", defaultValue = "0")int page,
+                              @RequestParam(value = "size", defaultValue = "5")int size) {
         String memberId = getMemberIdInJwt(req);
         if (memberId == null) {
             return "redirect:/sign/signIn";
         }
         List<Message> messageList = messageService.getReceiverMessageList(memberId);
         model.addAttribute("messages", messageList);
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Message> messagePage = messageService.getReceiverMessageList(memberId, pageable);
+//
+//        model.addAttribute("messagePage", messagePage.getContent());
+//        model.addAttribute("totalPages", messagePage.getTotalPages());
+//        model.addAttribute("currenPage", page);
+//        model.addAttribute("totlaMessages", messagePage.getTotalElements());
+//        model.addAttribute("size", size);
+
         return "message/list";
     }
 
@@ -91,6 +109,18 @@ public class MessageController {
         }
         try {
             messageService.sendMessage(senderId, receiverId, content, title, regDate);
+            //알림
+            String alertMessage = senderId + "님이 새 쪽지를 보냈습니다: " + "'"+title+"'";
+            Member member = memberRepository.findByMemberId(receiverId);
+
+            if (member == null) {
+                log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
+                // 적절한 처리를 추가 (예: 알림을 보내지 않거나, 다른 행동을 취함)
+                model.addAttribute("error", "존재하지 않는 회원입니다.");
+                return "message/regist";
+            }
+            alertService.registAlert(member, AlertType.CHAT_MESSAGE, alertMessage, "/message/list");
+            log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
             return "redirect:/message/list";
         } catch (IllegalArgumentException e) {
                 model.addAttribute("errorReceiverId", true);
