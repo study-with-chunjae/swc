@@ -78,10 +78,18 @@
         <div class="header">
           <p>친구 목록 리스트</p>
         </div>
-        <form action="/myPage/friend">
-          <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO.searchValue}">
+        <form action="/myPage/friend" class="search-form">
+          <input
+                  type="text"
+                  class="search-input"
+                  maxlength="100"
+                  name="searchValue"
+                  id="searchValue"
+                  th:value="${pageDTO.searchValue}"
+                  placeholder="검색어를 입력하세요">
           <input class="search-btn" type="submit" value="검색">
         </form>
+
         <div>
           <!-- Example person card -->
           <div class="person-card" th:each="friend, status : ${pageDTO.dtoList}">
@@ -92,12 +100,30 @@
           </div>
           <!-- 한 페이지에 7명씩 -->
           <div class="pagination">
-            <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+            <!-- 이전 버튼 -->
+            <button
+                    class="page-btn"
+                    th:if="${pageDTO.prev}"
+                    th:data-num="${pageDTO.blockStart - 1}">&lt;
+            </button>
+
+            <!-- 페이지 번호 버튼 -->
             <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
-              <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+              <button
+                      th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'"
+                      th:data-num="${i}">[[${i}]]
+              </button>
             </th:block>
-            <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
+
+            <!-- 다음 버튼 -->
+            <button
+                    class="page-btn"
+                    th:if="${pageDTO.next}"
+                    th:data-num="${pageDTO.blockEnd + 1}">&gt;
+            </button>
           </div>
+
+
         </div>
       </div>
 
