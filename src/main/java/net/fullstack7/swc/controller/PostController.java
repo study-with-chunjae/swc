@@ -81,11 +81,11 @@ public class PostController {
             model.addAttribute("viewType", "today");
             model.addAttribute("postMainDTOList", postMainDTOList);
             model.addAttribute("memberDTO", memberDTO);
-            model.addAttribute("profileImage", memberProfileRepository.findByMember(member).getProfileImage());
+            model.addAttribute("profileImage", memberProfileRepository.findByMember(member).orElse(null));
             return "main/main";
         }catch(Exception e){
             log.error(e.getMessage());
-            return errorUtil.redirectWithError(e.getMessage(),"/post/main",redirectAttributes);
+            return errorUtil.redirectWithError(e.getMessage(),"/",redirectAttributes);
         }
     }
 
