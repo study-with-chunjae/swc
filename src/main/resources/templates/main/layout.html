@@ -23,17 +23,35 @@
       /*친구검색추가(수진)*/
       /* 검색 결과 드롭다운 스타일 */
       .search-results {
+        /*top: 65%;*/
+        /*list-style: none;*/
+        /*padding: 0;*/
+        /*max-height: 200px;*/
+        /*overflow-y: auto;*/
+        /*position: relative;*/
+        /*background-color: white;*/
+        /*width: 100%;*/
+        z-index: 1000;
         top: 65%;
         list-style: none;
+        margin: 0;
         padding: 0;
-        /*border: 1px solid #ccc;*/
-        max-height: 200px;
+        max-height: 300px;
         overflow-y: auto;
         position: relative;
-        background-color: white;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 모던한 느낌의 그림자 */
         width: 100%;
-        z-index: 1000;
       }
+      .search-results li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        border-bottom: 1px solid #ddd; /* 구분선 추가 */
+      }
+
       .search-container {
         position: relative;
         width: 300px;
@@ -52,6 +70,15 @@
       }
       .search-results .load-more-button:hover {
         background-color: #e0e0e0;
+      }
+
+      .search-results .friendBtn{
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
       }
 
       #alertPopup{
@@ -278,7 +305,7 @@
             // 친구 신청 버튼 생성
             const requestButton = document.createElement('button');
             requestButton.textContent = '친구 신청';
-            requestButton.className = 'button button-request';
+            requestButton.className = 'friendBtn';
             requestButton.onclick = () => sendFriendRequest(member.memberId);
 
             // 링크와 버튼을 li에 추가
