@@ -198,7 +198,7 @@
                 <table>
                     <tr>
                         <td><label for="title">제목</label></td>
-                        <td><input type="text" name="title" id="title" th:maxlength="100" th:text="${postDTO?.title?:''}"></td>
+                        <td><input type="text" name="title" id="title" th:maxlength="100" th:value="${postDTO?.title?:''}"></td>
                     </tr>
                     <tr>
                         <td><label for="content">내용</label></td>
@@ -207,7 +207,7 @@
                     </tr>
                     <tr>
                         <td><label for="file">이미지</label></td>
-                        <td><input type="file" name="file" id="file"></td>
+                        <td><input type="file" name="image" id="file"></td>
                     </tr>
                     <tr>
                         <td>오늘의 학습 노출여부</td>
@@ -221,7 +221,7 @@
                         <td>
                             <input id="displayAt" type="date" name="displayAt" th:value="${postDTO?.displayAt?:''}">
                             &nbsp;~&nbsp;
-                            <input id="displayEnd" type="date" name="displayEnd" th:value="${postDTO?.displayAt?:''}">
+                            <input id="displayEnd" type="date" name="displayEnd" th:value="${postDTO?.displayEnd?:''}">
                         </td>
                     </tr>
                     <tr>
@@ -247,6 +247,10 @@
                     </tr>
                 </table>
                 <script th:inline="javascript">
+                    const errors = [[${errors}]];
+                    if(errors){
+                        alert(errors);
+                    }
                     const tags = [];
                     const inputElement = document.getElementById('tag-input');
                     const hiddenInputElement = document.getElementById('hashtag-input');
@@ -270,14 +274,14 @@
                                 console.log("tags.length>=4");
                                 return;
                             }
-                            if (value.length <= 10) {
+                            if (value.length <= 5) {
                                 event.preventDefault();
                                 event.stopPropagation();
                                 addTag(value.startsWith('#') ? value : `#${value}`);
                                 input.value = '';
                             } else {
                                 event.preventDefault();
-                                alert('Each tag can be up to 10 characters long.');
+                                alert('5글자 까지만 입력하세요.ㅠ');
                             }
                         }
                     }
@@ -304,18 +308,17 @@
                         tagContainer.appendChild(tagElement);
 
                         button.addEventListener("click",()=>{
-                            removeTag(value,tagElement)
+                            removeTag(value,button)
                         });
 
                         updateHiddenInput();
                     }
 
-                    function removeTag(value, tagElement) {
-                        console.log('remove' + tagElement);
+                    function removeTag(value, button) {
                         const index = tags.indexOf(value);
                         if (index > -1) {
                             tags.splice(index, 1);
-                            tagElement.remove();
+                            button.parentElement.remove();
                             updateHiddenInput();
                         }
                         console.log("tags : "+ tags.join(','));

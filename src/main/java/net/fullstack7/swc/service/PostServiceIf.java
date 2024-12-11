@@ -11,7 +11,7 @@ import java.util.Map;
 
 public interface PostServiceIf {
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId);
-    public PostDTO viewPost(int postId);
+    public PostViewDTO viewPost(int postId);
     public List<PostMainDTO> mainPost(LocalDateTime createdAt, String memberId, Integer todayType);
     public List<PostMainDTO> mainPostList(LocalDateTime selectedDate, String memberId, Integer todayType);
     public PageDTO<PostDTO> sortAndSearch(PageDTO<PostDTO> pageDTO, String memberId);
