@@ -1,5 +1,6 @@
 package net.fullstack7.swc.repository;
 
+import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
 
 //    void deleteAllById(List<Long> messageIds);
+
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllBySenderIdOrReceiverId(String senderId, String receiverId);
 }

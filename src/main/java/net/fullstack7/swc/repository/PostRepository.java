@@ -38,4 +38,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>, PostSearch
     )
     Post viewPost(Integer postId);
 
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllByMember(Member member);
 }

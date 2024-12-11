@@ -8,8 +8,14 @@ import net.fullstack7.swc.config.JwtTokenProvider;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.MemberDTO;
+import net.fullstack7.swc.repository.AlertRepository;
+import net.fullstack7.swc.repository.FriendRepository;
+import net.fullstack7.swc.repository.MemberProfileRepository;
 import net.fullstack7.swc.repository.MemberRepository;
-
+import net.fullstack7.swc.repository.MessageRepository;
+import net.fullstack7.swc.repository.PostRepository;
+import net.fullstack7.swc.repository.ShareRepository;
+import net.fullstack7.swc.repository.ThumbUpRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +47,16 @@ public class MemberServiceImpl implements MemberServiceIf {
     //관리자(수진)
     private final ModelMapper modelMapper;
     //관리자(수진)
+
+    // 모든 memberId 관련 DB 내용 삭제 //
+    private final AlertRepository alertRepository;
+    private final MemberProfileRepository memberProfileRepository;
+    private final PostRepository postRepository;
+    private final ShareRepository shareRepository;
+    private final ThumbUpRepository thumbUpRepository;
+    private final FriendRepository friendRepository;
+    private final MessageRepository messageRepository;
+    // 모든 memberId 관련 DB 내용 삭제 //
 
     @Autowired
     private JavaMailSender mailSender;
@@ -449,4 +465,21 @@ public class MemberServiceImpl implements MemberServiceIf {
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
     }
 
+    @Transactional
+    public void deleteMember(String memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new RuntimeException("실패"));
+        member.changeMemberStatus("D");
+        memberRepository.save(member);
+
+        alertRepository.deleteAllByMember(member);
+        memberProfileRepository.deleteAllByMember(member);
+        postRepository.deleteAllByMember(member);
+        shareRepository.deleteAllByMember(member);
+        thumbUpRepository.deleteAllByMember(member);
+        friendRepository.deleteAllByReceiver(member);
+        friendRepository.deleteAllByRequester(member);
+        messageRepository.deleteAllBySenderIdOrReceiverId(memberId, memberId);
+    }
 }
+

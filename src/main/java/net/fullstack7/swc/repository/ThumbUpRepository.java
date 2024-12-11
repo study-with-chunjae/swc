@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface ThumbUpRepository extends JpaRepository<ThumbUp, Integer> {
     Optional<ThumbUp> findByPostAndMember(Post post, Member member);
     List<ThumbUp> findByPost(Post post);
+
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllByMember(Member member);
 }

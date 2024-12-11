@@ -37,4 +37,7 @@ public interface FriendRepository extends JpaRepository<Friend, Integer> {
     // 친구 목록 페이징 ( 추후 확인 )
     Page<Friend> findByRequesterOrReceiverOrderByRegDateDesc(Member requester, Member receiver, Pageable pageable);
 
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllByReceiver(Member member);
+    void deleteAllByRequester(Member member);
 }

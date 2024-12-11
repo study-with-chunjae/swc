@@ -12,4 +12,7 @@ public interface AlertRepository extends JpaRepository<Alert, Integer> {
     int countByMemberAndMsgReadFalse(Member member);
     // 전체리스트
     List<Alert> findByMemberOrderByRegDateDesc(Member member);
+
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllByMember(Member member);
 }
