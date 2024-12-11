@@ -9,4 +9,7 @@ import java.util.Optional;
 
 public interface ShareRepository extends JpaRepository<Share, Integer> {
     Optional<Share> findByPostAndMember(Post post, Member member);
+
+    // 아이디 전체 삭제 (한덕용 추가)
+    void deleteAllByMember(Member member);
 }

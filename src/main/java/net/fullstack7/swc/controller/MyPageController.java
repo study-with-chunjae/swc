@@ -207,4 +207,11 @@ public class MyPageController {
     memberService.updateMyInfo(memberId, request.get("myInfo"));
     return ResponseEntity.ok(Map.of("success", true));
   }
+
+  @PostMapping("/delete")
+  public ResponseEntity<Map<String, Object>> deleteMember(HttpServletRequest req) {
+    String memberId = getMemberIdInJwt(req);
+    memberService.deleteMember(memberId);
+    return ResponseEntity.ok(Map.of("success", true));
+  }
 }

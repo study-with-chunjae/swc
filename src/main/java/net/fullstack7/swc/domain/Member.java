@@ -18,6 +18,7 @@ public class Member {
     public Member(String memberId){
         this.memberId = memberId;
     }
+
     @Id
     @Column(name = "memberId", nullable = false, length = 50) // 회원 id
     private String memberId;
@@ -82,5 +83,9 @@ public class Member {
     }
     public void modifyMyInfo(String newMyInfo) {
         this.myInfo = newMyInfo;
+    }
+
+    public void changeMemberStatus(String newStatus) {
+        this.status = newStatus;
     }
 }
