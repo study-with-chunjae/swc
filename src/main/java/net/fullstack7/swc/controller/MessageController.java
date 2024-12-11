@@ -108,13 +108,12 @@ public class MessageController {
 
             if (member == null) {
                 log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
-                // 적절한 처리를 추가 (예: 알림을 보내지 않거나, 다른 행동을 취함)
                 model.addAttribute("error", "존재하지 않는 회원입니다.");
                 return "message/regist";
             }
             alertService.registAlert(member, AlertType.CHAT_MESSAGE, alertMessage, "/message/list");
             log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
-            return "redirect:/message/list";
+            return "redirect:/message/send/list";
         } catch (IllegalArgumentException e) {
                 model.addAttribute("errorReceiverId", true);
                 return "message/regist";

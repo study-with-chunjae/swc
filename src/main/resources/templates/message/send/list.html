@@ -8,7 +8,6 @@
 <head>
     <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
     <style>
-        /* 전체 body 스타일 */
         body {
             font-family: Arial, sans-serif;
             background-color: #F3CD99;
@@ -21,7 +20,6 @@
             align-items: center;
         }
 
-        /* 페이지 제목 스타일 */
         h1 {
             color: white;
             margin-bottom: 20px;
@@ -29,7 +27,6 @@
             text-align: center;
         }
 
-        /* 테이블 스타일 */
         table {
             width: 100%;
             max-width: 1000px;
@@ -67,7 +64,6 @@
             text-decoration: underline;
         }
 
-        /* 체크박스 스타일 */
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -77,7 +73,6 @@
             margin-right: 10px;
         }
 
-        /* 버튼 스타일 */
         button {
             background-color: seagreen;
             color: white;
@@ -94,11 +89,11 @@
             background-color: #218838;
         }
 
-        /* '쪽지 목록이 없습니다.' 메시지 스타일 */
         .no-messages {
-            color: #888;
+            color: white;
             font-size: 18px;
-            margin-top: 20px;
+            margin-top: 30%;
+            text-align: center;
         }
 
         form {
@@ -129,18 +124,16 @@
             }
         }
 
-        /* 네비게이션 버튼 */
         .navigation-buttons {
             display: flex;
-            justify-content: center; /* 버튼 사이의 간격을 자동으로 조정 */
+            justify-content: center;
             width: 100%;
             max-width: 1000px;
             /*gap: 390px;*/
         }
-
-
     </style>
 </head>
+<body>
 <div layout:fragment="mainContent" class="fontQnsvlf">
     <div class="flex">
         <div class="myPageLeft">
@@ -175,8 +168,8 @@
             <h1>보낸 쪽지 목록</h1>
 
             <div th:if="${#lists.isEmpty(messages)}" class="no-messages">
-                <p>보낸 쪽지 목록이 없습니다.</p>
-                <button type="submit">삭제</button>
+                <p>보낸 쪽지가 없습니다.</p>
+<!--                <button type="submit">삭제</button>-->
             </div>
 
             <div th:unless="${#lists.isEmpty(messages)}">
@@ -237,5 +230,5 @@
         return true;
     }
 </script>
-
+</body>
 </html>
