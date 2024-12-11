@@ -15,9 +15,10 @@
         <h3 style="text-align: center; margin-top: 15px">프로필</h3>
         <aside class="shared-learning">
           <div class="thumbnail-group center">
-            <img th:src="@{/assets/public/human.png}" alt="Thumbnail" />
+            <img th:src="${profileImage}" alt="Thumbnail" />
           </div>
-          <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 30px">
+          <button class="profileImgEdit">Edit</button>
+          <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 10px">
 
           </div>
           <div>
@@ -34,8 +35,7 @@
           <div class="studyDream center">
             <div>
               <p style="text-align: center">학습 목표</p>
-              <div class="center studyDreamContent">
-                자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.
+              <div class="center studyDreamContent" th:text="${memberDTO.myInfo}">
               </div>
             </div>
           </div>

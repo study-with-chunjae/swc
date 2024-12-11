@@ -92,18 +92,18 @@
             </div>
             <div class="introduceItem">
               <div>
-                학습목표 :
+                <div class="flex" style="justify-content: space-between">
+                  학습목표
+                  <button class="editBtn" onclick="handleEdit(this, 'myInfo')">
+                    수정
+                  </button>
+                </div>
                 <span th:text="${myInfo}" class="infoText"></span>
                 <textarea
                   id="editMyInfo"
                   style="display: none"
                   class="editInput"
                 ></textarea>
-              </div>
-              <div>
-                <button class="editBtn" onclick="handleEdit(this, 'myInfo')">
-                  수정
-                </button>
               </div>
             </div>
           </div>

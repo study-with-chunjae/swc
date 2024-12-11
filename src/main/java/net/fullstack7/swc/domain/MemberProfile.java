@@ -21,4 +21,8 @@ public class MemberProfile {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId")
     private Member member; // Member와의 관계
+
+    public String getProfileImage() {  // getter 추가
+        return this.path;
+    }
 }

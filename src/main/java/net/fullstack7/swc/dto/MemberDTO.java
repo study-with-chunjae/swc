@@ -48,4 +48,5 @@ public class MemberDTO {
     private LocalDateTime updatedAt; // 회원 수정일
     private LocalDateTime deletedAt; // 회원 삭제일
     private LocalDateTime lastLoginAt; // 마지막 로그인한 날
+    private String myInfo;
 }
