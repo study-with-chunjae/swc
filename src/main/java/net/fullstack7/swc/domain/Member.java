@@ -33,6 +33,8 @@ public class Member {
     private String status; // 맴버 상태 <- 기본값 Y : 활성화, N : 비활성화(관리자 비활성화 포함), O : 6개월 이상 로그인 이력X, P : 5회 이상 로그인 실패 비활성화, D : 탈퇴
     @Column(name="social", nullable = true, length = 20)
     private String social;
+    @Column(name="myInfo", nullable = true, length = 50)
+    private String myInfo;
     private LocalDateTime createdAt; //회원 생성일
     private LocalDateTime updatedAt; //회원 수정일
     private LocalDateTime deletedAt; //회원삭제일
@@ -74,6 +76,11 @@ public class Member {
     }
     public void modifyName(String newName) {
         this.name = newName;
-        this.updatedAt = LocalDateTime.now();
+    }
+    public void modifyPhone(String newPhone) {
+        this.phone = newPhone;
+    }
+    public void modifyMyInfo(String newMyInfo) {
+        this.myInfo = newMyInfo;
     }
 }
