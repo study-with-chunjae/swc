@@ -149,7 +149,7 @@ public class PostServiceImpl implements PostServiceIf {
                     .displayAt(post.getDisplayAt())
                     .displayEnd(post.getDisplayEnd())
                     .createdAt(post.getCreatedAt())
-                    .hashtag(post.getHashtag())
+                    .hashtag(post.getHashtag()!=null?Arrays.asList(post.getHashtag().split(",")):List.of())
                     .image(post.getImage())
                     .shares(
                             post.getShares().stream().map(s -> s.getMember().getMemberId()).toList()

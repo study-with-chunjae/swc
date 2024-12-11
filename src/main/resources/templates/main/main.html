@@ -79,9 +79,15 @@
               >
                 <div class="thumbnail">
                   <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
-                  <p class="category" th:text="${post.topics}"></p>
-                  <p class="category" th:text="${post.hashtag}"></p>
-                  <div class="thumbUps">❤️ 좋아요 [[${post.thumbUps}]]</div>
+                  <div class="category">
+                    <div class="tag-container">
+                      <strong>해시태그</strong>:
+                      <th:block th:each="tag,status:${post.hashtag}">
+                        <div class="tag-div" th:text="${tag}" th:data-tag="${tag}" th:onclick="'search(this);'"></div>
+                      </th:block>
+                    </div>
+                  </div>
+                  <div class="thumbUps">❤️ 좋아요 <span th:text="${post.thumbUps}"></span></div>
                 </div>
                 <div class="info">
                   <h3 class="title" th:text="${post.title}"></h3>
@@ -112,6 +118,10 @@
     <div>
       <script th:inline="javascript">
         let baseDate = new Date([[${createdAt}]]);
+        function search(element){
+          const tag = element.getAttribute("data-tag");
+          location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
+        }
       </script>
       <script
         th:src="@{/assets/js/main.js}"
