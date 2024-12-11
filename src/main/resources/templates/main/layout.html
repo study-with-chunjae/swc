@@ -16,6 +16,9 @@
         padding: 0;
         background-color: #f3cd99;
       }
+      li{
+        list-style: none;
+      }
 
       /*친구검색추가(수진)*/
       /* 검색 결과 드롭다운 스타일 */
@@ -262,15 +265,24 @@
           // 멤버 추가
           members.forEach(member => {
             const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = `${member.memberId} (${member.name})`;
 
+            // 링크 생성
+            const link = document.createElement('a');
+            link.href = `/post/main?memberId=${encodeURIComponent(member.memberId)}`;
+            link.textContent = `${member.memberId} (${member.name})`;
+            link.classList.add('search-link');
+            link.style.textDecoration = 'none';
+            link.style.color = 'black';
+            link.style.marginRight = '10px'; // 버튼과의 간격 조정
+
+            // 친구 신청 버튼 생성
             const requestButton = document.createElement('button');
             requestButton.textContent = '친구 신청';
             requestButton.className = 'button button-request';
             requestButton.onclick = () => sendFriendRequest(member.memberId);
 
-            li.appendChild(span);
+            // 링크와 버튼을 li에 추가
+            li.appendChild(link);
             li.appendChild(requestButton);
             searchResultsList.appendChild(li);
           });
@@ -326,13 +338,11 @@
                   .then((res) => res.json())
                   .then((count) => {
                     unreadCountDiv.textContent = count;
-
-                    if (count === 0) {
-                      unreadCountDiv.classList.add("hidden");
+                    if (count > 0) {
+                      unreadCountDiv.classList.add("visible");
                     } else {
-                      unreadCountDiv.classList.remove("hidden");
+                      unreadCountDiv.classList.remove("visible");
                     }
-
                   })
                   .catch((error) => {
                     console.error("Error fetching unread count:", error);
@@ -356,8 +366,8 @@
                   .then((res) => res.text())
                   .then((data) => {
                     if (data === "ok") {
-                      // unreadCountDiv.textContent = "0";
-                      // unreadCountDiv.classList.add("hidden"); // 숨기기
+                      unreadCountDiv.textContent = "0";
+                      unreadCountDiv.classList.remove("visible");
                       loadAlerts();
                       document.getElementById("alertPopup").style.display = "block";
                     }
@@ -430,11 +440,10 @@
                             .then((res) => res.json())
                             .then((count) => {
                               unreadCountDiv.textContent = count;
-
-                              if (count == 0) {
-                                unreadCountDiv.classList.add("hidden");
+                              if (count > 0) {
+                                unreadCountDiv.classList.add("visible");
                               } else {
-                                unreadCountDiv.classList.remove("hidden");
+                                unreadCountDiv.classList.remove("visible");
                               }
                             })
                             .catch((error) => {

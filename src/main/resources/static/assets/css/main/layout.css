@@ -81,7 +81,8 @@
   bottom: 10px;
   line-height: 100;
   transition: opacity 0.3s ease;
-}
-.hidden {
   opacity: 0;
+}
+#unreadCount.visible {
+  opacity: 1; /* 표시될 때 */
 }
