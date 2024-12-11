@@ -28,8 +28,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @Controller
@@ -221,7 +222,7 @@ public class PostController {
         return "post/modify";
     }
     @PostMapping("/modify")
-    public String modifyPost(@Valid PostModifyDTO postModifyDTO,
+    public String modifyPost(@Valid PostRegisterDTO postModifyDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
                              HttpServletRequest req,
@@ -241,5 +242,36 @@ public class PostController {
     private String getMemberIdInJwt(HttpServletRequest req){
         String accessToken = cookieUtil.getCookieValue(req,"accessToken");
         return memberService.getMemberInfo(accessToken).get("memberId");
+    }
+    private void validTitle(PostRegisterDTO postRegisterDTO){
+        String title = postRegisterDTO.getTitle();
+
+    }
+    private void validHashtag(PostRegisterDTO postRegisterDTO){
+        String hashtag = postRegisterDTO.getHashtag();
+        final String regex = "^(#\\\\w{1,10})(,#[^,]{1,10}){0,3}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(hashtag);
+        if(!matcher.matches()){
+            throw new IllegalArgumentException("길이 초과 또는 잘못된 형식입니다.");
+        }
+        String[] items = hashtag.split(",");
+        Set<String> set = new HashSet<>(Arrays.asList(items));
+        if(set.size()<=4 && set.size() == items.length){
+            return;
+        }
+        if(set.size() > 4) {
+            throw new IllegalArgumentException("길이 초과 입니다.");
+        }
+        StringBuilder builder = new StringBuilder();
+        while(set.iterator().hasNext()){
+            String item = set.iterator().next();
+            builder.append(item);
+            if(!set.iterator().hasNext()){
+                postRegisterDTO.setHashtag(builder.toString());
+                break;
+            }
+            builder.append(",");
+        }
     }
 }

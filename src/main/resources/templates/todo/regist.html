@@ -201,6 +201,25 @@
             pointer-events: none;
             color: #999;
         }
+        .tag-container{
+            display : flex;
+            flex-wrap: wrap;
+        }
+        .tag-div{
+            margin : 3px;
+            background-color : #999;
+            color : black;
+            font-weight: bold;
+            border-radius : 5px;
+        }
+        .tag-span{
+            margin : 3px;
+        }
+        .tag-remove{
+            background-color : transparent;
+            width : 10px;
+            height : 10px;
+        }
 
 </style>
 </head>
@@ -267,19 +286,30 @@
 
                     inputElement.addEventListener('keydown', (event) => {
                         handleInput(event);
-                        event.target.focus();
                     });
 
                     function handleInput(event) {
                         const input = event.target;
                         const value = input.value.trim();
-
-                        if (event.key === 'Enter' && value && tags.length < 4) {
-                            event.preventDefault();
+                        if (event.key === 'Enter') {
+                            console.log(value);
+                            if(!value){
+                                event.preventDefault();
+                                console.log("!value");
+                                return;
+                            }
+                            if(tags.length>=4){
+                                event.preventDefault();
+                                console.log("tags.length>=4");
+                                return;
+                            }
                             if (value.length <= 10) {
+                                event.preventDefault();
+                                event.stopPropagation();
                                 addTag(value.startsWith('#') ? value : `#${value}`);
                                 input.value = '';
                             } else {
+                                event.preventDefault();
                                 alert('Each tag can be up to 10 characters long.');
                             }
                         }
@@ -290,31 +320,38 @@
                         if(tags.includes(value)) return;
                         if(tags.length>=4) return;
                         tags.push(value);
-
+                        console.log("tags : "+ tags.join(','));
                         const tagContainer = document.getElementById('tag-container');
                         const tagElement = document.createElement('div');
-                        tagElement.className = 'tag';
+                        tagElement.className = 'tag-div';
 
                         const span = document.createElement('span');
+                        span.className='tag-span';
                         span.textContent = value;
                         tagElement.appendChild(span);
 
                         const button = document.createElement('button');
+                        button.className='tag-remove';
                         button.textContent = '×';
-                        button.onclick = () => removeTag(value, tagElement);
                         tagElement.appendChild(button);
-
                         tagContainer.appendChild(tagElement);
+
+                        button.addEventListener("click",()=>{
+                            removeTag(value,tagElement)
+                        });
+
                         updateHiddenInput();
                     }
 
                     function removeTag(value, tagElement) {
+                        console.log('remove' + tagElement);
                         const index = tags.indexOf(value);
                         if (index > -1) {
                             tags.splice(index, 1);
                             tagElement.remove();
                             updateHiddenInput();
                         }
+                        console.log("tags : "+ tags.join(','));
                     }
 
                     function updateHiddenInput() {

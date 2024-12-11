@@ -16,7 +16,7 @@ public interface PostServiceIf {
     public List<PostMainDTO> mainPostList(LocalDateTime selectedDate, String memberId, Integer todayType);
     public PageDTO<PostDTO> sortAndSearch(PageDTO<PostDTO> pageDTO, String memberId);
     public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type);
-    public Post modifyPost(PostModifyDTO postModifyDTO, String memberId);
+    public Post modifyPost(PostRegisterDTO postModifyDTO, String memberId);
     public boolean deletePost(int postId, String memberId);
     int totalCount(PageDTO<PostDTO> pageDTO, String memberId);
     public PageDTO<PostDTO> postList(PageDTO<PostDTO> pageDTO, String memberId);
