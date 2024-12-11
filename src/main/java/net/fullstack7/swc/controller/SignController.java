@@ -58,7 +58,7 @@ public class SignController {
     );
 
     Cookie cookie = new Cookie("accessToken", token);
-    cookie.setHttpOnly(true);
+    cookie.setHttpOnly(false);
     cookie.setPath("/");
     cookie.setMaxAge(60 * 60 * 24);
     response.addCookie(cookie);

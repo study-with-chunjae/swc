@@ -5,33 +5,35 @@
   xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{main/layout.html}"
 >
-  <head>
-    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
-  </head>
-  <div layout:fragment="mainContent" class="fontQnsvlf">
-    <div class="flex">
+<head>
+  <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
+</head>
+<div layout:fragment="mainContent" class="fontQnsvlf">
+  <div class="flex">
     <section class="content1">
       <div>
-      <h3 style="text-align: center; margin-top: 15px">프로필</h3>
-      <aside class="shared-learning">
-        <div class="thumbnail-group center">
-          <img th:src="@{/assets/public/human.png}" alt="Thumbnail" />
-        </div>
-        <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 30px"></div>
-        <div>
+        <h3 style="text-align: center; margin-top: 15px">프로필</h3>
+        <aside class="shared-learning">
+          <div class="thumbnail-group center">
+            <img th:src="@{/assets/public/human.png}" alt="Thumbnail" />
+          </div>
+          <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 30px">
+
+          </div>
+          <div>
             <button class="button"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="15px" /> 친구 추가</button>
             <button class="button">✉️ 쪽지 보내기</button>
-        </div>
-        <div class="studyDream center">
-          <div>
-            <p style="text-align: center">학습 목표</p>
-            <div class="center studyDreamContent">
-              자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.
+          </div>
+          <div class="studyDream center">
+            <div>
+              <p style="text-align: center">학습 목표</p>
+              <div class="center studyDreamContent">
+                자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.자고싶다.
+              </div>
             </div>
           </div>
-        </div>
-      </aside>
-    </div>
+        </aside>
+      </div>
     </section>
 
     <section class="content2">
@@ -49,61 +51,59 @@
             style="font-size: 16px; text-align: center"
           ></p>
         </div>
-      </section>
-      <div class="slider-container">
-        <div class="slider-wrapper">
-          <div class="slider" id="slider">
+        <div class="slider-container">
+          <div class="slider-wrapper">
+            <div class="slider" id="slider">
 
-            <article
-              class="learning-card"
-              th:if="${!postMainDTOList.isEmpty()}"
-              th:each="post, status:${postMainDTOList}"
-            >
-              <div class="thumbnail">
-                <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
-                <p class="category" th:text="${post.topics}"></p>
-                <p class="category" th:text="${post.hashtag}"></p>
-              </div>
-              <div class="info">
-                <h3 class="title" th:text="${post.title}"></h3>
-                <p class="description" th:text="${post.content}"></p>
-                <div class="shared-by">
-                  <th:block th:each="share, status:${post.shares}">
-                    <div th:text="${share}"></div>
-                  </th:block>
-                  <div class="thumbUps" th:text="${post.thumbUps}"></div>
+              <article
+                class="learning-card"
+                th:if="${!postMainDTOList.isEmpty()}"
+                th:each="post, status:${postMainDTOList}"
+              >
+                <div class="thumbnail">
+                  <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
+                  <p class="category" th:text="${post.topics}"></p>
+                  <p class="category" th:text="${post.hashtag}"></p>
                 </div>
-              </div>
-            </article>
-            <article
-                    class="learning-card"
-                    th:if="${postMainDTOList.isEmpty()}"
-            >
-              <div class="info">
-                <h3 class="title" th:text="'등록된 오늘의학습이 없습니다.'"></h3>
-              </div>
-            </article>
-            <!-- 추가적으로 더 많은 <article> 요소를 등록 -->
+                <div class="info">
+                  <h3 class="title" th:text="${post.title}"></h3>
+                  <p class="description" th:text="${post.content}"></p>
+                  <div class="shared-by">
+                    <th:block th:each="share, status:${post.shares}">
+                      <div th:text="${share}"></div>
+                    </th:block>
+                    <div class="thumbUps" th:text="${post.thumbUps}"></div>
+                  </div>
+                </div>
+              </article>
+              <article
+                class="learning-card"
+                th:if="${postMainDTOList.isEmpty()}"
+              >
+                <div class="info">
+                  <h3 class="title" th:text="'등록된 오늘의학습이 없습니다.'"></h3>
+                </div>
+              </article>
+              <!-- 추가적으로 더 많은 <article> 요소를 등록 -->
+            </div>
+          </div>
+          <div class="slider-indicators">
+            <!-- Dots will be dynamically added here -->
           </div>
         </div>
-        <div class="slider-indicators">
-          <!-- Dots will be dynamically added here -->
-        </div>
       </section>
-      
-      <div>
-        <script th:inline="javascript">
-          let baseDate = new Date([[${createdAt}]]);
-        </script>
-        <script
-          th:src="@{/assets/js/main.js}"
-          layout:fragment="mainscript"
-          th:inline="javascript"
-        ></script>
-      </div>
+    <div>
+      <script th:inline="javascript">
+        let baseDate = new Date([[${createdAt}]]);
+      </script>
+      <script
+        th:src="@{/assets/js/main.js}"
+        layout:fragment="mainscript"
+        th:inline="javascript"
+      ></script>
+    </div>
     </section>
   </div>
 </div>
-
 </body>
 </html>

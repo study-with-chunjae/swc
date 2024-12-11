@@ -65,13 +65,14 @@
           </button>
         </div>
         <div class="user-info">
-          <a href="#" class="user-name" th:text="${memberDTO.name}"></a>
+          <a href="/myPage/myPageInfo" class="user-name"></a>
           <ul class="dropdown">
-            <li><a href="#">나의 정보</a></li>
-            <li><a href="#">친구 목록</a></li>
-            <li><a href="#">쪽지 목록</a></li>
+            <li><a href="/myPage/myPageInfo">나의 정보</a></li>
+            <li><a href="/myPage/myPageFriend">친구 목록</a></li>
+            <li><a href="/myPage/myPageMessage">쪽지 목록</a></li>
           </ul>
           <button class="alertIcon"></button>
+          <div class="alertCount">9</div>
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
               src="/assets/public/exitDoor.png"
@@ -90,6 +91,31 @@
       </div>
     </div>
 
-    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="script">
+      <script
+        src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
+      ></script>
+      <script>
+        let userName = "";
+        function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+
+        const accessToken = getCookie("accessToken");
+
+        if (accessToken) {
+          const decodedToken = jwt_decode(accessToken);
+          userName = decodedToken.name;
+
+          document.querySelector(".user-name").textContent = userName;
+        } else {
+          console.error("Access token is not available.");
+        }
+
+        console.log(userName);
+      </script>
+    </th:block>
   </body>
 </html>
