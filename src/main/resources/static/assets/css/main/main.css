@@ -35,9 +35,10 @@
 
 .thumbnail {
   width: 250px;
-  height: 500px;
-  margin-right: 10px;
+  height: 470px;
+  margin-left: 13px;
   background: rgba(145, 135, 135, 0.06);
+  border-radius: 8px;
 }
 
 .thumbnail img {
@@ -45,9 +46,13 @@
   height: 350px;
 }
 
-.info .title {
+.info {
   font-size: 18px;
   margin: 0 0 10px;
+}
+.title{
+  font-size: 18px;
+  margin: 10px;
 }
 
 .info {
@@ -60,7 +65,9 @@
 .description {
   font-size: 14px;
   color: #555;
-  min-height: 300px;
+  min-height: 393px;
+  min-width: 290px;
+  border-radius: 8px;
   padding: 10px;
   background-color: rgba(133, 129, 129, 0.06);
 }
@@ -104,7 +111,7 @@
 
 .weekday-container {
   width: 150px;
-  height: 510px;
+  height: 500px;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -112,6 +119,7 @@
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: black;
+  margin-left: 20px;
 }
 
 .arrow {
@@ -322,4 +330,13 @@
   border: 1px dashed white;
   height: 150px;
   padding: 5px;
+}
+.category{
+  color: black;
+  margin: 20px;
+}
+
+.thumbUps{
+  color: black;
+  margin: 20px;
 }

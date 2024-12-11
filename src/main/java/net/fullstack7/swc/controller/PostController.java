@@ -219,7 +219,7 @@ public class PostController {
             return errorUtil.redirectWithError("권한이 없습니다",DEFAULT_REDIRECT,redirectAttributes);
         }
         model.addAttribute("postDTO",postDTO);
-        return "post/modify";
+        return "todo/modify";
     }
     @PostMapping("/modify")
     public String modifyPost(@Valid PostRegisterDTO postModifyDTO,

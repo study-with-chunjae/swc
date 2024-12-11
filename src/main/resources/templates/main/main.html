@@ -23,6 +23,13 @@
           <div>
             <button class="button"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="15px" /> 친구 추가</button>
             <button class="button">✉️ 쪽지 보내기</button>
+            <button class="button" id="registBtn">📝 학습 등록</button>
+            <div><script>
+              const registBtn = document.getElementById("registBtn")
+              registBtn.addEventListener("click", ()=>{
+                location.href="/post/register"
+              });
+            </script></div>
           </div>
           <div class="studyDream center">
             <div>
@@ -37,7 +44,7 @@
     </section>
 
     <section class="content2">
-      <h2>오늘의 학습</h2>
+      <h2 style="margin-left: 30px;">오늘의 학습</h2>
       <section class="content3" style="margin-top: 20px">
         <div class="weekday-container">
           <input type="date" class="styled-date" />

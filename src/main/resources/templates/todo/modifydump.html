@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{main/layout.html}"
+>
+<head>
+    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/css/main/header.css}" rel="stylesheet"/>
+    <style>
+
+        .content2 {
+            min-width: 1000px;
+            margin: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255);
+            height: 600px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        label {
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 5px;
+            color: black;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #btnSubmit {
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        #btnSubmit:hover {
+            background-color: #0056b3;
+        }
+
+        #btnReset {
+            background-color: #6c757d;
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        #btnDelete {
+            background-color: #ff0000;
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        #btnReset:hover {
+            background-color: #5a6268;
+        }
+
+        #btnBack {
+            background-color: #28a745;
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        #btnBack:hover {
+            background-color: #218838;
+        }
+
+        td[th\\:colspan="2"] {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+
+            input[type="text"],
+            input[type="file"],
+            input[type="date"],
+            textarea {
+                width: 100%;
+            }
+
+            td {
+                display: block;
+                width: 100%;
+            }
+
+            td[th\\:colspan="2"] {
+            text-align: center;
+            margin-top: 20px;
+        }
+        }
+        .styled-select {
+            position: relative;
+            width: 200px;
+            display: inline-block;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            appearance: none; /* Removes default browser styles */
+            -webkit-appearance: none; /* Removes Safari default styles */
+            -moz-appearance: none; /* Removes Firefox default styles */
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #007BFF;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Arrow customization */
+        .styled-select::after {
+            content: '▼';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #999;
+        }
+
+    </style>
+</head>
+<body>
+<div layout:fragment="mainContent">
+        <div class="content2">
+            <form id="frm" action="/post/modify" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="postId" th:value="${postDTO.postId}">
+                <table>
+                    <tr>
+                        <td><label for="title">제목</label></td>
+                        <td><input type="text" name="title" id="title" th:maxlength="100" th:value="${postDTO.title}"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="content">내용</label></td>
+                        <td><textarea name="content" id="content" th:maxlength="2000"
+                                      th:text="${postDTO.content}"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td><label for="file">이미지</label></td>
+                        <td><input type="file" name="file" id="file">파일선택 </td>
+                        <div th:text="${postDTO.image + ' x '}"></div>
+                    </tr>
+                    <tr>
+                        <td style="color: black">오늘의 학습 노출여부</td>
+                        <td>
+                            <input id="todayType_1" type="radio" name="todayType" value="1" th:checked="${postDTO.todayType == 1}"
+                            ><label for="todayType_1">노출</label>
+                            <input id="todayType_0" type="radio" name="todayType" value="0" th:checked="${postDTO.todayType == 0}"
+                            ><label for="todayType_0">노출안함</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: black">오늘의 학습 노출기간</td>
+                        <td>
+                            <input id="displayAt" type="date" name="displayAt" th:value="${postDTO.displayAt}">
+                            &nbsp;~&nbsp;
+                            <input id="displayEnd" type="date" name="displayEnd" th:value="${postDTO.displayEnd}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: black">분야</td>
+                        <td><input type="text" name="topics" id="topics" th:maxlength="100" th:value="${postDTO.topics}"></td>
+                    </tr>
+                    <tr>
+                        <td style="color: black">해쉬태그</td>
+                        <td><input type="text" name="hashtag" id="hashtag" th:maxlength="100" th:value="${postDTO.hashtag}"></td>
+                    </tr>
+                    <tr>
+                        <td th:colspan="3">
+                            <button type="submit" id="btnSubmit">수정</button>
+                            <button type="reset" id="btnReset">초기화</button>
+                            <button type="button" id="btnDelete">삭제</button>
+                            <button type="button" id="btnBack">목록으로</button>
+                        </td>
+                    </tr>
+                    <div><script>
+                        const btnBack = document.getElementById("btnBack")
+                        btnBack.addEventListener("click", ()=>{
+                            location.href="/post/list"
+                        });
+                    </script>
+                    </div>
+                </table>
+            </form>
+        </div>
+    </div>
+
+
+</body>
