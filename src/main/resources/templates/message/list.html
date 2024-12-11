@@ -136,7 +136,31 @@
             /*gap: 390px;*/
         }
 
+        /* 페이징 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
+        .pagination a {
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #007bff;
+        }
+
+        .pagination a:hover {
+            background-color: #e9ecef;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+            cursor: default;
+        }
     </style>
 </head>
 <div layout:fragment="mainContent" class="fontQnsvlf">
@@ -223,12 +247,27 @@
             <!--        <a th:href="@{/message/list(page=${currentPage + 1}, size=${size})}">다음</a>-->
             <!--    </span>-->
             <!--</div>-->
-
             <!-- 네비게이션 버튼 -->
             <div class="navigation-buttons">
                 <button type="button" class="send-button" onclick="window.location.href='/message/send/list';">보낸쪽지목록</button>
-<!--                <button type="button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>-->
+                <!--                <button type="button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>-->
             </div>
+            <!-- 페이징 -->
+            <div class="pagination">
+                <span th:if="${currentPage > 0}">
+                    <a th:href="@{/message/list(page=${currentPage - 1}, size=${size})}">이전</a>
+                </span>
+
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/message/list(page=${i}, size=${size})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'current' : ''"></a>
+                </span>
+
+                <span th:if="${currentPage < totalPages - 1}">
+                    <a th:href="@{/message/list(page=${currentPage + 1}, size=${size})}">다음</a>
+                </span>
+            </div>
+
+
         </div>
     </div>
 </div>
