@@ -7,6 +7,7 @@ import net.fullstack7.swc.constant.PostPageConstants;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.domain.Share;
+import net.fullstack7.swc.domain.ThumbUp;
 import net.fullstack7.swc.dto.*;
 import net.fullstack7.swc.mapper.PostMapper;
 import net.fullstack7.swc.repository.PostRepository;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +49,10 @@ public class PostServiceImpl implements PostServiceIf {
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
-            String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getImage(), "images");
+            if(postRegisterDTO.getImage()!=null) {
+                String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getImage(), "images");
+                postRegisterDTO.setNewImagePath(imageFilePath);
+            }
             if(postRegisterDTO.getTodayType()==1){
                 validateDisplayDate(postRegisterDTO.getDisplayAt(), postRegisterDTO.getDisplayEnd());
             }
@@ -55,26 +60,65 @@ public class PostServiceImpl implements PostServiceIf {
                     .title(postRegisterDTO.getTitle())
                     .content(postRegisterDTO.getContent())
                     .todayType(postRegisterDTO.getTodayType())
-                    .createdAt(postRegisterDTO.getCreatedAt())
+                    .createdAt(LocalDateTime.now())
                     .displayEnd(LocalDate.parse(postRegisterDTO.getDisplayEnd(),FORMATTER).atStartOfDay())
                     .topics(postRegisterDTO.getTopics())
                     .displayAt(LocalDate.parse(postRegisterDTO.getDisplayAt(),FORMATTER).atStartOfDay())
                     .hashtag(postRegisterDTO.getHashtag())
-                    .image(imageFilePath.replace("\\","/"))
+                    .image(postRegisterDTO.getNewImagePath()!=null?postRegisterDTO.getNewImagePath().replace("\\","/"):null)
                     .member(Member.builder().memberId(memberId).build())
                     .build();
             return postRepository.save(post);
-        }catch(Exception e){
+        }catch(IllegalArgumentException e){
+            log.error(e.getMessage());
+            throw e;
+        }
+        catch(Exception e){
             log.error(e.getMessage());
             return null;
         }
     }
     @Transactional
     @Override
-    public PostDTO viewPost(int postId) {
+    public PostViewDTO viewPost(int postId) {
         try {
             //return modelMapper.map(postRepository.findById(postId).orElseThrow(), PostDTO.class);
-            return modelMapper.map(postRepository.viewPost(postId), PostDTO.class);
+            Post post = postRepository.viewPost(postId);
+            return PostViewDTO.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .todayType(post.getTodayType())
+                    .createdAt(post.getCreatedAt())
+                    .displayAt(post.getDisplayAt())
+                    .displayEnd(post.getDisplayEnd())
+                    .image(post.getImage())
+                    .member(Member.builder()
+                            .memberId(post.getMember().getMemberId())
+                            .name(post.getMember().getName())
+                            .build()
+                    )
+                    .hashtags(post.getHashtag()!=null?Arrays.asList(post.getHashtag().split(",")):List.of())
+                    .hashtagString(post.getHashtag()!=null?post.getHashtag():null)
+                    .thumbUps(
+                        post.getThumbUps().stream().map(t->{
+                            return ThumbUp.builder()
+                                    .thumbUpId(t.getThumbUpId())
+                                    .post(Post.builder().postId(t.getPost().getPostId()).build())
+                                    .member(Member.builder().memberId(t.getMember().getMemberId()).build())
+                                    .build();
+                        }).toList()
+                    )
+                    .shares(post.getShares().stream().map(s->{
+                                return Share.builder()
+                                        .shareId(s.getShareId())
+                                        .createdAt(s.getCreatedAt())
+                                        .post(Post.builder().postId(s.getPost().getPostId()).build())
+                                        .member(Member.builder().memberId(s.getMember().getMemberId()).name(s.getMember().getName()).build())
+                                        .build();
+                            }).toList()
+                    )
+                    .build();
         }catch(Exception e){
             log.error(e.getMessage());
             return null;
@@ -221,9 +265,11 @@ public class PostServiceImpl implements PostServiceIf {
 
             if(postModifyDTO.getImage()!=null){
                 log.info("new file exist");
-                log.info("delete file");
-                fileUploadUtil.deleteFile(post.getImage());
-                log.info("delete file success");
+                if(post.getImage()!=null) {
+                    log.info("delete file");
+                    fileUploadUtil.deleteFile(post.getImage());
+                    log.info("delete file success");
+                }
                 log.info("upload new file");
                 String newImagePath =fileUploadUtil.uploadImageFile(postModifyDTO.getImage(),"images");
                 log.info("upload new file success");

@@ -300,7 +300,7 @@ public class MemberServiceImpl implements MemberServiceIf {
             log.info("임시 비밀번호 이메일 전송 완료: {}", member.getEmail());
         } catch (Exception e) {
             log.error("임시 비밀번호 이메일 전송 실패: {}", e.getMessage(), e);
-            throw new RuntimeException("임시 비밀번호 이메일 전송 실패: " + e.getMessage());
+            throw new RuntimeException("임��� 비밀번호 이메일 전송 실패: " + e.getMessage());
         }
     }
 
@@ -410,5 +410,43 @@ public class MemberServiceImpl implements MemberServiceIf {
         return memberRepository.updateStatusByMemberId(status, memberId);
     }
     //관리자(수진)
+
+    @Transactional
+    public void updateName(String memberId, String newName) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        member.modifyName(newName);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updateEmail(String memberId, String newEmail) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        member.modifyEmail(newEmail);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updatePhone(String memberId, String newPhone) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        member.modifyPhone(newPhone);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updateMyInfo(String memberId, String newMyInfo) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        member.modifyMyInfo(newMyInfo);
+        memberRepository.save(member);
+    }
+
+    @Transactional(readOnly = true)
+    public Member getMemberById(String memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+    }
 
 }
