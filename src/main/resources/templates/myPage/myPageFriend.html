@@ -80,8 +80,8 @@
         </div>
         <div>
           <!-- Example person card -->
-          <div class="person-card" th:each="friend : ${friends}">
-              <span class="name" th:text="${memberId == friend.requester ? friend.receiver + ' (' + friend.receiverName + ')' : friend.requester + ' (' + friend.requesterName + ')'}"></span>
+          <div class="person-card" th:each="friend, status : ${pageDTO.dtoList}">
+              <span class="name" th:text="${friend.othersId + ' (' + friend.othersName + ')'}"></span>
               <span class="name" th:if="${friend.status == 0}">수락 대기중</span>
               <span class="name" th:if="${friend.status == 1}"></span>
             <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">친구 삭제</button>

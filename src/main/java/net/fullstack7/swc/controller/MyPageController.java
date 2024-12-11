@@ -1,11 +1,16 @@
 package net.fullstack7.swc.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Message;
+import net.fullstack7.swc.dto.FriendListDTO;
+import net.fullstack7.swc.dto.PageDTO;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.MessageService;
+import net.fullstack7.swc.util.ErrorUtil;
+import net.fullstack7.swc.util.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.AlertDTO;
@@ -21,6 +26,7 @@ import net.fullstack7.swc.service.MemberServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +38,8 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 import java.time.format.DateTimeFormatter;
@@ -48,6 +56,8 @@ public class MyPageController {
   private final MemberServiceImpl memberService;
   private final AlertServiceIf alertService;
   private final MessageService messageService;
+  private final ErrorUtil errorUtil;
+  private final View error;
 
   private String getMemberIdInJwt(HttpServletRequest req){
     String accessToken = cookieUtil.getCookieValue(req,"accessToken");
@@ -123,36 +133,28 @@ public class MyPageController {
 
   @GetMapping("/friend")
   public String myPageFriend(
-          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-          @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-          @RequestParam(value = "size", required = false, defaultValue = "5") int size,
-          Model model
-          , HttpServletRequest request
-  ) {
-    String memberId = getMemberIdInJwt(request);
-    log.info("회원아이디{}",memberId);
-    Pageable pageable = PageRequest.of(page, size);
-    List<Member> searchResults = friendService.searchFriends(keyword, size, page); // 매개변수 순서 확인
-    model.addAttribute("searchResults", searchResults);
-    model.addAttribute("keyword", keyword);
-    model.addAttribute("page", page);
-    model.addAttribute("pageSize", size);
-
-    List<FriendDTO> friendRequests = friendService.getFriendRequests(memberId);
-    model.addAttribute("friendRequests", friendRequests);
-
-    List<FriendDTO> friends = friendService.getFriends(memberId);
-    model.addAttribute("friends", friends);
-
-    List<AlertDTO> alerts = alertService.readAlerts(memberId);
-    model.addAttribute("alerts", alerts);
-    model.addAttribute("memberId", memberId);
-
-
-    int unreadCount = alertService.unreadCount(memberId);
-    model.addAttribute("unreadCount", unreadCount);
-
-    return "myPage/myPageFriend";
+          @Valid PageDTO<FriendListDTO> pageDTO,
+          BindingResult bindingResult,
+          RedirectAttributes redirectAttributes,
+          Model model,
+          HttpServletRequest request
+          ) {
+    LogUtil.logLine("MypageController friendList");
+    if(bindingResult.hasErrors()) {
+      return errorUtil.redirectWithError("/post/main",redirectAttributes,bindingResult);
+    }
+    try {
+      String memberId = getMemberIdInJwt(request);
+      LogUtil.log("memberId",memberId);
+      pageDTO.setPageSize(8);
+      pageDTO.initialize("regDate","desc");
+      pageDTO.setTotalCount(friendService.getTotalCount(pageDTO,memberId));
+      pageDTO = friendService.getFriendList(pageDTO,memberId);
+      model.addAttribute("pageDTO", pageDTO);
+      return "myPage/myPageFriend";
+    }catch(Exception e) {
+      return errorUtil.redirectWithError(e.getMessage(), "/post/main", redirectAttributes);
+    }
   }
 
   @GetMapping("/myPageMsg")

@@ -107,8 +107,8 @@ public class PostController {
     @GetMapping("/list")
     public String list(@Valid PageDTO<PostDTO> pageDTO,
                        BindingResult bindingResult,
-                       Model model,
                        RedirectAttributes redirectAttributes,
+                       Model model,
                        HttpServletRequest req) {
         LogUtil.logLine(CONTROLLER_NAME + "list");
         if(bindingResult.hasErrors()){
