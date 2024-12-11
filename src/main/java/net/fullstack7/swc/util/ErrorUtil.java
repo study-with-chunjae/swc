@@ -9,14 +9,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Log4j2
 public class ErrorUtil {
     public String redirectWithError(String message, String redirectUri, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", message);
+        LogUtil.logLine("redirectWithError");
+        redirectAttributes.addFlashAttribute("errors", message);
+        LogUtil.log("errors",message);
         return "redirect:"+redirectUri;
     }
 
     public String redirectWithError(String redirectUri, RedirectAttributes redirectAttributes, BindingResult bindingResult) {
+        LogUtil.logLine("redirectWithError");
         StringBuilder errors = new StringBuilder();
         bindingResult.getAllErrors().forEach(err->{errors.append(err.getDefaultMessage()).append("\n");});
-        redirectAttributes.addFlashAttribute("error", errors.toString());
+        redirectAttributes.addFlashAttribute("errors", errors.toString());
+        LogUtil.log("errors",errors.toString());
         return "redirect:"+redirectUri;
     }
 }

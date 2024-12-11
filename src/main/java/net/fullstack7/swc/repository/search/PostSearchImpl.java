@@ -146,6 +146,7 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                     break;
                 case "content" : bb.and(qPost.content.like("%"+searchValue+"%"));
                     break;
+                case "hashtag" : bb.and(qPost.hashtag.like("%"+searchValue+"%"));
                 default : break;
             }
         }

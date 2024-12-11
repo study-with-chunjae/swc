@@ -170,5 +170,53 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/update-name")
+    public ResponseEntity<String> updateName(@RequestBody Map<String, String> request, 
+                                             @RequestHeader("Authorization") String token) {
+        try {
+            String memberId = jwtTokenProvider.getMemberId(token);
+            memberService.updateName(memberId, request.get("name"));
+            return ResponseEntity.ok("이름이 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-email")
+    public ResponseEntity<String> updateEmail(@RequestBody Map<String, String> request, 
+                                              @RequestHeader("Authorization") String token) {
+        try {
+            String memberId = jwtTokenProvider.getMemberId(token);
+            memberService.updateEmail(memberId, request.get("email"));
+            return ResponseEntity.ok("이메일이 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-phone")
+    public ResponseEntity<String> updatePhone(@RequestBody Map<String, String> request, 
+                                              @RequestHeader("Authorization") String token) {
+        try {
+            String memberId = jwtTokenProvider.getMemberId(token);
+            memberService.updatePhone(memberId, request.get("phone"));
+            return ResponseEntity.ok("전화번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-myInfo")
+    public ResponseEntity<String> updateMyInfo(@RequestBody Map<String, String> request, 
+                                                @RequestHeader("Authorization") String token) {
+        try {
+            String memberId = jwtTokenProvider.getMemberId(token);
+            memberService.updateMyInfo(memberId, request.get("myInfo"));
+            return ResponseEntity.ok("내 정보가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     
 } 

@@ -76,9 +76,10 @@ async function getMainPosts(element) {
 						<img src="${mainPost.image==null?'/upload/images/default_image.jpg':mainPost.image}" alt="Thumbnail">
 						<p class="category">${mainPost.topics}</p>
 						<p class="category">${mainPost.hashtag}</p>
+						<div class="thumbUps">❤️ 좋아요 ${mainPost.thumbUps}</div>
 					</div>
 					<div class="info">
-						<h3 class="title">${mainPost.title}</h3>
+						<h3 class="title">학습제목 : ${mainPost.title}</h3>
 						<p class="description">${mainPost.content}</p>
 						<div class="shared-by">
             `;
@@ -87,7 +88,7 @@ async function getMainPosts(element) {
                 }
                 slider.innerHTML += `
 						</div>
-						<div class="thumbUps">${mainPost.thumbUps}</div>
+					
 					</div>
                 </article>
             `;

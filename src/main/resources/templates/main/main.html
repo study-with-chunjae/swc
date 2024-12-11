@@ -22,7 +22,14 @@
           </div>
           <div>
             <button class="button"><img th:src="@{/assets/public/followIcon.png}" alt="friendPlus" width="15px" /> 친구 추가</button>
-            <button class="button" onclick="window.location.href='/message/regist';">✉️ 쪽지 보내기</button>
+            <button class="button">✉️ 쪽지 보내기</button>
+            <button class="button" id="registBtn">📝 학습 등록</button>
+            <div><script>
+              const registBtn = document.getElementById("registBtn")
+              registBtn.addEventListener("click", ()=>{
+                location.href="/post/register"
+              });
+            </script></div>
           </div>
           <div class="studyDream center">
             <div>
@@ -101,6 +108,31 @@
         layout:fragment="mainscript"
         th:inline="javascript"
       ></script>
+      <script>
+        // function sendFriendRequest(receiverId) {
+        //   fetch('/friend/request', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ receiver: receiverId })
+        //   })
+        //           .then(response => {
+        //             if (!response.ok) {
+        //               return response.text().then(text => { throw new Error(text) });
+        //             }
+        //             return response.text();
+        //           })
+        //           .then(message => {
+        //             alert(message);
+        //           })
+        //           .catch(error => {
+        //             console.error('Error:', error);
+        //             alert(error.message || '친구 요청에 실패했습니다.');
+        //           });
+        // }
+        // 친구검색추가(수진)
+      </script>
     </div>
     </section>
   </div>
