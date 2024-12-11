@@ -1,23 +1,183 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{main/layout.html}"
+>
 <head>
-    <meta charset="UTF-8">
-    <title>쪽지 상세보기</title>
+    <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F3CD99;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-info {
+            margin-bottom: 20px;
+        }
+
+        .message-info p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .message-info span {
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px; /* 버튼 사이에 간격 추가 */
+            margin-top: 20px;
+            width: 100%;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        /* 목록으로 버튼 */
+        .list-button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: #28a745;
+            width: 150px;
+            height: 10%;
+        }
+
+        .list-button:hover {
+            background-color: #218838;
+        }
+
+        /* 삭제 버튼 */
+        .delete-button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: #dc3545;
+            width: 150px;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+        /* 안 읽음 버튼 색상 (초록색) */
+        .buttons .mark-unread-button {
+            background-color: #28a745;
+        }
+
+        .buttons .mark-unread-button:hover {
+            background-color: #218838;
+        }
+
+        form {
+            text-align: center;
+            /*margin-top: 20px;*/
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+
+        /* 안 읽음 버튼 위치 조정 */
+        .message-info p {
+            /*margin-bottom: 60px; !* 버튼들이 겹치지 않도록 여유 공간 추가 *!*/
+        }
+
+        .mark-unread-container {
+            display: inline-block;
+            /*align-items: center;*/
+            /*justify-content: flex-start;*/
+            /*gap: 10px;*/
+            /*margin-top: 10px;*/
+        }
+
+        .container{
+            text-decoration: black;
+        }
+    </style>
 </head>
-<body>
-<h1>보낸 쪽지 상세보기</h1>
+<div layout:fragment="mainContent" class="fontQnsvlf">
+    <div class="flex">
+        <div class="myPageLeft">
+            <h2 class="textCenter">마이페이지</h2>
+            <div>
+                <ul class="myPageNav">
+                    <li>
+                        <a href="/myPage/info">
+                            <span>내 정보</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/myPage/myPageFollowList">
+                            <span>친구 요청</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/myPage/friend">
+                            <span>친구 목록</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/message/list">
+                            <span class="here">쪽지 목록</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-<p>받는 사람: <span th:text="${message.receiverId}"></span></p>
-<p>제목: <span th:text="${message.title}"></span></p>
-<p>내용: <span th:text="${message.content}"></span></p>
-<p>읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
+        <div class="myPageRight">
+            <h1>보낸 쪽지</h1>
 
-<div>
-    <button type="button" onclick="window.location.href='/message/send/list';">목록으로</button>
-    <form method="post" th:action="@{/message/send/delete}">
-        <input type="hidden" name="messageIds" th:value="${message.id}"/>
-    <button type="submit">삭제</button>
-    </form>
-</div>
-</body>
+            <div class="container">
+                <div class="message-info">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p>제목: <span th:text="${message.title}"></span></p>
+                        <p>받는 사람: <span th:text="${message.receiverId}"></span></p>
+                    </div>
+                    <p>내용: <span th:text="${message.content}"></span></p>
+                    <div class="isRead" style="display: flex; align-items: center;"><p style="margin-right: 10px; color: black;">읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
+                    </div>
+
+                </div>
+
+                <div class="buttons">
+                    <button class="list-button" type="button" onclick="window.location.href='/message/list';">목록으로</button>
+
+                    <form method="post" th:action="@{/message/delete}">
+                        <input type="hidden" name="messageIds" th:value="${message.id}"/>
+                        <button type="submit" class="delete-button">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 </html>
