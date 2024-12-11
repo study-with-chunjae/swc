@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.config.JwtTokenProvider;
 import net.fullstack7.swc.domain.Member;
+import net.fullstack7.swc.domain.MemberProfile;
 import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.MemberDTO;
 import net.fullstack7.swc.repository.AlertRepository;
@@ -16,6 +17,8 @@ import net.fullstack7.swc.repository.MessageRepository;
 import net.fullstack7.swc.repository.PostRepository;
 import net.fullstack7.swc.repository.ShareRepository;
 import net.fullstack7.swc.repository.ThumbUpRepository;
+import net.fullstack7.swc.util.FileUploadUtil;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +29,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -33,6 +37,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import jakarta.mail.internet.MimeMessage;
 
@@ -44,6 +51,7 @@ public class MemberServiceImpl implements MemberServiceIf {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final FileUploadUtil fileUploadUtil;
     //관리자(수진)
     private final ModelMapper modelMapper;
     //관리자(수진)
@@ -480,6 +488,36 @@ public class MemberServiceImpl implements MemberServiceIf {
         friendRepository.deleteAllByReceiver(member);
         friendRepository.deleteAllByRequester(member);
         messageRepository.deleteAllBySenderIdOrReceiverId(memberId, memberId);
+    }
+
+    @Transactional
+    public void updateProfileImage(String memberId, MultipartFile file) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+
+        try {
+            // 파일 업로드
+            String filePath = fileUploadUtil.uploadImageFile(file, "profile"); // "profile" 서브 경로 사용
+
+            // MemberProfile 엔티티를 통해 프로필 이미지 경로 업데이트
+            MemberProfile memberProfile = member.getMemberProfile(); // MemberProfile 가져오기
+            if (memberProfile == null) {
+                // MemberProfile이 없으면 새로 생성
+                memberProfile = MemberProfile.builder()
+                        .fileName(file.getOriginalFilename())
+                        .path(filePath)
+                        .member(member)
+                        .build();
+            } else {
+                // 기존 MemberProfile 업데이트
+                memberProfile.modifyProfileImage(filePath);
+            }
+            
+            // MemberProfile 저장
+            memberProfileRepository.save(memberProfile); // memberProfileRepository는 주입되어야 함
+        } catch (Exception e) {
+            throw new RuntimeException("프로필 사진 업로드 실패: " + e.getMessage());
+        }
     }
 }
 
