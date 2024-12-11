@@ -8,63 +8,6 @@
 <head>
   <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
   <link th:href="@{/assets/css/myPage/myPageFriend.css}" rel="stylesheet" />
-<script>
-  // 친구 요청 수락 함수
-  window.acceptFriendRequest = function(friendId) {
-    fetch(`/friend/accept/${friendId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-            .then(response => {
-              if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-              }
-              return response.text();
-            })
-            .then(message => {
-              alert(message);
-              // 해당 친구 요청을 리스트에서 제거
-              const button = document.querySelector(`button.button-accept[onclick="acceptFriendRequest(${friendId})"]`);
-              if (button) {
-                button.parentElement.remove();
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert(error.message || '친구 요청 수락에 실패했습니다.');
-            });
-  };
-
-  // 친구 요청 거절 함수
-  window.rejectFriendRequest = function(friendId) {
-    fetch(`/friend/reject/${friendId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-            .then(response => {
-              if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-              }
-              return response.text();
-            })
-            .then(message => {
-              alert(message);
-              // 해당 친구 요청을 리스트에서 제거
-              const button = document.querySelector(`button.button-reject[onclick="rejectFriendRequest(${friendId})"]`);
-              if (button) {
-                button.parentElement.remove();
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert(error.message || '친구 요청 거절에 실패했습니다.');
-            });
-  };
-</script>
 </head>
 <div layout:fragment="mainContent" class="fontQnsvlf">
   <div class="flex">
@@ -103,28 +46,47 @@
         <div class="header">
           <p>친구 요청 리스트</p>
         </div>
-        <div >
+        <div>
+          <form action="/myPage/followList">
+            <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO?.searchValue}">
+            <input class="search-btn" type="submit" value="검색">
+          </form>
           <!-- Example person card -->
-          <div class="person-card" th:each="request : ${friendRequests}">
-            <span class="name" th:text="${request.requester} + ' (' + ${request.requesterName} + ')' ">김하나</span>
+          <div class="person-card" th:each="request, status : ${pageDTO.dtoList}">
+            <span class="name" th:text="${request.othersId} + ' (' + ${request.othersName} + ')' "></span>
             <div class="actions">
-              <button type="button" class="confirm-btn" th:onclick="'acceptFriendRequest(' + ${request.friendId} + ')'">수락</button>
-              <button type="button" class="delete-btn2" th:onclick="'rejectFriendRequest(' + ${request.friendId} + ')'">거절</button>
+              <button type="button" class="confirm-btn" th:data-idx="${request.friendId}" th:onclick="'acceptFriendRequest(this)'">수락</button>
+              <button type="button" class="delete-btn2" th:data-idx="${request.friendId}" th:onclick="'rejectFriendRequest(this)'">거절</button>
             </div>
           </div>
-
-          <!-- 한 페이지에 7명씩 -->
+          <div class="pagination">
+            <button class="page-btn" th:if="${pageDTO.prev}" th:data-num="${pageDTO.blockStart - 1}">&lt;</button>
+            <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+              <button th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'" th:data-num="${i}">[[${i}]]</button>
+            </th:block>
+            <button class="page-btn" th:if="${pageDTO.next}" th:data-num="${pageDTO.blockEnd + 1}">&gt;</button>
+          </div>
         </div>
       </div>
+      <script th:src="@{/assets/js/friend.js}"></script>
+      <script th:inline="javascript">
+        let pageBtn = document.querySelectorAll(".page-btn");
 
+        for(let i of pageBtn){
+          i.addEventListener("click",(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            const num = e.target.getAttribute("data-num");
+            const formObj = document.querySelector("form");
+            formObj.innerHTML += `<input type='hidden' name='pageNo' value='${num}'>`;
+            formObj.submit();
+          });
+        }
+      </script>
     </div>
   </div>
 </div>
 <div>
-  <script
-        th:src="@{/assets/js/friend.js}"
-        layout:fragment="friendscript"
-        th:inline="javascript"
-></script>
+
 </div>
 </html>

@@ -21,6 +21,8 @@ public interface FriendServiceIf {
     //강감찬추가
     PageDTO<FriendListDTO> getFriendList(PageDTO<FriendListDTO> pageDTO, String memberId);
     int getTotalCount(PageDTO<FriendListDTO> pageDTO, String memberId);
+    PageDTO<FriendListDTO> getFriendRequestList(PageDTO<FriendListDTO> pageDTO, String memberId);
+    int getRequestTotalCount(PageDTO<FriendListDTO> pageDTO, String memberId);
     List<FriendShareDTO> notSharedFriends(Integer postId, String memberId);
     //강감찬추가
 }

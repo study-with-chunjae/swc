@@ -314,8 +314,8 @@
       <script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
       <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
 
-      <script>
-        var memberId = "[[${memberDTO.memberId}]]";
+      <script th:inline="javascript">
+        const memberId = "";
 
         document.addEventListener("DOMContentLoaded", function () {
           // 페이지 로딩 후 unreadCount 가져오기

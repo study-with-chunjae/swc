@@ -184,6 +184,29 @@ public class FriendServiceImpl implements FriendServiceIf {
             return -1;
         }
     }
+
+    @Override
+    public PageDTO<FriendListDTO> getFriendRequestList(PageDTO<FriendListDTO> pageDTO, String memberId) {
+        LogUtil.logLine("FriendService getFriendRequestList");
+        try{
+            pageDTO.setDtoList(friendMapper.friendRequestList(pageDTO,memberId));
+            return pageDTO;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public int getRequestTotalCount(PageDTO<FriendListDTO> pageDTO, String memberId) {
+        LogUtil.logLine("FriendService getRequestTotalCount");
+        try{
+            return friendMapper.requestTotalCount(pageDTO,memberId);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return -1;
+        }
+    }
     //강감찬 추가
 
 }

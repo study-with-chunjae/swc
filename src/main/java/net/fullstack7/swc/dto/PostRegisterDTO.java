@@ -44,8 +44,6 @@ public class PostRegisterDTO {
     private String displayEnd; //오늘의 학습노출종료일
     private LocalDateTime createdAt; //게시글 생성일
 
-    @Size(max=100, message="100글자 이하로 입력하세요")
-    private String topics; //분야
     @Size(max=27, message="해시태그 하나당 10자 이하로 입력하세요")
     private String hashtag; //해시태그
 
@@ -56,9 +54,6 @@ public class PostRegisterDTO {
     }
     public String getContent(){
         return StringEscapeUtils.escapeHtml4(content);
-    }
-    public String getTopics(){
-        return StringEscapeUtils.escapeHtml4(topics);
     }
     public String getHashtag(){
         return StringEscapeUtils.escapeHtml4(hashtag);
