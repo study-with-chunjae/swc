@@ -50,6 +50,20 @@
       .search-results .load-more-button:hover {
         background-color: #e0e0e0;
       }
+
+      #alertPopup{
+        display: none;
+        position: absolute;
+        top: 205px;
+        right: 60px;
+        width: 400px;
+        height: auto;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 1000; /* 모달이 다른 요소들 위에 표시되도록 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
       /*친구검색추가(수진)*/
     </style>
   </head>
@@ -117,7 +131,7 @@
           </ul>
 <!--          알림추가(수진)-->
           <button class="alertIcon" id="alertButton" onclick="openAlertPopup()" ></button>
-          <div class="unreadCount" id="unreadCount"></div>
+          <div id="unreadCount"></div>
 <!--          알림추가(수진)-->
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
@@ -158,6 +172,7 @@
       ></script>
       <script>
         let userName = "";
+        let memberId = "";
         function getCookie(name) {
           const value = `; ${document.cookie}`;
           const parts = value.split(`; ${name}=`);
@@ -169,6 +184,8 @@
         if (accessToken) {
           const decodedToken = jwt_decode(accessToken);
           userName = decodedToken.name;
+          memberId = decodedToken.memberId;
+
 
           document.querySelector(".user-name").textContent = userName;
         } else {
@@ -176,6 +193,7 @@
         }
 
         console.log(userName);
+        console.log(memberId);
 
         // 친구검색추가(수진)
         const keywordInput = document.getElementById('keyword');
@@ -301,20 +319,18 @@
         }
 
 // 알림시작
-        let memberId = "[[${memberId}]]";
-
+        let unreadCountDiv = document.getElementById("unreadCount");
         document.addEventListener("DOMContentLoaded", function () {
           // 페이지 로딩 후 unreadCount 가져오기
           fetch("/alert/unreadCount?memberId=" + memberId)
                   .then((res) => res.json())
                   .then((count) => {
-                    var unreadCountSpan = document.getElementById("unreadCount");
-                    unreadCountSpan.textContent = count;
+                    unreadCountDiv.textContent = count;
 
-                    if (count == 0) {
-                      unreadCountSpan.classList.add("hidden");
+                    if (count === 0) {
+                      unreadCountDiv.classList.add("hidden");
                     } else {
-                      unreadCountSpan.classList.remove("hidden");
+                      unreadCountDiv.classList.remove("hidden");
                     }
 
                   })
@@ -327,8 +343,8 @@
 
           // 외부 클릭 시 모달 닫기
           window.addEventListener("click", function(event) {
-            var alertPopup = document.getElementById("alertPopup");
-            var alertButton = document.getElementById("alertButton");
+            let alertPopup = document.getElementById("alertPopup");
+            let alertButton = document.getElementById("alertButton");
             if (alertPopup.style.display === "block" && !alertPopup.contains(event.target) && event.target !== alertButton) {
               closeAlertPopup();
             }
@@ -340,9 +356,8 @@
                   .then((res) => res.text())
                   .then((data) => {
                     if (data === "ok") {
-                      var unreadCountSpan = document.getElementById("unreadCount");
-                      unreadCountSpan.textContent = "0";
-                      unreadCountSpan.classList.add("hidden"); // 숨기기
+                      // unreadCountDiv.textContent = "0";
+                      // unreadCountDiv.classList.add("hidden"); // 숨기기
                       loadAlerts();
                       document.getElementById("alertPopup").style.display = "block";
                     }
@@ -410,17 +425,16 @@
                     // 알림 메시지와 URL, 타입을 전달
                     displayNotification(alertData.message, alertData.url, alertData.type);
 
-                    // 미확인 갯수확인
+                    // 갯수 업데이트 가ㅓ져올거임..
                     fetch("/alert/unreadCount?memberId=" + memberId)
                             .then((res) => res.json())
                             .then((count) => {
-                              let unreadCountSpan = document.getElementById("unreadCount");
-                              unreadCountSpan.textContent = count;
+                              unreadCountDiv.textContent = count;
 
                               if (count == 0) {
-                                unreadCountSpan.classList.add("hidden");
+                                unreadCountDiv.classList.add("hidden");
                               } else {
-                                unreadCountSpan.classList.remove("hidden");
+                                unreadCountDiv.classList.remove("hidden");
                               }
                             })
                             .catch((error) => {
