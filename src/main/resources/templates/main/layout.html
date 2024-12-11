@@ -20,6 +20,9 @@
       /*친구검색추가(수진)*/
       /* 검색 결과 드롭다운 스타일 */
       .search-results {
+        top: 65%;
+        list-style: none;
+        padding: 0;
         /*border: 1px solid #ccc;*/
         max-height: 200px;
         overflow-y: auto;
@@ -47,6 +50,7 @@
       .search-results .load-more-button:hover {
         background-color: #e0e0e0;
       }
+
       /*친구검색추가(수진)*/
     </style>
   </head>
@@ -85,12 +89,13 @@
             </li>
           </ul>
         </nav>
-        <div class="search-bar search-container" style="position: relative">
-          <!--          친구검색연결(수진)-->
-          <input type="text" id="keyword" name="keyword" placeholder="Search..." />
-            <ul class="search-results" id="search-results" style="position: absolute">
+<!--        <div class="search-bar">-->
+<!--          &lt;!&ndash;          친구검색연결(수진)&ndash;&gt;-->
+          <div class="search-bar search-container" style="position: relative; width: 422px;">
+          <input type="text" id="keyword" name="keyword" placeholder="Search..."/>
+            <ul class="search-results" id="search-results" style="position: absolute; width: 410px;">
             <!-- 검색 결과가 동적으로 추가됨 -->
-          </ul>
+             </ul>
           <button type="button" id="load-more-button" class="search-results load-more-button">더보기</button>
           <!--          친구검색연결(수진)-->
             <button>
@@ -249,6 +254,29 @@
           currentPage += 1;
           fetchFriends(currentKeyword, currentPage);
         });
+
+        function sendFriendRequest(receiverId) {
+          fetch('/friend/request', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ receiver: receiverId })
+          })
+                  .then(response => {
+                    if (!response.ok) {
+                      return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.text();
+                  })
+                  .then(message => {
+                    alert(message);
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message || '친구 요청에 실패했습니다.');
+                  });
+        }
         // 친구검색추가(수진)
 
       </script>
