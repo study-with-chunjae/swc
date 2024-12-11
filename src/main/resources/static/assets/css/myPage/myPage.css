@@ -63,3 +63,46 @@
 .myInfoIntroduce {
   width: 400px;
 }
+
+.introduceItem {
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.introduceItem button {
+  border: none;
+  color: white;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 20px;
+  font-family: "HakgyoansimBunpilR";
+}
+
+.byeBtn {
+  border: none;
+  color: white;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 20px;
+  font-family: "HakgyoansimBunpilR";
+}
+
+.timeArea {
+  margin-top: 30px;
+}
+
+#editMyInfo {
+  border: 3px dashed white;
+  width: 100%;
+  height: auto;
+  outline: none;
+  resize: none;
+  padding: 10px;
+  background-color: transparent;
+  color: white;
+  font-family: inherit;
+  font-size: inherit;
+}

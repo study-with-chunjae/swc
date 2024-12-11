@@ -43,22 +43,68 @@
         <div class="flex">
           <div class="myInfoIntroduce">
             <div class="introduceItem">
-              이름 : <span th:text="${name}"></span>
+              <div>
+                이름 : <span th:text="${name}" class="infoText"></span>
+                <input
+                  type="text"
+                  th:value="${name}"
+                  class="editInput"
+                  style="display: none"
+                />
+              </div>
+              <div>
+                <button class="editBtn" onclick="handleEdit(this, 'name')">
+                  수정
+                </button>
+              </div>
             </div>
             <div class="introduceItem">
-              이메일 : <span th:text="${email}"></span>
+              <div>
+                이메일 : <span th:text="${email}" class="infoText"></span>
+                <input
+                  type="text"
+                  th:value="${email}"
+                  class="editInput"
+                  style="display: none"
+                />
+              </div>
+              <div>
+                <button class="editBtn" onclick="handleEdit(this, 'email')">
+                  수정
+                </button>
+              </div>
             </div>
             <div class="introduceItem">
-              번호 : <span th:text="${phone}"></span>
+              <div>
+                번호 : <span th:text="${phone}" class="infoText"></span>
+                <input
+                  type="text"
+                  th:value="${phone}"
+                  class="editInput"
+                  style="display: none"
+                />
+              </div>
+              <div>
+                <button class="editBtn" onclick="handleEdit(this, 'phone')">
+                  수정
+                </button>
+              </div>
             </div>
             <div class="introduceItem">
-              자기소개 : <span th:text="${myInfo}"></span>
+              <div>
+                학습목표 :
+                <textarea th:text="${myInfo}" readonly></textarea>
+              </div>
+              <div>
+                <button class="editBtn" onclick="handleEdit(this, 'myInfo')">
+                  수정
+                </button>
+              </div>
             </div>
           </div>
-          <div><button></button></div>
         </div>
 
-        <div>
+        <div class="timeArea">
           <div>
             최근 로그인 :
             <span th:text="${lastLogin}" class="time"></span>
@@ -67,8 +113,83 @@
             마지막 수정 :
             <span th:text="${updatedAt}" class="time"></span>
           </div>
+          <button class="byeBtn">탈퇴하기</button>
         </div>
       </div>
     </div>
+    <script th:inline="javascript">
+      window.handleEdit = function (button, field) {
+        const infoItem = button.closest(".introduceItem");
+        const textSpan = infoItem.querySelector("span");
+        const inputField = infoItem.querySelector("input");
+        const textArea = infoItem.querySelector("textarea");
+
+        if (button.textContent === "수정") {
+          textSpan.style.display = "none";
+          inputField.style.display = "inline-block";
+          inputField.value = textSpan.textContent.trim();
+          button.textContent = "취소";
+
+          const saveButton = document.createElement("button");
+          saveButton.textContent = "저장";
+          saveButton.className = "save-button";
+          saveButton.onclick = () =>
+            handleSave(field, inputField.value, infoItem);
+          infoItem.appendChild(saveButton);
+        } else {
+          textSpan.style.display = "inline-block";
+          inputField.style.display = "none";
+          button.textContent = "수정";
+
+          const saveButton = infoItem.querySelector(".save-button");
+          if (saveButton) {
+            saveButton.remove();
+          }
+        }
+      };
+
+      window.handleSave = function (field, value, infoItem) {
+        const data = {};
+        data[field] = value;
+
+        fetch(`/myPage/update-${field}`, {
+          // 수정된 URL로 요청
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("서버 응답 오류");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              const textSpan = infoItem.querySelector(".infoText");
+              const inputField = infoItem.querySelector(".editInput");
+              const editButton = infoItem.querySelector(".editBtn");
+              const saveButton = infoItem.querySelector(".save-button");
+
+              textSpan.textContent = value;
+              textSpan.style.display = "inline-block";
+              inputField.style.display = "none";
+              editButton.textContent = "수정";
+              saveButton.remove();
+
+              alert("저장되었습니다.");
+            } else {
+              alert(data.message || "저장에 실패했습니다.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("저장 중 오류가 발생했습니다.");
+          });
+      };
+    </script>
   </div>
 </html>

@@ -41,10 +41,15 @@ public class MyPageController {
 
       Member member = memberService.getMemberById(memberId);
 
-      model.addAttribute("name", member.getName());
-      model.addAttribute("email", member.getEmail());
-      model.addAttribute("phone", member.getPhone());
-      model.addAttribute("myInfo", member.getMyInfo());
+      String name = member.getName() != null ? member.getName() : "비공개";
+      String email = member.getEmail() != null ? member.getEmail() : "비공개";
+      String phone = member.getPhone() != null ? member.getPhone() : "비공개";
+      String myInfo = member.getMyInfo() != null ? member.getMyInfo() : "비공개";
+
+      model.addAttribute("name", name);
+      model.addAttribute("email", email);
+      model.addAttribute("phone", phone);
+      model.addAttribute("myInfo", myInfo);
 
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd a h시 mm분");
       String lastLoginFormatted = member.getLastLoginAt() != null ? member.getLastLoginAt().format(formatter) : "없음";
@@ -73,5 +78,37 @@ public class MyPageController {
   @GetMapping("/message")
   public String myPageMessage() {
     return "myPage/myPageMsg";
+  }
+
+  @PostMapping("/update-name")
+  public ResponseEntity<Map<String, Object>> updateName(@RequestBody Map<String, String> request, 
+                                                        HttpServletRequest req) {
+    String memberId = getMemberIdInJwt(req);
+    memberService.updateName(memberId, request.get("name"));
+    return ResponseEntity.ok(Map.of("success", true));
+  }
+
+  @PostMapping("/update-email")
+  public ResponseEntity<Map<String, Object>> updateEmail(@RequestBody Map<String, String> request, 
+  HttpServletRequest req) {
+    String memberId = getMemberIdInJwt(req);
+    memberService.updateEmail(memberId, request.get("email"));
+    return ResponseEntity.ok(Map.of("success", true));
+  }
+
+  @PostMapping("/update-phone")
+  public ResponseEntity<Map<String, Object>> updatePhone(@RequestBody Map<String, String> request, 
+  HttpServletRequest req) {
+    String memberId = getMemberIdInJwt(req);
+    memberService.updatePhone(memberId, request.get("phone"));
+    return ResponseEntity.ok(Map.of("success", true));
+  }
+
+  @PostMapping("/update-myInfo")
+  public ResponseEntity<Map<String, Object>> updateMyInfo(@RequestBody Map<String, String> request, 
+  HttpServletRequest req) {
+    String memberId = getMemberIdInJwt(req);
+    memberService.updateMyInfo(memberId, request.get("myInfo"));
+    return ResponseEntity.ok(Map.of("success", true));
   }
 }
