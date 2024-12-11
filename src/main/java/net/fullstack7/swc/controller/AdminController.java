@@ -1,6 +1,7 @@
 package net.fullstack7.swc.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.AdminDTO;
@@ -9,6 +10,7 @@ import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.AdminServiceIf;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.QnaServiceIf;
+import net.fullstack7.swc.util.ErrorUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -28,6 +31,7 @@ public class AdminController {
     private final AdminServiceIf adminService;
     private final QnaServiceIf qnaService;
     private final MemberServiceIf memberService;
+    private final ErrorUtil errorUtil;
 
     @GetMapping("/main")
     public String main() {
@@ -108,8 +112,14 @@ public class AdminController {
     // **답변 등록 처리 메서드 추가**
     @PostMapping("/{qnaId}/regist")
     public String registAnswer(@PathVariable Integer qnaId,
-                               @ModelAttribute QnaDTO qnaDTO,
+                               @ModelAttribute @Valid QnaDTO qnaDTO,
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes,
                                Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("qnaDTO", qnaDTO);
+            return errorUtil.redirectWithError("/qna/regist", redirectAttributes, bindingResult);
+        }
         qnaDTO.setParentId(qnaId);
         qnaService.addReply(qnaDTO, true);
         return "redirect:/admin/qnaList";

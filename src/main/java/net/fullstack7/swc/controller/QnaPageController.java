@@ -1,12 +1,16 @@
 package net.fullstack7.swc.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.QnaServiceIf;
+import net.fullstack7.swc.util.ErrorUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/qna")
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class QnaPageController {
 
     private final QnaServiceIf qnaService;
+    private final ErrorUtil errorUtil;
 
     // QnA 작성 페이지 이동
     @GetMapping("/regist")
@@ -25,8 +30,21 @@ public class QnaPageController {
 
     // QnA 작성 폼 제출 처리
     @PostMapping("/regist")
-    public String registQna(@ModelAttribute QnaDTO qnaDTO, Model model) {
-        Integer qnaId = qnaService.registQna(qnaDTO);
+    public String registQna( @ModelAttribute @Valid QnaDTO qnaDTO,
+                            BindingResult bindingResult,
+                            RedirectAttributes redirectAttributes,
+
+
+
+                            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("qnaDTO", qnaDTO);
+//            log.info("오류 확인: {}", bindingResult);
+            return errorUtil.redirectWithError("/qna/regist", redirectAttributes, bindingResult);
+        }
+
+        qnaService.registQna(qnaDTO);
         return "redirect:/qna/list";
     }
 
