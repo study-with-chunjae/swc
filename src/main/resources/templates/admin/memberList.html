@@ -5,6 +5,27 @@
 >
 
 <div layout:fragment="admincontent">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .reply {
+            margin-left: 20px;
+            color: gray;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <h1>회원 리스트</h1>
 
         <!-- 검색 폼 -->
@@ -26,14 +47,27 @@
                 <th>이름</th>
                 <th>상태</th>
                 <th>가입일</th>
+                <th>최종 로그인</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="member : ${memberPage.content}">
                 <td th:text="${member.memberId}"></td>
                 <td th:text="${member.name}"></td>
-                <td th:text="${member.status}"></td>
+                <td>
+                <select th:data-member-id="${member.memberId}" th:value="${member.status}" class="status-dropdown">
+                    <option value="Y" th:selected="${member.status == 'Y'}">활성화</option>
+                    <option value="N" th:selected="${member.status == 'N'}">이용정지</option>
+                    <option value="O" th:selected="${member.status == 'O'}">휴면계정</option>
+                    <option value="P" th:selected="${member.status == 'P'}">비번오류</option>
+                    <option value="D" th:selected="${member.status == 'D'}">탈퇴</option>
+                </select>
+                </td>
                 <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}"></td>
+                <td th:text="${#temporals.format(member.lastLoginAt, 'yyyy-MM-dd')}"></td>
+            </tr>
+            <tr th:if="${memberPage.content.size() == 0}">
+                <td colspan="4">해당하는 회원이 없습니다</td>
             </tr>
             </tbody>
         </table>
@@ -43,7 +77,7 @@
         <span th:if="${memberPage.hasPrevious()}">
             <a th:href="@{/admin/memberList(page=${memberPage.number - 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}">이전</a>
         </span>
-            <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages - 1)}">
+            <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages)}">
             <a th:href="@{/admin/memberList(page=${page}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}"
                th:text="${page + 1}"></a>
         </span>
@@ -51,4 +85,24 @@
             <a th:href="@{/admin/memberList(page=${memberPage.number + 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}">다음</a>
         </span>
         </div>
+    <script>
+        $(document).ready(function() {
+            $('.status-dropdown').change(function() {
+                var memberId = $(this).data('member-id');
+                var newStatus = $(this).val();
+
+                $.ajax({
+                    url: '/admin/' + memberId + '/status',
+                    type: 'POST',
+                    data: { status: newStatus },
+                    success: function(response) {
+                        alert(response);
+                    },
+                    error: function(e) {
+                        alert('상태 업데이트 실패: ' + e.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </div>

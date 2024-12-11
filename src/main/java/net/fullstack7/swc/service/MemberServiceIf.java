@@ -19,5 +19,7 @@ public interface MemberServiceIf{
 
     //관리자(수진)
     Page<AdminMemberDTO> getAllMembers(String searchType, String keyword, Pageable pageable);
+    int updateMemberStatus();
+    int updateStatusByMemberId(String status, String memberId);
     //관리자(수진)
 }

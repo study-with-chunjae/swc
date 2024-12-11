@@ -45,7 +45,7 @@
                 <!-- 비밀번호 입력 모달을 여는 링크로 변경 -->
                 <a href="#" th:attr="data-qna-id=${qna.qnaId}" class="open-password-modal" th:text="${qna.title}"></a>
                 <div th:if="${qna.replies.size() > 0}" class="reply">
-                    <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.content} + ' (' + ${reply.title} + ')'"></span>
+                    <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.title} "></span>
                 </div>
             </td>
             <td>

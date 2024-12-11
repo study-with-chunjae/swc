@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Qna;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,4 +23,5 @@ public class QnaDTO {
     private boolean answered;
     private Integer parentId;
     private List<QnaDTO> replies = new ArrayList<>();
+    private LocalDateTime regDate;
 }

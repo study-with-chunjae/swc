@@ -9,9 +9,7 @@
 <body>
 <div class="container mt-4">
     <h1>답변 등록</h1>
-    <form th:action="@{'/qna/' + ${qnaId} + '/regist'}" method="post">
-        <!-- CSRF 토큰 -->
-
+    <form th:action="@{'/admin/' + ${qnaId} + '/regist'}" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">답변 제목:</label>
             <input type="text" class="form-control" id="title" name="title" th:value="${qnaDTO.title}" required>

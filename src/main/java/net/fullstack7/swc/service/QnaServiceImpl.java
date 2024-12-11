@@ -26,7 +26,8 @@ public class QnaServiceImpl implements QnaServiceIf {
                 qnaDTO.getTitle(),
                 qnaDTO.getContent(),
                 qnaDTO.getEmail(),
-                qnaDTO.getPassword()
+                qnaDTO.getPassword(),
+                qnaDTO.getRegDate()
         );
 
         Qna savedQna = qnaRepository.save(qna);
@@ -61,16 +62,17 @@ public class QnaServiceImpl implements QnaServiceIf {
                 qnaDTO.getTitle(),
                 qnaDTO.getContent(),
                 parent.getEmail(),
-                parent.getPassword());
+                parent.getPassword(),
+                parent.getRegDete());
 
         parent.addReply(reply);
 
         qnaRepository.save(parent);
 
         // 이메일 발송( 집에서 확인 )
-//        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
-//            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
-//        }
+        if (parent.getEmail() != null && !parent.getEmail().isEmpty()) {
+            sendMail(parent.getEmail(), parent.getTitle(), reply.getContent());
+        }
     }
 
     @Override
@@ -95,6 +97,13 @@ public class QnaServiceImpl implements QnaServiceIf {
         return rootQnaList.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public QnaDTO adminViewQna(Integer qnaId) {
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 QnA가 존재하지 않습니다."));
+        return convertToDTO(qna);
     }
 
     // Qna 엔티티를 QnaDTO로 변환
@@ -123,7 +132,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     private void sendMail(String toEmail, String subject, String answerContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
-        message.setSubject("QnA 답변: " + subject);
+        message.setSubject("SWC QnA 답변 : " + subject);
         message.setText("답변 내용:\n" + answerContent);
         mailSender.send(message);
     }

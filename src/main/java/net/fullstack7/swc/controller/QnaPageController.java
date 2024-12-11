@@ -77,7 +77,7 @@ public class QnaPageController {
                                @ModelAttribute QnaDTO qnaDTO,
                                Model model) {
         qnaDTO.setParentId(qnaId); // 부모 QnA ID 설정
-        qnaService.addReply(qnaDTO, true); // 관리자 답변이라고 가정 (실제 환경에서는 인증을 통해 설정)
+        qnaService.addReply(qnaDTO, true);
         return "redirect:/qna/view/" + qnaId;
     }
 
