@@ -137,14 +137,16 @@
         .tag-container{
             display : flex;
             flex-wrap: wrap;
+            padding: 10px;
         }
-        .tag-div{
-            margin : 3px;
-            background-color : #999;
-            color : black;
+        .tag-div {
+            color: black;
             font-weight: bold;
-            border-radius : 5px;
+            border-radius: 5px;
+            display: inline-block;
+            min-width: 40px;
         }
+
         .tag-span{
             margin : 3px;
         }
@@ -210,6 +212,21 @@
                         <div class="tag-div" th:text="${tag}" th:data-tag="${tag}" th:onclick="'search(this);'"></div>
                     </th:block>
                 </div>
+                <div><script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Predefined set of background colors
+                        const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
+
+                        // Select all .tag-div elements
+                        const tagDivs = document.querySelectorAll(".tag-div");
+
+                        // Assign a random background color to each .tag-div
+                        tagDivs.forEach(tagDiv => {
+                            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                            tagDiv.style.backgroundColor = randomColor;
+                        });
+                    });
+                </script></div>
             </div>
         </div>
 

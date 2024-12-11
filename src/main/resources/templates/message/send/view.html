@@ -171,9 +171,9 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="list-button" type="button" onclick="window.location.href='/message/list';">목록으로</button>
+                    <button class="list-button" type="button" onclick="window.location.href='/message/send/list';">목록으로</button>
 
-                    <form method="post" th:action="@{/message/delete}">
+                    <form method="post" th:action="@{/message/send/delete}">
                         <input type="hidden" name="messageIds" th:value="${message.id}"/>
                         <button type="submit" class="delete-button">삭제</button>
                     </form>

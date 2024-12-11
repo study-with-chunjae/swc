@@ -76,19 +76,19 @@
             margin-right: 10px;
         }
 
-        button {
-            background-color: seagreen;
+        .send-button, .delete-button {
             color: white;
-            border: none;
+            background-color: seagreen;
+            font-size: 14px;
             padding: 10px 20px;
+            border: none;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 14px;
             transition: background-color 0.3s ease;
             margin: 10px;
         }
 
-        button:hover {
+        .send-button:hover, .delete-button:hover {
             background-color: #218838;
         }
 
@@ -226,7 +226,7 @@
 
             <!-- 네비게이션 버튼 -->
             <div class="navigation-buttons">
-                <button type="button" onclick="window.location.href='/message/send/list';">보낸쪽지목록</button>
+                <button type="button" class="send-button" onclick="window.location.href='/message/send/list';">보낸쪽지목록</button>
 <!--                <button type="button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>-->
             </div>
         </div>

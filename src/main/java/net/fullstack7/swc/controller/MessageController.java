@@ -81,13 +81,18 @@ public class MessageController {
 
     // 쪽지 작성
     @GetMapping("/regist")
-    public String showRegistForm(Model model, HttpServletRequest req) {
+    public String showRegistForm(@RequestParam(required = false) String receiverId, Model model, HttpServletRequest req) {
         String senderId = getMemberIdInJwt(req);
         log.info("senderId" + senderId);
         if (senderId == null) {
             return "redirect:/sign/signIn";
         }
+        if(receiverId == null || receiverId.isEmpty()) {
+            receiverId = "";
+        }
+
         model.addAttribute("senderId", senderId);
+        model.addAttribute("receiverId", receiverId);
         return "message/regist";
     }
 
@@ -106,13 +111,13 @@ public class MessageController {
             String alertMessage = senderId + "님이 새 쪽지를 보냈습니다: " + "'"+title+"'";
             Member member = memberRepository.findByMemberId(receiverId);
 
-            if (member == null) {
-                log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
+            if (member == null || senderId.equals(member.getMemberId())) {
+//                log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
                 model.addAttribute("error", "존재하지 않는 회원입니다.");
                 return "message/regist";
             }
             alertService.registAlert(member, AlertType.CHAT_MESSAGE, alertMessage, "/message/list");
-            log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
+//            log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
             return "redirect:/message/send/list";
         } catch (IllegalArgumentException e) {
                 model.addAttribute("errorReceiverId", true);
