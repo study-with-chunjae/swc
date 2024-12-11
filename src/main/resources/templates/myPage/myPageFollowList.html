@@ -1,13 +1,70 @@
 <!DOCTYPE html>
 <html
-  lang="ko"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{main/layout.html}"
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{main/layout.html}"
 >
 <head>
   <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
   <link th:href="@{/assets/css/myPage/myPageFriend.css}" rel="stylesheet" />
+<script>
+  // 친구 요청 수락 함수
+  window.acceptFriendRequest = function(friendId) {
+    fetch(`/friend/accept/${friendId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+              }
+              return response.text();
+            })
+            .then(message => {
+              alert(message);
+              // 해당 친구 요청을 리스트에서 제거
+              const button = document.querySelector(`button.button-accept[onclick="acceptFriendRequest(${friendId})"]`);
+              if (button) {
+                button.parentElement.remove();
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert(error.message || '친구 요청 수락에 실패했습니다.');
+            });
+  };
+
+  // 친구 요청 거절 함수
+  window.rejectFriendRequest = function(friendId) {
+    fetch(`/friend/reject/${friendId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+            .then(response => {
+              if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+              }
+              return response.text();
+            })
+            .then(message => {
+              alert(message);
+              // 해당 친구 요청을 리스트에서 제거
+              const button = document.querySelector(`button.button-reject[onclick="rejectFriendRequest(${friendId})"]`);
+              if (button) {
+                button.parentElement.remove();
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert(error.message || '친구 요청 거절에 실패했습니다.');
+            });
+  };
+</script>
 </head>
 <div layout:fragment="mainContent" class="fontQnsvlf">
   <div class="flex">
@@ -22,7 +79,7 @@
           </li>
           <li>
             <a href="/myPage/followList">
-              <span class="here">친구 요청</span>
+              <span  class="here">친구 요청</span>
             </a>
           </li>
           <li>
@@ -41,7 +98,33 @@
 
     <div class="myPageRight">
 
+
+      <div class="people-container">
+        <div class="header">
+          <p>친구 요청 리스트</p>
+        </div>
+        <div >
+          <!-- Example person card -->
+          <div class="person-card" th:each="request : ${friendRequests}">
+            <span class="name" th:text="${request.requester} + ' (' + ${request.requesterName} + ')' ">김하나</span>
+            <div class="actions">
+              <button type="button" class="confirm-btn" th:onclick="'acceptFriendRequest(' + ${request.friendId} + ')'">수락</button>
+              <button type="button" class="delete-btn2" th:onclick="'rejectFriendRequest(' + ${request.friendId} + ')'">거절</button>
+            </div>
+          </div>
+
+          <!-- 한 페이지에 7명씩 -->
+        </div>
+      </div>
+
     </div>
   </div>
+</div>
+<div>
+  <script
+        th:src="@{/assets/js/friend.js}"
+        layout:fragment="friendscript"
+        th:inline="javascript"
+></script>
 </div>
 </html>

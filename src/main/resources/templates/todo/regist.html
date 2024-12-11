@@ -247,10 +247,16 @@
                     </tr>
                 </table>
                 <script th:inline="javascript">
+                    const btnBack = document.getElementById("btnBack")
+                    btnBack.addEventListener("click", ()=>{
+                       location.href="/post/list"
+                    });
+
                     const errors = [[${errors}]];
                     if(errors){
                         alert(errors);
                     }
+                  
                     const tags = [];
                     const inputElement = document.getElementById('tag-input');
                     const hiddenInputElement = document.getElementById('hashtag-input');

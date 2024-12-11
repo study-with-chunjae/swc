@@ -149,12 +149,12 @@ header {
   position: relative;
 }
 
-.user-name:hover + .dropdown,
-.dropdown:hover {
+.user-name:hover + .dropdown2,
+.dropdown2:hover {
   display: block;
 }
 
-.dropdown {
+.dropdown2 {
   position: absolute;
   top: 40%;
   left: 0;
@@ -168,11 +168,11 @@ header {
   padding: 0;
 }
 
-.dropdown li {
+.dropdown2 li {
   list-style: none;
 }
 
-.dropdown li a {
+.dropdown2 li a {
   display: block;
   padding: 10px;
   text-decoration: none;
@@ -181,7 +181,7 @@ header {
   font-size: 14px;
 }
 
-.dropdown li a:hover {
+.dropdown2 li a:hover {
   background-color: #f1f1f1;
   color: #000;
 }

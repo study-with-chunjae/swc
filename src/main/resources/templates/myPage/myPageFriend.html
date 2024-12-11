@@ -8,6 +8,39 @@
 <head>
   <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
   <link th:href="@{/assets/css/myPage/myPageFriend.css}" rel="stylesheet" />
+  <script>
+    // 친구 삭제 함수
+    window.deleteFriend = function(friendId) {
+      if (!confirm('정말 친구를 삭제하시겠습니까?')) {
+        return;
+      }
+
+      fetch(`/friend/delete/${friendId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+              .then(response => {
+                if (!response.ok) {
+                  return response.text().then(text => { throw new Error(text) });
+                }
+                return response.text();
+              })
+              .then(message => {
+                alert(message);
+                // 해당 친구를 목록에서 제거
+                const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
+                if (button) {
+                  button.parentElement.remove();
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || '친구 삭제에 실패했습니다.');
+              });
+    };
+  </script>
 </head>
 <div layout:fragment="mainContent" class="fontQnsvlf">
   <div class="flex">
@@ -40,7 +73,25 @@
     </div>
 
     <div class="myPageRight">
+
+      <div class="people-container">
+        <div class="header">
+          <p>친구 목록 리스트</p>
+        </div>
+        <div>
+          <!-- Example person card -->
+          <div class="person-card" th:each="friend : ${friends}">
+              <span class="name" th:text="${memberId == friend.requester ? friend.receiver + ' (' + friend.receiverName + ')' : friend.requester + ' (' + friend.requesterName + ')'}"></span>
+              <span class="name" th:if="${friend.status == 0}">수락 대기중</span>
+              <span class="name" th:if="${friend.status == 1}"></span>
+            <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">친구 삭제</button>
+          </div>
+          <!-- 한 페이지에 7명씩 -->
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
+
 </html>
