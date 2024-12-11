@@ -1,22 +1,59 @@
 <div th:fragment="alert">
-    <button id="alertButton" onclick="openAlertPopup()">
-        알림 (<span id="unreadCount" th:text="${unreadCount}"></span>)
+    <style>
+        #unreadCount {
+            width: 18px;
+            height: 18px;
+            color: white;
+            background-color: #E85B6C;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            right: 22px;
+            bottom: 10px;
+            line-height: 100;
+            transition: opacity 0.3s ease; /* 부드러운 전환 효과 */
+        }
+        .hidden {
+            opacity: 0;
+        }
+        .alertIcon {
+            background-image: url("/assets/public/alerty.png");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 25px;
+            height: 25px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            margin: 0 10px 0 10px;
+        }
+        #alertPopup{
+            display: none;
+            position: absolute;
+            top: 100px;
+            right: 200px;
+            width: 400px;
+            height: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 1000; /* 모달이 다른 요소들 위에 표시되도록 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <button class="alertIcon" id="alertButton" onclick="openAlertPopup()">
     </button>
+    <span
+            id="unreadCount"
+            th:text="${unreadCount}"
+            th:classappend="${unreadCount} == 0 ? ' hidden' : ''">
+    </span>
 
-    <div
-            id="alertPopup"
-            style="
-      display: none;
-      position: absolute;
-      top: 50px;
-      right: 50px;
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 10px;
-      z-index: 1000; /* 모달이 다른 요소들 위에 표시되도록 */
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    "
-    >
+    <div id="alertPopup">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3>알림 목록</h3>
             <button onclick="closeAlertPopup()" style="background: transparent; border: none; font-size: 16px; cursor: pointer;">&times;</button>
@@ -38,7 +75,9 @@
             fetch("/alert/unreadCount?memberId=" + memberId)
                 .then((res) => res.json())
                 .then((count) => {
-                    document.getElementById("unreadCount").textContent = count;
+                    var unreadCountSpan = document.getElementById("unreadCount");
+                    unreadCountSpan.textContent = count;
+
                 })
                 .catch((error) => {
                     console.error("Error fetching unread count:", error);
@@ -62,7 +101,9 @@
                 .then((res) => res.text())
                 .then((data) => {
                     if (data === "ok") {
-                        document.getElementById("unreadCount").textContent = "0";
+                        var unreadCountSpan = document.getElementById("unreadCount");
+                        unreadCountSpan.textContent = "0";
+                        unreadCountSpan.classList.add("hidden"); // 숨기기
                         loadAlerts();
                         document.getElementById("alertPopup").style.display = "block";
                     }
@@ -134,7 +175,14 @@
                     fetch("/alert/unreadCount?memberId=" + memberId)
                         .then((res) => res.json())
                         .then((count) => {
-                            document.getElementById("unreadCount").textContent = count;
+                            var unreadCountSpan = document.getElementById("unreadCount");
+                            unreadCountSpan.textContent = count;
+
+                            if (count == 0) {
+                                unreadCountSpan.classList.add("hidden");
+                            } else {
+                                unreadCountSpan.classList.remove("hidden");
+                            }
                         })
                         .catch((error) => {
                             console.error("Error fetching unread count:", error);
