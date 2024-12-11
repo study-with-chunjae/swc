@@ -5,9 +5,49 @@
   xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{main/layout.html}"
 >
-<head>
-  <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
-</head>
-<div layout:fragment="mainContent" class="fontQnsvlf">
-asdㅋㅋ
-</div>
+  <head>
+    <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
+  </head>
+  <div layout:fragment="mainContent" class="fontQnsvlf">
+    <div class="flex">
+      <div class="myPageLeft">
+        <h2 class="textCenter">마이페이지</h2>
+        <div>
+          <ul class="myPageNav">
+            <li>
+              <a href="/myPage/info">
+                <span>내 정보</span>
+              </a>
+            </li>
+            <li>
+              <a href="/myPage/followList">
+                <span class="here">친구 요청</span>
+              </a>
+            </li>
+            <li>
+              <a href="/myPage/friend">
+                <span>친구 목록</span>
+              </a>
+            </li>
+            <li>
+              <a href="/myPage/message">
+                <span>쪽지 목록</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="myPageRight">
+        <h2>내 정보</h2>
+        <div class="myInfoIntroduce">
+          <div class="introduceItem">이름 : <span>한덕용</span></div>
+          <div class="introduceItem"></div>
+          <div class="introduceItem"></div>
+          <div class="introduceItem"></div>
+          <div class="introduceItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</html>
