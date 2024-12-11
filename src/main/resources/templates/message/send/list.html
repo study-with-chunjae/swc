@@ -8,17 +8,17 @@
 <head>
     <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F3CD99;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+        /*body {*/
+        /*    font-family: Arial, sans-serif;*/
+        /*    background-color: #F3CD99;*/
+        /*    margin: 0;*/
+        /*    padding: 0;*/
+        /*    height: 100vh;*/
+        /*    display: flex;*/
+        /*    flex-direction: column;*/
+        /*    justify-content: center;*/
+        /*    align-items: center;*/
+        /*}*/
 
         h1 {
             color: white;
@@ -73,19 +73,24 @@
             margin-right: 10px;
         }
 
-        button {
-            background-color: seagreen;
+        .delete-button,
+        .received-button,
+        .write-button {
             color: white;
-            border: none;
+            background-color: seagreen;
+            font-size: 14px;
             padding: 10px 20px;
+            border: none;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 14px;
             transition: background-color 0.3s ease;
             margin: 10px;
         }
 
-        button:hover {
+        /* 버튼의 공통 색상 설정 */
+        .delete-button:hover,
+        .received-button:hover,
+        .write-button:hover {
             background-color: #218838;
         }
 
@@ -206,8 +211,8 @@
 
             <!-- 네비게이션 버튼 -->
             <div class="navigation-buttons">
-                <button type="button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
-                <button type="button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>
+                <button type="button" class="received-button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
+                <button type="button" class="write-button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>
             </div>
         </div>
     </div>

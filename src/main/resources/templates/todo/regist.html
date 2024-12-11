@@ -65,12 +65,13 @@
             margin-right: 5px;
         }
 
-        button {
+        .button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            width: 150px;
         }
 
         #btnSubmit {
@@ -173,20 +174,22 @@
             display : flex;
             flex-wrap: wrap;
         }
-        .tag-div{
-            margin : 3px;
-            background-color : #999;
-            color : black;
+        .tag-div {
+            color: black;
             font-weight: bold;
-            border-radius : 5px;
+            border-radius: 5px;
+            display: inline-block;
         }
         .tag-span{
             margin : 3px;
         }
         .tag-remove{
             background-color : transparent;
-            width : 10px;
-            height : 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
 </style>
@@ -225,12 +228,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>해쉬태그</td>
+                        <td>해시태그</td>
                         <td>
                             <!-- Tags will be dynamically added here -->
                             <div class="input-container">
                                 <input type="text" id="tag-input" placeholder="10자 이내로 4개까지 등록 가능합니다.">
                             </div>
+
 
                             <div class="tag-container" id="tag-container">
                                 <!-- Tags will be dynamically added here -->
@@ -240,9 +244,9 @@
                     </tr>
                     <tr>
                         <td th:colspan="2">
-                            <button type="submit" id="btnSubmit" onclick="prepareFormData()">등록</button>
-                            <button type="reset" id="btnReset">초기화</button>
-                            <button type="button" id="btnBack">목록으로</button>
+                            <button class="button" type="submit" id="btnSubmit" onclick="prepareFormData()">등록</button>
+                            <button class="button" type="reset" id="btnReset">초기화</button>
+                            <button class="button" type="button" id="btnBack">목록으로</button>
                         </td>
                     </tr>
                 </table>
@@ -256,7 +260,7 @@
                     if(errors){
                         alert(errors);
                     }
-                  
+
                     const tags = [];
                     const inputElement = document.getElementById('tag-input');
                     const hiddenInputElement = document.getElementById('hashtag-input');
@@ -292,33 +296,43 @@
                         }
                     }
 
+
                     function addTag(value) {
-                        if(value==null||value==='') return;
-                        if(tags.includes(value)) return;
-                        if(tags.length>=4) return;
+                        if (value == null || value === '') return;
+                        if (tags.includes(value)) return;
+                        if (tags.length >= 4) return;
+
                         tags.push(value);
-                        console.log("tags : "+ tags.join(','));
+                        console.log("tags : " + tags.join(','));
+
                         const tagContainer = document.getElementById('tag-container');
                         const tagElement = document.createElement('div');
                         tagElement.className = 'tag-div';
 
+                        // Assign a random background color
+                        const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        tagElement.style.backgroundColor = randomColor;
+
                         const span = document.createElement('span');
-                        span.className='tag-span';
+                        span.className = 'tag-span';
                         span.textContent = value;
                         tagElement.appendChild(span);
 
                         const button = document.createElement('button');
-                        button.className='tag-remove';
+                        button.className = 'tag-remove';
                         button.textContent = '×';
                         tagElement.appendChild(button);
+
                         tagContainer.appendChild(tagElement);
 
-                        button.addEventListener("click",()=>{
-                            removeTag(value,button)
+                        button.addEventListener("click", () => {
+                            removeTag(value, button);
                         });
 
                         updateHiddenInput();
                     }
+
 
                     function removeTag(value, button) {
                         const index = tags.indexOf(value);

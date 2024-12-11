@@ -47,10 +47,7 @@
     </style>
     <button class="alertIcon" id="alertButton" onclick="openAlertPopup()">
     </button>
-    <span
-            id="unreadCount"
-            th:text="${unreadCount}"
-            th:classappend="${unreadCount} == 0 ? ' hidden' : ''">
+    <span id="unreadCount">
     </span>
 
     <div id="alertPopup">
@@ -68,7 +65,7 @@
     <script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
 
     <script>
-        var memberId = "[[${memberId}]]";
+        let memberId = "[[${memberId}]]";
 
         document.addEventListener("DOMContentLoaded", function () {
             // 페이지 로딩 후 unreadCount 가져오기
@@ -77,6 +74,12 @@
                 .then((count) => {
                     var unreadCountSpan = document.getElementById("unreadCount");
                     unreadCountSpan.textContent = count;
+
+                    if (count == 0) {
+                        unreadCountSpan.classList.add("hidden");
+                    } else {
+                        unreadCountSpan.classList.remove("hidden");
+                    }
 
                 })
                 .catch((error) => {
@@ -156,8 +159,8 @@
                 });
         }
 
-        var socket = new SockJS("/ws-stomp");
-        var stompClient = Stomp.over(socket);
+        let socket = new SockJS("/ws-stomp");
+        let stompClient = Stomp.over(socket);
 
         stompClient.connect(
             {},
@@ -175,7 +178,7 @@
                     fetch("/alert/unreadCount?memberId=" + memberId)
                         .then((res) => res.json())
                         .then((count) => {
-                            var unreadCountSpan = document.getElementById("unreadCount");
+                            let unreadCountSpan = document.getElementById("unreadCount");
                             unreadCountSpan.textContent = count;
 
                             if (count == 0) {
@@ -196,11 +199,11 @@
 
         // 알림 메시지를 화면에 표시하는 함수
         function displayNotification(message, url, type) {
-            var notificationList = document.getElementById("alertList");
-            var li = document.createElement("li");
+            let notificationList = document.getElementById("alertList");
+            let li = document.createElement("li");
 
             // <a> 태그 생성
-            var a = document.createElement("a");
+            let a = document.createElement("a");
             a.href = url;
             a.textContent = message;
             a.style.textDecoration = "none"; // 스타일 조정 (선택 사항)
