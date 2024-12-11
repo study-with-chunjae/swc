@@ -63,8 +63,7 @@
             width: 150px;
             height: 10%;
         }
-        #dc3545
-        #28a745
+
         .list-button:hover {
             background-color: #218838;
         }
@@ -134,15 +133,20 @@
             display: flex;
             align-items: center;
             margin: 10px 0;
+            width: 100%;
         }
 
         .message-info p span {
             margin-left: 10px;
+            flex-shrink: 0;
         }
 
         .input-wrapper {
-            flex-grow: 1;
-            display: inline-block;
+            /*flex-grow: 1;*/
+            display: flex;
+            /*flex-direction: row;  !* 수평 정렬 *!*/
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
         }
     </style>
@@ -170,7 +174,7 @@
 <!--                        <p>보낸 사람 <span th:text="${senderId}"></span></p>-->
                         <p class="input-wrapper">
                             <span style="margin-right: 10px;">받는 사람</span>
-                            <input type="text" id="receiverId" name="receiverId" required placeholder="받는 사람을 입력하세요" />
+                            <input type="text" id="receiverId" name="receiverId" th:value="${receiverId}" required placeholder="받는 사람을 입력하세요" />
                         </p>
                         <p class="input-wrapper">
                             <span style="margin-right: 10px;">제목</span>
