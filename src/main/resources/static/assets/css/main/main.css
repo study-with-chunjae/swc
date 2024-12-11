@@ -31,6 +31,7 @@
   display: flex;
   background-color: white;
   float: left;
+  height: 500px;
 }
 
 .thumbnail {

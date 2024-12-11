@@ -22,6 +22,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.util.List;
 
@@ -42,7 +48,7 @@ public class MyPageController {
   private final MemberServiceImpl memberService;
   private final AlertServiceIf alertService;
   private final MessageService messageService;
-  
+
   private String getMemberIdInJwt(HttpServletRequest req){
     String accessToken = cookieUtil.getCookieValue(req,"accessToken");
     return memberService.getMemberInfo(accessToken).get("memberId");
@@ -173,7 +179,7 @@ public class MyPageController {
   }
 
   @PostMapping("/update-name")
-  public ResponseEntity<Map<String, Object>> updateName(@RequestBody Map<String, String> request, 
+  public ResponseEntity<Map<String, Object>> updateName(@RequestBody Map<String, String> request,
                                                         HttpServletRequest req) {
     String memberId = getMemberIdInJwt(req);
     memberService.updateName(memberId, request.get("name"));
