@@ -15,7 +15,7 @@
         <h3 style="text-align: center; margin-top: 15px">프로필</h3>
         <aside class="shared-learning">
           <div class="thumbnail-group center">
-            <img th:src="${profileImage}" alt="Thumbnail" />
+            <img th:src="${profileImage != null ? profileImage : '/assets/public/human.png'}" alt="Thumbnail" />
           </div>
           <button class="profileImgEdit">Edit</button>
           <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 10px">
