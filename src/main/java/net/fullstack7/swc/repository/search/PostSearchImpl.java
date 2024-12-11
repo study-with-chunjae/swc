@@ -1,12 +1,9 @@
 package net.fullstack7.swc.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.*;
-import net.fullstack7.swc.dto.PageDTO;
-import net.fullstack7.swc.dto.PostListDTO;
 import net.fullstack7.swc.util.LogUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;

@@ -47,7 +47,7 @@ public class PostServiceImpl implements PostServiceIf {
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
-            String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getFile(), "images");
+            String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getImage(), "images");
             if(postRegisterDTO.getTodayType()==1){
                 validateDisplayDate(postRegisterDTO.getDisplayAt(), postRegisterDTO.getDisplayEnd());
             }
@@ -205,7 +205,7 @@ public class PostServiceImpl implements PostServiceIf {
     }
 
     @Override
-    public Post modifyPost(PostModifyDTO postModifyDTO, String memberId) {
+    public Post modifyPost(PostRegisterDTO postModifyDTO, String memberId) {
         LogUtil.logLine("PostService -> modifyPost");
         try {
             Post post = postRepository.findById(postModifyDTO.getPostId()).orElseThrow(()->new IllegalArgumentException("존재하지 않는 학습입니다."));
