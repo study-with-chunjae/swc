@@ -14,6 +14,11 @@ public class MyPageController {
     return "myPage/myPageInfo";
   }
 
+  @GetMapping("/followList")
+  public String myPageFollowList() {
+    return "myPage/myPageFollowList";
+  }
+
   @GetMapping("/myPageFriend")
   public String myPageFriend() {
     return "myPage/myPageFriend";
