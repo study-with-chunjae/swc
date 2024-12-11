@@ -50,18 +50,16 @@ public class MyPageController {
   private final AlertServiceIf alertService;
   private final MessageService messageService;
   private final ErrorUtil errorUtil;
-  private final View error;
 
-  private String getMemberIdInJwt(HttpServletRequest req){
+  private String getMemberIdInJwt(HttpServletRequest req) {
     String accessToken = cookieUtil.getCookieValue(req,"accessToken");
     return memberService.getMemberInfo(accessToken).get("memberId");
-}
+  }
 
   @GetMapping("/info")
   public String myPage(Model model, HttpServletRequest req) {
     try {
       String memberId = getMemberIdInJwt(req);
-      log.info("memberId : {}", memberId);
 
       Member member = memberService.getMemberById(memberId);
 

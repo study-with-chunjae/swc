@@ -316,7 +316,7 @@ public class MemberServiceImpl implements MemberServiceIf {
             log.info("임시 비밀번호 이메일 전송 완료: {}", member.getEmail());
         } catch (Exception e) {
             log.error("임시 비밀번호 이메일 전송 실패: {}", e.getMessage(), e);
-            throw new RuntimeException("임��� 비밀번호 이메일 전송 실패: " + e.getMessage());
+            throw new RuntimeException("임시 비밀번호 이메일 전송 실패: " + e.getMessage());
         }
     }
 

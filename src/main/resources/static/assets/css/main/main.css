@@ -51,7 +51,7 @@
   font-size: 18px;
   margin: 0 0 10px;
 }
-.title{
+.title {
   font-size: 18px;
   margin: 10px;
 }
@@ -332,12 +332,22 @@
   height: 150px;
   padding: 5px;
 }
-.category{
+.category {
   color: black;
   margin: 20px;
 }
 
-.thumbUps{
+.thumbUps {
   color: black;
   margin: 20px;
+}
+
+.profileImgEdit {
+  background-color: transparent;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  bottom: 10px;
+  left: 150px;
 }

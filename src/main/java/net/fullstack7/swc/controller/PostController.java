@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.constant.PostPageConstants;
 import net.fullstack7.swc.domain.Member;
+import net.fullstack7.swc.domain.MemberProfile;
 import net.fullstack7.swc.domain.Post;
 import net.fullstack7.swc.dto.*;
+import net.fullstack7.swc.repository.MemberProfileRepository;
 import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.PostServiceIf;
@@ -45,6 +47,7 @@ public class PostController {
     private static final String NOW_STRING = FORMATTER.format(LocalDate.now());
     private final MemberServiceIf memberService;
     private final MemberRepository memberRepository;
+    private final MemberProfileRepository memberProfileRepository;
     private final PostServiceIf postService;
     private final ThumbUpServiceIf thumbUpService;
     private final ErrorUtil errorUtil;
@@ -68,6 +71,7 @@ public class PostController {
             MemberDTO memberDTO = MemberDTO.builder()
                     .memberId(memberId)
                     .name(member.getName())
+                    .myInfo(member.getMyInfo())
                     .build();
             List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt, FORMATTER).atStartOfDay(), memberId, TYPE_SHARE);
             if (postMainDTOList == null) {
@@ -77,6 +81,7 @@ public class PostController {
             model.addAttribute("viewType", "today");
             model.addAttribute("postMainDTOList", postMainDTOList);
             model.addAttribute("memberDTO", memberDTO);
+            model.addAttribute("profileImage", memberProfileRepository.findByMember(member).getProfileImage());
             return "main/main";
         }catch(Exception e){
             log.error(e.getMessage());
