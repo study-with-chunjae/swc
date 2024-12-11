@@ -2,12 +2,18 @@ package net.fullstack7.swc.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.Banner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Collections;
+import java.util.Map;
 
 @ControllerAdvice
 @Log4j2
@@ -26,7 +32,7 @@ public class GlobalExceptionHandler {
           org.attoparser.ParseException.class,
           org.thymeleaf.exceptions.TemplateInputException.class,
           jakarta.servlet.ServletException.class,
-          RuntimeException.class,
+//          RuntimeException.class,
           org.springframework.web.servlet.resource.NoResourceFoundException.class
   })
   public String handleBadRequest(Exception e, Model model) {
@@ -48,5 +54,12 @@ public class GlobalExceptionHandler {
     log.error("Unexpected error occurred: ", e);
     model.addAttribute("errors", "처리 중 오류가 발생했습니다.");
     return "main/error";
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  @ResponseBody
+  public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(Collections.singletonMap("message", ex.getMessage()));
   }
 }

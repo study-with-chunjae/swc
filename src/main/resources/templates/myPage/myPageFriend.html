@@ -21,24 +21,27 @@
           'Content-Type': 'application/json'
         }
       })
-              .then(response => {
-                if (!response.ok) {
-                  return response.text().then(text => { throw new Error(text) });
-                }
-                return response.text();
-              })
-              .then(message => {
-                alert(message);
-                // 해당 친구를 목록에서 제거
-                const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
-                if (button) {
-                  button.parentElement.remove();
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-                alert(error.message || '친구 삭제에 실패했습니다.');
-              });
+      .then(function(response) {
+        return response.json().then(function(data) {
+          if (!response.ok) {
+            throw new Error(data.message || '친구 요청에 실패했습니다.');
+          }
+          return data;
+        });
+      })
+      .then(function(data) {
+        alert(data.message);
+        // 해당 친구를 목록에서 제거
+        const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
+        if (button) {
+          button.parentElement.remove();
+        }
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert(error.message || '친구 삭제에 실패했습니다.');
+      });
     };
   </script>
 </head>
