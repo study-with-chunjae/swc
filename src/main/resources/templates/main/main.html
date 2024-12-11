@@ -81,6 +81,7 @@
                   <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
                   <p class="category" th:text="${post.topics}"></p>
                   <p class="category" th:text="${post.hashtag}"></p>
+                  <div class="thumbUps">❤️ 좋아요 [[${post.thumbUps}]]</div>
                 </div>
                 <div class="info">
                   <h3 class="title" th:text="${post.title}"></h3>
@@ -89,7 +90,6 @@
                     <th:block th:each="share, status:${post.shares}">
                       <div th:text="${share}"></div>
                     </th:block>
-                    <div class="thumbUps" th:text="${post.thumbUps}"></div>
                   </div>
                 </div>
               </article>
