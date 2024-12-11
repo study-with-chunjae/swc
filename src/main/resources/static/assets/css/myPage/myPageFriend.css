@@ -7,8 +7,8 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     max-width: 720px;
-    max-height: 500px;
-    margin:20px;
+    max-height: 490px;
+    margin:10px;
 }
 
 /* Header */
@@ -172,8 +172,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+    margin: 10px 0;
     gap: 5px;
+
 }
 
 /* 페이지네이션 버튼 스타일 */
