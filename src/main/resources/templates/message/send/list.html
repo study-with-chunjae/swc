@@ -93,28 +93,17 @@
             margin-top: 20px;
         }
 
-        /* 폼 스타일 */
         form {
             width: 100%;
             max-width: 1000px;
             margin-bottom: 30px;
         }
 
-        /* '삭제' 버튼 위치를 오른쪽으로 배치 */
         .delete-button {
-            float: right;
+            float: left;
             background-color: #dc3545;
         }
 
-        /* 네비게이션 버튼 */
-        .navigation-buttons {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        /* 모바일 대응을 위한 반응형 스타일 */
         @media (max-width: 768px) {
             .container {
                 width: 90%;
@@ -129,6 +118,17 @@
                 padding: 8px 16px;
             }
         }
+
+        /* 네비게이션 버튼 */
+        .navigation-buttons {
+            display: flex;
+            justify-content: center; /* 버튼 사이의 간격을 자동으로 조정 */
+            width: 100%;
+            max-width: 1000px;
+            gap: 400px; /* 버튼 사이에 20px의 간격을 추가 */
+        }
+
+
     </style>
 </head>
 <body>
