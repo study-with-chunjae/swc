@@ -3,12 +3,12 @@
 <head>
     <link th:href="@{/assets/css/myPage/myPage.css}" rel="stylesheet" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F3CD99;
-            margin: 0;
-            padding: 0;
-        }
+        /*body {*/
+        /*    font-family: Arial, sans-serif;*/
+        /*    background-color: #F3CD99;*/
+        /*    margin: 0;*/
+        /*    padding: 0;*/
+        /*}*/
 
         h1 {
             text-align: center;
@@ -41,12 +41,12 @@
             font-weight: bold;
         }
 
-        .buttons {
-            display: flex;
+        .submit-button, .list-button {
+            display: inline-flex;
             gap: 10px;
             margin-top: 20px;
             width: 100%;
-            align-items: baseline;
+            align-items: center;
             justify-content: center;
         }
 
@@ -69,7 +69,7 @@
         }
 
         /* 등록 버튼 */
-        .delete-button {
+        .submit-button {
             color: white;
             border: none;
             padding: 10px 20px;
@@ -81,7 +81,7 @@
             width: 150px;
         }
 
-        .delete-button:hover {
+        .submit-button:hover {
             background-color: #218838;
         }
 
@@ -101,7 +101,7 @@
             text-decoration: black;
         }
 
-        input[type="text"], textarea {
+        .receiverInput, .titleInput[type="text"], .contentTextarea {
             width: 80%;
             padding: 12px;
             margin: 8px 0;
@@ -114,17 +114,17 @@
             color: #333;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        .receiverInput, .titleInput[type="text"]:focus, .contentTextarea:focus {
             border-color: #28a745;
             box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
             outline: none;
         }
 
-        input[type="text"]::placeholder, textarea::placeholder {
+        .receiverInput, .titleInput[type="text"]::placeholder, .contentTextarea::placeholder {
             color: #aaa;
         }
 
-        textarea {
+        .contentTextarea {
             resize: vertical;
             min-height: 150px;
         }
@@ -174,24 +174,23 @@
 <!--                        <p>보낸 사람 <span th:text="${senderId}"></span></p>-->
                         <p class="input-wrapper">
                             <span style="margin-right: 10px;">받는 사람</span>
-                            <input type="text" id="receiverId" name="receiverId" th:value="${receiverId}" required placeholder="받는 사람을 입력하세요" />
+                            <input class="receiverInput" type="text" id="receiverId" name="receiverId" th:value="${receiverId}" required placeholder="받는 사람을 입력하세요" />
                         </p>
                         <p class="input-wrapper">
                             <span style="margin-right: 10px;">제목</span>
-                            <input type="text" id="title" name="title" required placeholder="제목을 입력하세요" />
+                            <input class="titleInput" type="text" id="title" name="title" required placeholder="제목을 입력하세요" />
                         </p>
                         <p class="input-wrapper">
                             <span style="margin-right: 10px;">내용</span>
-                            <textarea id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
+                            <textarea class="contentTextarea" id="content" name="content" placeholder="쪽지 내용을 입력하세요" required></textarea>
                         </p>
                     </div>
 
                     <div class="buttons">
-                        <button class="list-button" type="button" onclick="window.location.href='/message/list';">목록으로</button>
-
+                        <button type="submit" class="submit-button">보내기</button>
+                        <button class="list-button" type="button" onclick="window.location.href='/message/list';">취소</button>
                         <input type="hidden" id="senderId" name="senderId" th:value="${senderId}" />
                         <input type="hidden" id="regDate" name="regDate" th:value="${T(java.time.LocalDateTime).now()}" />
-                        <button type="submit" class="delete-button">보내기</button>
                     </div>
                 </form>
 
