@@ -237,6 +237,20 @@
             color: red;
             transform: scale(1.2);
         }
+        .tag-container{
+            display : flex;
+            flex-wrap: wrap;
+        }
+        .tag-div{
+            margin : 3px;
+            background-color : #999;
+            color : black;
+            font-weight: bold;
+            border-radius : 5px;
+        }
+        .tag-span{
+            margin : 3px;
+        }
 
     </style>
 </head>
@@ -265,7 +279,8 @@
 
                 <div class="content-section">
                     <div class="image-section">
-                        <img th:src="${postDTO.image}" alt="Thumbnail" >
+                        <img th:if="${postDTO.image!=null}" th:src="${postDTO.image}" onerror="this.onerror=null;this.src='/upload/images/default_image.jpg'" alt="Thumbnail" >
+                        <img th:if="${postDTO.image==null}" th:src="@{/upload/images/default_image.jpg}" alt="thumbnail">
                     </div>
                     <div class="text-section" th:text="${postDTO.content}">
                     </div>
@@ -292,8 +307,11 @@
                             th:text="공유하기" th:onclick="'getNotSharedFriendList('+${postDTO.postId}+');'"
                     ></button>
                 </div>
-                <div class="tags">
-                    <p th:utext="'<strong>해시태그:</strong>' + ${postDTO.hashtag}"></p>
+                <div class="tag-container">
+                    <strong>해시태그</strong>:
+                    <th:block th:each="tag,status:${postDTO.hashtags}">
+                        <div class="tag-div" th:text="${tag}" th:data-tag="${tag}" th:onclick="'search(this);'"></div>
+                    </th:block>
                 </div>
             <div class="button-section">
                 <button>목록</button>
@@ -535,6 +553,10 @@
                         console.error("친구목록 조회 실패" || error);
                         alert("친구목록 조회 실패");
                     }
+                }
+                function search(element){
+                    const tag = element.getAttribute("data-tag");
+                    location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
                 }
             </script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

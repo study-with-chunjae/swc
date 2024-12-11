@@ -1,6 +1,7 @@
 package net.fullstack7.swc.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -51,28 +52,36 @@ public class PostController {
 
     @CheckJwtToken
     @GetMapping("/main")
-    public String postMain(@RequestParam(required = false, defaultValue = "") String createdAt,
+    public String postMain(@RequestParam(required = false, defaultValue="") String memberId,
+                           @RequestParam(required = false, defaultValue = "") String createdAt,
                            HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "main");
+        if(memberId.isEmpty()){
+            memberId = getMemberIdInJwt(req);
+        }
         if(createdAt.isEmpty()){
             createdAt = NOW_STRING;
         }
-        LogUtil.log("now", createdAt);
-        String memberId = getMemberIdInJwt(req);
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        MemberDTO memberDTO = MemberDTO.builder()
-                .memberId(memberId)
-                .name(member.getName())
-                .build();
-        List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
-        if(postMainDTOList==null){
-            model.addAttribute("error","조회 중 일시적인 에러가 발생했습니다.");
+        try {
+            LogUtil.log("now", createdAt);
+            Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalAccessError("존재하지 않는 회원입니다"));
+            MemberDTO memberDTO = MemberDTO.builder()
+                    .memberId(memberId)
+                    .name(member.getName())
+                    .build();
+            List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt, FORMATTER).atStartOfDay(), memberId, TYPE_SHARE);
+            if (postMainDTOList == null) {
+                model.addAttribute("error", "조회 중 일시적인 에러가 발생했습니다.");
+            }
+            model.addAttribute("createdAt", createdAt);
+            model.addAttribute("viewType", "today");
+            model.addAttribute("postMainDTOList", postMainDTOList);
+            model.addAttribute("memberDTO", memberDTO);
+            return "main/main";
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return errorUtil.redirectWithError(e.getMessage(),"/post/main",redirectAttributes);
         }
-        model.addAttribute("createdAt",createdAt);
-        model.addAttribute("viewType","today");
-        model.addAttribute("postMainDTOList",postMainDTOList);
-        model.addAttribute("memberDTO",memberDTO);
-        return "main/main";
     }
 
 //    @CheckJwtToken
@@ -156,9 +165,11 @@ public class PostController {
             return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.", DEFAULT_REDIRECT,redirectAttributes);
         }
         String memberId = getMemberIdInJwt(req);
-        PostDTO postDTO = postService.viewPost(postId);
+        PostViewDTO postDTO = postService.viewPost(postId);
         LogUtil.log("postDTO",postDTO);
         LogUtil.log("shares",postDTO.getShares());
+        LogUtil.log("hashtags",postDTO.getHashtags());
+        LogUtil.log("thumbUps",postDTO.getThumbUps());
         model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
         model.addAttribute("postDTO",postDTO);
         model.addAttribute("thumbUp",thumbUpService.isExist(postId,memberId)?"1":"0");
@@ -168,6 +179,7 @@ public class PostController {
     @CheckJwtToken(redirectUri = DEFAULT_REDIRECT)
     @GetMapping("/register")
     public String registerGet(HttpServletRequest req, RedirectAttributes redirectAttributes, Model model) {
+        LogUtil.logLine(CONTROLLER_NAME + "registerGet");
         String accessToken = cookieUtil.getCookieValue(req,"accessToken");
         Map<String,String> memberInfo = memberService.getMemberInfo(accessToken);
 //        if(memberInfo == null) {
@@ -187,17 +199,24 @@ public class PostController {
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
                                HttpServletRequest req, Model model){
-        LogUtil.logLine(CONTROLLER_NAME + "register");
+        LogUtil.logLine(CONTROLLER_NAME + "registerPost");
         if(bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("postDTO", postRegisterDTO);
             return errorUtil.redirectWithError("/post/register",redirectAttributes,bindingResult);
         }
-        String memberId = getMemberIdInJwt(req);
-        Post post = postService.registerPost(postRegisterDTO, memberId);
-        if(post==null){
-            redirectAttributes.addFlashAttribute("postDTO",postRegisterDTO);
-            return errorUtil.redirectWithError("게시글등록 실패","/post/register",redirectAttributes);
+        try {
+            String memberId = getMemberIdInJwt(req);
+            Post post = postService.registerPost(postRegisterDTO, memberId);
+            if (post == null) {
+                redirectAttributes.addFlashAttribute("postDTO", postRegisterDTO);
+                return errorUtil.redirectWithError("게시글등록 실패", "/post/register", redirectAttributes);
+            }
+            return "redirect:/post/view?postId=" + post.getPostId();
+        }catch(Exception e){
+            log.error(e.getMessage());
+            redirectAttributes.addFlashAttribute("postDTO", postRegisterDTO);
+            return errorUtil.redirectWithError(e.getMessage(),"/post/register", redirectAttributes);
         }
-        return "redirect:/post/view?postId="+post.getPostId();
     }
 
     @CheckJwtToken
@@ -211,15 +230,19 @@ public class PostController {
             return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.",DEFAULT_REDIRECT,redirectAttributes);
         }
         String memberId = getMemberIdInJwt(req);
-        PostDTO postDTO = postService.viewPost(postId);
+        PostViewDTO postDTO = postService.viewPost(postId);
         if(postDTO==null){
             return errorUtil.redirectWithError("없는 게시글입니다.",DEFAULT_REDIRECT,redirectAttributes);
         }
         if(!postDTO.getMember().getMemberId().equals(memberId)){
             return errorUtil.redirectWithError("권한이 없습니다",DEFAULT_REDIRECT,redirectAttributes);
         }
+        LogUtil.log("postDTO",postDTO);
+        LogUtil.log("shares",postDTO.getShares());
+        LogUtil.log("hashtags",postDTO.getHashtags());
+        LogUtil.log("thumbUps",postDTO.getThumbUps());
         model.addAttribute("postDTO",postDTO);
-        return "post/modify";
+        return "todo/modify";
     }
     @PostMapping("/modify")
     public String modifyPost(@Valid PostRegisterDTO postModifyDTO,
@@ -246,32 +269,5 @@ public class PostController {
     private void validTitle(PostRegisterDTO postRegisterDTO){
         String title = postRegisterDTO.getTitle();
 
-    }
-    private void validHashtag(PostRegisterDTO postRegisterDTO){
-        String hashtag = postRegisterDTO.getHashtag();
-        final String regex = "^(#\\\\w{1,10})(,#[^,]{1,10}){0,3}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(hashtag);
-        if(!matcher.matches()){
-            throw new IllegalArgumentException("길이 초과 또는 잘못된 형식입니다.");
-        }
-        String[] items = hashtag.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(items));
-        if(set.size()<=4 && set.size() == items.length){
-            return;
-        }
-        if(set.size() > 4) {
-            throw new IllegalArgumentException("길이 초과 입니다.");
-        }
-        StringBuilder builder = new StringBuilder();
-        while(set.iterator().hasNext()){
-            String item = set.iterator().next();
-            builder.append(item);
-            if(!set.iterator().hasNext()){
-                postRegisterDTO.setHashtag(builder.toString());
-                break;
-            }
-            builder.append(",");
-        }
     }
 }
