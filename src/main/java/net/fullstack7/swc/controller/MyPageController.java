@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/myPage")
 public class MyPageController {
-  @GetMapping("/myPageInfo")
+  @GetMapping("/info")
   public String myPage() {
     return "myPage/myPageInfo";
   }
@@ -19,13 +19,13 @@ public class MyPageController {
     return "myPage/myPageFollowList";
   }
 
-  @GetMapping("/myPageFriend")
+  @GetMapping("/friend")
   public String myPageFriend() {
     return "myPage/myPageFriend";
   }
 
-  @GetMapping("/myPageMessage")
+  @GetMapping("/message")
   public String myPageMessage() {
-    return "myPage/myPageMessage";
+    return "myPage/myPageMsg";
   }
 }
