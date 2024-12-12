@@ -41,6 +41,7 @@ function initSliders() {
   const indicatorsContainer = document.querySelector(".slider-indicators");
 
   let currentIndex = 0; // Start at the first slide
+
   const totalSlides = slides.length;
   createIndicators(indicatorsContainer, totalSlides, currentIndex, slider);
 }
@@ -102,6 +103,7 @@ async function getMainPosts(element) {
 						<h3 class="title">학습제목 : ${mainPost.title}</h3>
 						<p class="description">${mainPost.content}</p>
 						<div class="shared-by">
+						    <strong>공유 목록</strong>
 						    ${shareElements}
 						</div>
 					</div>

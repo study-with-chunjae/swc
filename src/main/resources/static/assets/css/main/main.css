@@ -66,8 +66,8 @@
 .description {
   font-size: 14px;
   color: #555;
-  min-height: 393px;
-  min-width: 290px;
+  height: 274px;
+  width: 290px;
   border-radius: 8px;
   padding: 10px;
   background-color: rgba(133, 129, 129, 0.06);
@@ -81,7 +81,7 @@
 
 .info .shared-by {
   font-size: 12px;
-  color: #666;
+  color: #000;
   margin: 15px;
 }
 

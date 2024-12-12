@@ -136,6 +136,7 @@
                     <h3 class="title" th:text="${post.title}"></h3>
                     <p class="description" th:text="${post.content}"></p>
                     <div class="shared-by">
+                      <strong>공유 목록</strong>
                       <th:block th:each="share, status:${post.shares}">
                         <div th:text="${share}"></div>
                       </th:block>
