@@ -21,24 +21,27 @@
           'Content-Type': 'application/json'
         }
       })
-              .then(response => {
-                if (!response.ok) {
-                  return response.text().then(text => { throw new Error(text) });
-                }
-                return response.text();
-              })
-              .then(message => {
-                alert(message);
-                // 해당 친구를 목록에서 제거
-                const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
-                if (button) {
-                  button.parentElement.remove();
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-                alert(error.message || '친구 삭제에 실패했습니다.');
-              });
+      .then(function(response) {
+        return response.json().then(function(data) {
+          if (!response.ok) {
+            throw new Error(data.message || '친구 요청에 실패했습니다.');
+          }
+          return data;
+        });
+      })
+      .then(function(data) {
+        alert(data.message);
+        // 해당 친구를 목록에서 제거
+        const button = document.querySelector(`button.button-delete[onclick="deleteFriend(${friendId})"]`);
+        if (button) {
+          button.parentElement.remove();
+        }
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert(error.message || '친구 삭제에 실패했습니다.');
+      });
     };
   </script>
 </head>
@@ -90,7 +93,7 @@
           <input class="search-btn" type="submit" value="검색">
         </form>
 
-        <div>
+        <div style="min-height: 390px;">
           <!-- Example person card -->
           <div class="person-card" th:each="friend, status : ${pageDTO.dtoList}">
               <span class="name" th:text="${friend.othersId + ' (' + friend.othersName + ')'}"></span>
@@ -99,33 +102,33 @@
             <button type="button" class="button button-delete" th:onclick="'deleteFriend(' + ${friend.friendId} + ')'">친구 삭제</button>
           </div>
           <!-- 한 페이지에 7명씩 -->
-          <div class="pagination">
-            <!-- 이전 버튼 -->
-            <button
-                    class="page-btn"
-                    th:if="${pageDTO.prev}"
-                    th:data-num="${pageDTO.blockStart - 1}">&lt;
-            </button>
-
-            <!-- 페이지 번호 버튼 -->
-            <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
-              <button
-                      th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'"
-                      th:data-num="${i}">[[${i}]]
-              </button>
-            </th:block>
-
-            <!-- 다음 버튼 -->
-            <button
-                    class="page-btn"
-                    th:if="${pageDTO.next}"
-                    th:data-num="${pageDTO.blockEnd + 1}">&gt;
-            </button>
-          </div>
-
-
         </div>
+        <div class="pagination">
+          <!-- 이전 버튼 -->
+          <button
+                  class="page-btn"
+                  th:if="${pageDTO.prev}"
+                  th:data-num="${pageDTO.blockStart - 1}">&lt;
+          </button>
+
+          <!-- 페이지 번호 버튼 -->
+          <th:block th:each="i:${#numbers.sequence(pageDTO.blockStart, pageDTO.blockEnd)}">
+            <button
+                    th:class="${pageDTO.pageNo == i} ? 'page-btn active' :'page-btn'"
+                    th:data-num="${i}">[[${i}]]
+            </button>
+          </th:block>
+
+          <!-- 다음 버튼 -->
+          <button
+                  class="page-btn"
+                  th:if="${pageDTO.next}"
+                  th:data-num="${pageDTO.blockEnd + 1}">&gt;
+          </button>
+        </div>
+
       </div>
+
 
     </div>
   </div>

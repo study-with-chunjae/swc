@@ -21,7 +21,20 @@
         justify-content: center; /* 수평 중앙 정렬 */
         align-items: center; /* 수직 중앙 정렬 */
       }
-
+<head>
+  <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
+</head>
+<div layout:fragment="mainContent" class="fontQnsvlf">
+  <div class="flex">
+    <section class="content1">
+      <div>
+        <h3 style="text-align: center; margin-top: 15px">프로필</h3>
+        <aside class="shared-learning">
+          <div class="thumbnail-group center">
+            <img th:src="${profileImage?.getPath()?:'/assets/public/human.png'}" alt="Thumbnail" />
+          </div>
+          <button class="profileImgEdit">Edit</button>
+          <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 10px">
       .modal-content {
         background-color: #fff; /* 모달 배경색 */
         padding: 20px; /* 내부 여백 */
@@ -129,19 +142,30 @@
           <div class="slider-container">
             <div class="slider-wrapper">
               <div class="slider" id="slider">
-                <article
-                  class="learning-card"
-                  th:if="${!postMainDTOList.isEmpty()}"
-                  th:each="post, status:${postMainDTOList}"
-                >
-                  <div class="thumbnail">
-                    <img
-                      th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}"
-                      alt="Thumbnail"
-                    />
-                    <p class="category" th:text="${post.topics}"></p>
-                    <p class="category" th:text="${post.hashtag}"></p>
-                    <div class="thumbUps">❤️ 좋아요 [[${post.thumbUps}]]</div>
+              <article
+                class="learning-card"
+                th:if="${!postMainDTOList.isEmpty()}"
+                th:each="post, status:${postMainDTOList}"
+              >
+                <div class="thumbnail">
+                  <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
+                  <div class="category">
+                    <div class="tag-container">
+                      <strong>해시태그</strong>:
+                      <th:block th:each="tag,status:${post.hashtag}">
+                        <div class="tag-div" th:text="${tag}" th:data-tag="${tag}" th:onclick="'search(this);'"></div>
+                      </th:block>
+                    </div>
+                  </div>
+                  <div class="thumbUps">❤️ 좋아요 <span th:text="${post.thumbUps}"></span></div>
+                </div>
+                <div class="info">
+                  <h3 class="title" th:text="${post.title}"></h3>
+                  <p class="description" th:text="${post.content}"></p>
+                  <div class="shared-by">
+                    <th:block th:each="share, status:${post.shares}">
+                      <div th:text="${share}"></div>
+                    </th:block>
                   </div>
                   <div class="info">
                     <h3 class="title" th:text="${post.title}"></h3>
@@ -183,6 +207,19 @@
           ></script>
         </div>
       </section>
+    <div>
+      <script th:inline="javascript">
+        let baseDate = new Date([[${createdAt}]]);
+        function search(element){
+          const tag = element.getAttribute("data-tag");
+          location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
+        }
+      </script>
+      <script
+        th:src="@{/assets/js/main.js}"
+        layout:fragment="mainscript"
+        th:inline="javascript"
+      ></script>
     </div>
     <!-- 프로필 사진 변경 모달 -->
     <div id="profileModal">

@@ -40,6 +40,7 @@ public class JwtTokenProvider {
 
     return Jwts.builder()
         .setSubject(memberId)
+        .claim("memberId", memberId)
         .claim("name", name)
         .claim("email", email)
         .claim("phone", phone)

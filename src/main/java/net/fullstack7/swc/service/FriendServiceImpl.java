@@ -82,7 +82,8 @@ public class FriendServiceImpl implements FriendServiceIf {
         friendRepository.save(friend);
 
          String message = receiverId + "님이 친구 요청을 수락했습니다.";
-        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/myPage/friend");    }
+        alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/myPage/friend");
+    }
 
     @Override
     @Transactional
