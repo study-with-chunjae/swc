@@ -32,4 +32,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     // 아이디 전체 삭제 (한덕용 추가)
     void deleteAllBySenderIdOrReceiverId(String senderId, String receiverId);
+
+    int countBySenderId(String memberId);
 }

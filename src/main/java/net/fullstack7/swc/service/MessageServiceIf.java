@@ -27,7 +27,8 @@ public interface MessageServiceIf {
     Message markAsRead(Long messageId);
 
     //개수
-    public int getReceiverMessageCount(String memberId);
+    public int getReceiverMessageCount(String receiverId);
+    public int getSenderMessageCount(String senderId);
 
-    public List<MessageDTO> getReceiverMessageList(String memberId, Pageable pageable);
+    public List<MessageDTO> getReceiverMessageList(String receiverId, Pageable pageable);
 }

@@ -104,7 +104,8 @@
         form {
             width: 99%;
             max-width: 1000px;
-            margin-bottom: 30px;
+            margin-bottom: 75px;
+            margin-top: -45px;
             height: 450px;
             max-height: 450px;
         }
@@ -135,6 +136,32 @@
             width: 100%;
             max-width: 1000px;
             /*gap: 390px;*/
+        }
+
+        /* 페이징 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #007bff;
+        }
+
+        .pagination a:hover {
+            background-color: #e9ecef;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+            cursor: default;
         }
     </style>
 </head>
@@ -172,12 +199,12 @@
         <div class="myPageRight">
             <h1>보낸 쪽지 목록</h1>
 
-            <div th:if="${#lists.isEmpty(messages)}" class="no-messages">
+            <div th:if="${#lists.isEmpty(pageDTO.dtoList)}" class="no-messages">
                 <p>보낸 쪽지가 없습니다.</p>
                 <!--                <button type="submit">삭제</button>-->
             </div>
 
-            <div th:unless="${#lists.isEmpty(messages)}">
+            <div th:unless="${#lists.isEmpty(pageDTO.dtoList)}">
                 <form method="post" th:action="@{/message/send/delete}" onsubmit="return validateForm()">
                     <button type="submit" class="delete-button">삭제</button>
                     <table>
@@ -194,11 +221,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="message, iterStat : ${messages}">
+                        <tr th:each="message, iterStat : ${pageDTO.dtoList}">
                             <td class="checkbox-container">
                                 <input type="checkbox" name="messageIds" th:value="${message.id}" class="messageCheckbox"/>
                             </td>
-                            <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${iterStat.index + 1}"></a></td>
+                            <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${iterStat.index + pageDTO.offset + 1}"></a></td>
                             <td th:text="${message.receiverId}"></td>
                             <td><a th:href="@{/message/send/view?messageId={id}(id=${message.id})}" th:text="${message.title}"></a></td>
                             <td th:text="${#temporals.format(message.regDate, 'yyyy-MM-dd HH:mm')}"></td>
@@ -213,6 +240,20 @@
             <div class="navigation-buttons">
                 <button type="button" class="received-button" onclick="window.location.href='/message/list';">받은쪽지목록</button>
                 <button type="button" class="write-button" onclick="window.location.href='/message/regist';">쪽지 쓰기</button>
+            </div>
+            <!-- 페이징 -->
+            <div class="pagination">
+                <span th:if="${pageDTO.prev}">
+                    <a th:href="@{/message/send/list(page=${pageDTO.blockStart - 1}, size=${size})}">이전</a>
+                </span>
+
+                <span th:each="i : ${#numbers.sequence(pageDTO.blockStart - 1, pageDTO.blockEnd - 1)}">
+                    <a th:href="@{/message/send/list(page=${i + 1}, size=${size})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'current' : ''"></a>
+                </span>
+
+                <span th:if="${pageDTO.next}">
+                    <a th:href="@{/message/send/list(page=${pageDTO.blockEnd + 1}, size=${size})}">다음</a>
+                </span>
             </div>
         </div>
     </div>

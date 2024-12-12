@@ -23,35 +23,49 @@
 
         .container {
             width: 80%;
+            height: 400px;
+            max-height: 400px;
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-top: 40px;
         }
 
         .message-info {
-            margin-bottom: 20px;
+            /*margin-bottom: 230px;*/
+            flex: 1;
+            max-height: 300px;
+            /*overflow-y: auto;*/
+            padding-bottom: 60px;
         }
 
         .message-info p {
-            font-size: 16px;
+            font-size: 20px;
             line-height: 1.6;
             color: #555;
+            margin: 5px 0;
         }
 
         .message-info span {
             font-weight: bold;
+            white-space: pre-line;
+            word-wrap: break-word;
         }
 
         .buttons {
             display: flex;
             gap: 10px; /* 버튼 사이에 간격 추가 */
-            margin-top: 20px;
+            margin-top: 30px;
             width: 100%;
             align-items: baseline;
             justify-content: center;
+            bottom: 20px;
+            background: fixed;
+            position: absolute;
         }
 
         /* 목록으로 버튼 */
@@ -123,6 +137,41 @@
         .container{
             text-decoration: black;
         }
+
+        .message-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;  /* 스크롤 시 고정 */
+            top: 0;
+            background-color: white;  /* 배경색을 설정하여 스크롤 시 겹치는 내용이 보이지 않도록*/
+            z-index: 10;  /* 다른 요소들보다 위에 표시되도록 함 */
+            padding: 10px 0;  /* 위쪽, 아래쪽 여백 설정 */
+        }
+
+        .message-content {
+            flex: 1;
+            margin-top: 10px;
+            word-wrap: break-word;
+            white-space: normal;
+            overflow-y: auto;
+            max-height: 240px;
+            padding-right: 10px;
+        }
+
+
+        .isRead {
+            position: absolute;
+            left: 20px;
+            bottom: 60px; /* 목록과 삭제 버튼 위에 배치되도록 위쪽에 여유 공간 추가 */
+            display: flex;
+            align-items: center;
+        }
+
+        .isRead p {
+            margin-right: 10px;
+            color: black;
+        }
     </style>
 </head>
 <div layout:fragment="mainContent" class="fontQnsvlf">
@@ -160,22 +209,25 @@
 
             <div class="container">
                 <div class="message-info">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <p>제목: <span th:text="${message.title}"></span></p>
-                    <p>보낸 사람: <span th:text="${message.senderId}"></span></p>
+                    <div class="message-info-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <p>제목: <span th:text="${message.title}"></span></p>
+                        <p>보낸 사람: <span th:text="${message.senderId}"></span></p>
                     </div>
-                    <p>내용: <span th:text="${message.content}"></span></p>
-                    <div class="isRead" style="display: flex; align-items: center;"><p style="margin-right: 10px; color: black;">읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
+                    <div class="message-content">
+                        <p class="content" >내용: <span th:text="${message.content}"></span></p>
+                    </div>
+
+                <div class="isRead" style="display: flex; align-items: center;">
+                    <p style="margin-right: 10px; color: black;">읽음 여부: <span th:text="${message.isRead ? '읽음' : '안 읽음'}"></span></p>
                         <!--            <div class="mark-unread-container">-->
                         <!-- 안 읽음 버튼: 읽음 여부 옆 -->
-                        <form action="#" th:action="@{/message/markAsUnRead}" method="post" style="display: inline-flex" >
-                            <button type="submit" class="mark-unread-button">안 읽음</button>
-                            <input type="hidden" th:value="${message.id}" name="messageId" />
-                        </form>
-                    </div>
-
+                    <form action="#" th:action="@{/message/markAsUnRead}" method="post" style="display: inline-flex" >
+                        <button type="submit" class="mark-unread-button">안 읽음</button>
+                        <input type="hidden" th:value="${message.id}" name="messageId" />
+                    </form>
                 </div>
 
+            </div>
                 <div class="buttons">
                     <button class="list-button" type="button" onclick="window.location.href='/message/list';">목록으로</button>
 
@@ -184,6 +236,6 @@
                         <button type="submit" class="delete-button">삭제</button>
                     </form>
                 </div>
-            </div>
+        </div>
         </div>
 </html>
