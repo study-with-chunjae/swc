@@ -38,7 +38,8 @@ public class SecurityConfig {
                             "/qna/**",
                             "/assets/**",
                             "/error",
-                            "/oauth2/**"
+                            "/oauth2/**",
+                            "/admin/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

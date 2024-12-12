@@ -27,10 +27,21 @@
     </style>
     <div class="container mt-4">
         <h1>QnA 리스트</h1>
+
+        <form th:action="@{/admin/qnaList}" method="get">
+            <label for="answered">답변확인:</label>
+            <select name="answered" id="answered">
+                <option value="" th:selected="${answered == null}">All</option>
+                <option value="true" th:selected="${answered == true}">작성완료</option>
+                <option value="false" th:selected="${answered == false}">미작성</option>
+            </select>
+            <button type="submit">확인</button>
+        </form>
+
         <table>
             <thead>
             <tr>
-<!--                <th>번호</th>-->
+                <!--                <th>번호</th>-->
                 <th>제목</th>
                 <th>이메일</th>
                 <th>등록일</th>
@@ -38,7 +49,7 @@
             </thead>
             <tbody>
             <tr th:each="qna : ${qnaList}">
-<!--                <td th:text="${qna.qnaId}"></td>-->
+                <!--                <td th:text="${qna.qnaId}"></td>-->
                 <td>
                     <a th:href="@{/admin/qnaView/{qnaId}(qnaId=${qna.qnaId})}" th:text="${qna.title}"></a>
                     <div th:if="${qna.replies.size() > 0}" class="reply">
@@ -54,6 +65,29 @@
 
             </tbody>
         </table>
+        <div>
+            <ul style="list-style: none; display: flex;">
+                <!-- Previous Page 링크 -->
+                <li th:if="${qnaPage.hasPrevious()}">
+                    <a th:href="@{/admin/qnaList(page=${qnaPage.number - 1}, size=${qnaPage.size}, answered=${answered})}">Previous</a>
+                </li>
+
+                <!-- 페이지 번호 링크 -->
+                <li th:each="i : ${#numbers.sequence(0, qnaPage.totalPages - 1)}"
+                    th:if="${i >= qnaPage.number - 5 and i <= qnaPage.number + 5}">
+                    <a th:href="@{/admin/qnaList(page=${i}, size=${qnaPage.size}, answered=${answered})}"
+                       th:text="${i + 1}"
+                       th:class="${i == qnaPage.number} ? 'active' : ''"
+                       style="margin: 0 5px; text-decoration: none; color: [[${i == qnaPage.number} ? 'red' : 'blue']]">
+                    </a>
+                </li>
+
+                <!-- Next Page 링크 -->
+                <li th:if="${qnaPage.hasNext()}">
+                    <a th:href="@{/admin/qnaList(page=${qnaPage.number + 1}, size=${qnaPage.size}, answered=${answered})}">Next</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 </html>
