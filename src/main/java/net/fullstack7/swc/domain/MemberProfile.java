@@ -25,4 +25,8 @@ public class MemberProfile {
     public String getProfileImage() {  // getter 추가
         return this.path;
     }
+
+    public void modifyProfileImage(String path) {
+        this.path = path;
+    }
 }

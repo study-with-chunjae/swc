@@ -38,6 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
 @Controller
@@ -202,5 +203,19 @@ public class MyPageController {
     String memberId = getMemberIdInJwt(req);
     memberService.deleteMember(memberId);
     return ResponseEntity.ok(Map.of("success", true));
+  }
+
+  @PostMapping("/update-profile-image")
+  public ResponseEntity<Map<String, Object>> updateProfileImage(
+          @RequestParam("file") MultipartFile file,
+          HttpServletRequest req) {
+      try {
+          String memberId = getMemberIdInJwt(req);
+          memberService.updateProfileImage(memberId, file);
+          return ResponseEntity.ok(Map.of("success", true));
+      } catch (Exception e) {
+          log.error("프로필 사진 업데이트 실패: {}", e.getMessage());
+          return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+      }
   }
 }

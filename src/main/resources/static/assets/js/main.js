@@ -113,14 +113,14 @@ async function getMainPosts(element) {
 					<div class="info">
 						<h3 class="title">등록된 오늘의학습이 없습니다.</h3>
 					</div>
-                </article>
+        </article>
             `;
-        }
-        initSliders();
-    } catch (error) {
-        console.log(error);
-        //location.href = "/post/main?createdAt=" + createdAt;
     }
+    initSliders();
+  } catch (error) {
+    console.log(error);
+    //location.href = "/post/main?createdAt=" + createdAt;
+  }
 }
 
 const weekdays = ["일", "월", "화", "수", "목", "금", "토"];

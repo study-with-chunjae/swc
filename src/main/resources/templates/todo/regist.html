@@ -1,360 +1,411 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{main/layout.html}"
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{main/layout.html}"
 >
-<head>
-    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet"/>
-    <link th:href="@{/assets/css/main/header.css}" rel="stylesheet"/>
+  <head>
+    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
+    <link th:href="@{/assets/css/main/header.css}" rel="stylesheet" />
     <style>
+      .content2 {
+        min-width: 990px;
+        margin: 30px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255);
+        min-height: 500px;
+        border-radius: 8px;
+        color: #000;
+      }
 
+      h1 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
 
-        .content2 {
-            min-width: 990px;
-            margin: 30px;
-            padding: 20px;
-            background-color: rgba(255, 255, 255);
-            min-height: 500px;
-            border-radius: 8px;
-            color : #000;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
+      td {
+        padding: 10px;
+        vertical-align: top;
+      }
 
+      label {
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 5px;
+      }
 
+      input[type="text"],
+      input[type="file"],
+      input[type="date"],
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      textarea {
+        resize: none;
+        height: 100px;
+      }
+
+      input[type="radio"] {
+        margin-right: 5px;
+      }
+
+      .button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        width: 150px;
+      }
+
+      #btnSubmit {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      #btnSubmit:hover {
+        background-color: #0056b3;
+      }
+
+      #btnReset {
+        background-color: #6c757d;
+        color: #fff;
+        margin-left: 10px;
+      }
+
+      #btnReset:hover {
+        background-color: #5a6268;
+      }
+
+      #btnBack {
+        background-color: #28a745;
+        color: #fff;
+        margin-left: 10px;
+      }
+
+      #btnBack:hover {
+        background-color: #218838;
+      }
+
+      td[colspan="2"] {
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
         table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        td {
-            padding: 10px;
-            vertical-align: top;
-        }
-
-        label {
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 5px;
+          width: 100%;
         }
 
         input[type="text"],
         input[type="file"],
         input[type="date"],
         textarea {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            background: #fff;
-            box-sizing: border-box;
+          width: 100%;
         }
 
-        textarea {
-            resize: none;
-            height: 100px;
-        }
-
-        input[type="radio"] {
-            margin-right: 5px;
-        }
-
-        .button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 150px;
-        }
-
-        #btnSubmit {
-            background-color: #007BFF;
-            color: #fff;
-        }
-
-        #btnSubmit:hover {
-            background-color: #0056b3;
-        }
-
-        #btnReset {
-            background-color: #6c757d;
-            color: #fff;
-            margin-left: 10px;
-        }
-
-        #btnReset:hover {
-            background-color: #5a6268;
-        }
-
-        #btnBack {
-            background-color: #28a745;
-            color: #fff;
-            margin-left: 10px;
-        }
-
-        #btnBack:hover {
-            background-color: #218838;
+        td {
+          display: block;
+          width: 100%;
         }
 
         td[colspan="2"] {
-            text-align: center;
+          text-align: center;
+          margin-top: 20px;
         }
+      }
+      .styled-select {
+        position: relative;
+        width: 200px;
+        display: inline-block;
+      }
 
-        @media (max-width: 768px) {
-            table {
-                width: 100%;
+      select {
+        width: 100%;
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #333;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        appearance: none; /* Removes default browser styles */
+        -webkit-appearance: none; /* Removes Safari default styles */
+        -moz-appearance: none; /* Removes Firefox default styles */
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+      }
+
+      select:hover {
+        border-color: #007bff;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+
+      /* Arrow customization */
+      .styled-select::after {
+        content: "▼";
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #999;
+      }
+      .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .tag-div {
+        color: black;
+        font-weight: bold;
+        border-radius: 5px;
+        display: inline-block;
+      }
+      .tag-span {
+        margin: 3px;
+      }
+      .tag-remove {
+        background-color: transparent;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div layout:fragment="mainContent">
+      <div class="content2">
+        <form method="post" enctype="multipart/form-data">
+          <table>
+            <tr>
+              <td><label for="title">제목</label></td>
+              <td>
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  th:maxlength="100"
+                  th:value="${postDTO?.title?:''}"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="content">내용</label></td>
+              <td>
+                <textarea
+                  name="content"
+                  id="content"
+                  th:maxlength="2000"
+                  th:text="${postDTO?.content?:''}"
+                ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="file">이미지</label></td>
+              <td><input type="file" name="image" id="file" /></td>
+            </tr>
+            <tr>
+              <td>오늘의 학습 노출여부</td>
+              <td>
+                <input
+                  id="todayType_1"
+                  type="radio"
+                  name="todayType"
+                  value="1"
+                  th:checked="${postDTO?.todayType?:-1 == 1}"
+                /><label for="todayType_1">노출</label>
+                <input
+                  id="todayType_0"
+                  type="radio"
+                  name="todayType"
+                  value="0"
+                  th:checked="${postDTO?.todayType?:-1 == 0}"
+                /><label for="todayType_0">노출안함</label>
+              </td>
+            </tr>
+            <tr>
+              <td>오늘의 학습 노출기간</td>
+              <td>
+                <input
+                  id="displayAt"
+                  type="date"
+                  name="displayAt"
+                  th:value="${postDTO?.displayAt?:''}"
+                />
+                &nbsp;~&nbsp;
+                <input
+                  id="displayEnd"
+                  type="date"
+                  name="displayEnd"
+                  th:value="${postDTO?.displayEnd?:''}"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>해시태그</td>
+              <td>
+                <!-- Tags will be dynamically added here -->
+                <div class="input-container">
+                  <input
+                    type="text"
+                    id="tag-input"
+                    placeholder="10자 이내로 4개까지 등록 가능합니다."
+                  />
+                </div>
+
+                <div class="tag-container" id="tag-container">
+                  <!-- Tags will be dynamically added here -->
+                </div>
+                <input
+                  type="hidden"
+                  id="hashtag-input"
+                  name="hashtag"
+                  value=""
+                />
+              </td>
+            </tr>
+            <tr>
+              <td th:colspan="2">
+                <button
+                  class="button"
+                  type="submit"
+                  id="btnSubmit"
+                  onclick="prepareFormData()"
+                >
+                  등록
+                </button>
+                <button class="button" type="reset" id="btnReset">
+                  초기화
+                </button>
+                <button class="button" type="button" id="btnBack">
+                  목록으로
+                </button>
+              </td>
+            </tr>
+          </table>
+          <script th:inline="javascript">
+            const btnBack = document.getElementById("btnBack")
+            btnBack.addEventListener("click", ()=>{
+               location.href="/post/list"
+            });
+
+            const errors = [[${errors}]];
+            if(errors){
+                alert(errors);
             }
 
-            input[type="text"],
-            input[type="file"],
-            input[type="date"],
-            textarea {
-                width: 100%;
+            const tags = [];
+            const inputElement = document.getElementById('tag-input');
+            const hiddenInputElement = document.getElementById('hashtag-input');
+
+            inputElement.addEventListener('keydown', (event) => {
+                handleInput(event);
+            });
+
+            function handleInput(event) {
+                const input = event.target;
+                const value = input.value.trim();
+                if (event.key === 'Enter') {
+                    console.log(value);
+                    if(!value){
+                        event.preventDefault();
+                        console.log("!value");
+                        return;
+                    }
+                    if(tags.length>=4){
+                        event.preventDefault();
+                        console.log("tags.length>=4");
+                        return;
+                    }
+                    if (value.length <= 5) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        addTag(value.startsWith('#') ? value : `#${value}`);
+                        input.value = '';
+                    } else {
+                        event.preventDefault();
+                        alert('5글자 까지만 입력하세요.');
+                    }
+                }
             }
 
-            td {
-                display: block;
-                width: 100%;
+
+            function addTag(value) {
+                if (value == null || value === '') return;
+                if (tags.includes(value)) return;
+                if (tags.length >= 4) return;
+
+                tags.push(value);
+                console.log("tags : " + tags.join(','));
+
+                const tagContainer = document.getElementById('tag-container');
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-div';
+
+                // Assign a random background color
+                const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                tagElement.style.backgroundColor = randomColor;
+
+                const span = document.createElement('span');
+                span.className = 'tag-span';
+                span.textContent = value;
+                tagElement.appendChild(span);
+
+                const button = document.createElement('button');
+                button.className = 'tag-remove';
+                button.textContent = '×';
+                tagElement.appendChild(button);
+
+                tagContainer.appendChild(tagElement);
+
+                button.addEventListener("click", () => {
+                    removeTag(value, button);
+                });
+
+                updateHiddenInput();
             }
 
-            td[colspan="2"] {
-            text-align: center;
-            margin-top: 20px;
-        }
-        }
-        .styled-select {
-            position: relative;
-            width: 200px;
-            display: inline-block;
-        }
 
-        select {
-            width: 100%;
-            padding: 10px 15px;
-            font-size: 14px;
-            color: #333;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            appearance: none; /* Removes default browser styles */
-            -webkit-appearance: none; /* Removes Safari default styles */
-            -moz-appearance: none; /* Removes Firefox default styles */
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
+            function removeTag(value, button) {
+                const index = tags.indexOf(value);
+                if (index > -1) {
+                    tags.splice(index, 1);
+                    button.parentElement.remove();
+                    updateHiddenInput();
+                }
+                console.log("tags : "+ tags.join(','));
+            }
 
-        select:hover {
-            border-color: #007BFF;
-        }
+            function updateHiddenInput() {
+                hiddenInputElement.value = tags.join(',');
+            }
 
-        select:focus {
-            outline: none;
-            border-color: #007BFF;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-
-        /* Arrow customization */
-        .styled-select::after {
-            content: '▼';
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #999;
-        }
-        .tag-container{
-            display : flex;
-            flex-wrap: wrap;
-        }
-        .tag-div {
-            color: black;
-            font-weight: bold;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .tag-span{
-            margin : 3px;
-        }
-        .tag-remove{
-            background-color : transparent;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-</style>
-</head>
-<body>
-<div layout:fragment="mainContent">
-        <div class="content2">
-            <form method="post" enctype="multipart/form-data">
-                <table>
-                    <tr>
-                        <td><label for="title">제목</label></td>
-                        <td><input type="text" name="title" id="title" th:maxlength="100" th:value="${postDTO?.title?:''}"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="content">내용</label></td>
-                        <td><textarea name="content" id="content" th:maxlength="2000" th:text="${postDTO?.content?:''}"
-                        ></textarea></td>
-                    </tr>
-                    <tr>
-                        <td><label for="file">이미지</label></td>
-                        <td><input type="file" name="image" id="file"></td>
-                    </tr>
-                    <tr>
-                        <td>오늘의 학습 노출여부</td>
-                        <td>
-                            <input id="todayType_1" type="radio" name="todayType" value="1" th:checked="${postDTO?.todayType?:-1 == 1}"><label for="todayType_1">노출</label>
-                            <input id="todayType_0" type="radio" name="todayType" value="0" th:checked="${postDTO?.todayType?:-1 == 0}"><label for="todayType_0">노출안함</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>오늘의 학습 노출기간</td>
-                        <td>
-                            <input id="displayAt" type="date" name="displayAt" th:value="${postDTO?.displayAt?:''}">
-                            &nbsp;~&nbsp;
-                            <input id="displayEnd" type="date" name="displayEnd" th:value="${postDTO?.displayEnd?:''}">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>해시태그</td>
-                        <td>
-                            <!-- Tags will be dynamically added here -->
-                            <div class="input-container">
-                                <input type="text" id="tag-input" placeholder="10자 이내로 4개까지 등록 가능합니다.">
-                            </div>
-
-
-                            <div class="tag-container" id="tag-container">
-                                <!-- Tags will be dynamically added here -->
-                            </div>
-                            <input type="hidden" id="hashtag-input" name="hashtag" value="">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td th:colspan="2">
-                            <button class="button" type="submit" id="btnSubmit" onclick="prepareFormData()">등록</button>
-                            <button class="button" type="reset" id="btnReset">초기화</button>
-                            <button class="button" type="button" id="btnBack">목록으로</button>
-                        </td>
-                    </tr>
-                </table>
-                <script th:inline="javascript">
-                    const btnBack = document.getElementById("btnBack")
-                    btnBack.addEventListener("click", ()=>{
-                       location.href="/post/list"
-                    });
-
-                    const errors = [[${errors}]];
-                    if(errors){
-                        alert(errors);
-                    }
-
-                    const tags = [];
-                    const inputElement = document.getElementById('tag-input');
-                    const hiddenInputElement = document.getElementById('hashtag-input');
-
-                    inputElement.addEventListener('keydown', (event) => {
-                        handleInput(event);
-                    });
-
-                    function handleInput(event) {
-                        const input = event.target;
-                        const value = input.value.trim();
-                        if (event.key === 'Enter') {
-                            console.log(value);
-                            if(!value){
-                                event.preventDefault();
-                                console.log("!value");
-                                return;
-                            }
-                            if(tags.length>=4){
-                                event.preventDefault();
-                                console.log("tags.length>=4");
-                                return;
-                            }
-                            if (value.length <= 5) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                addTag(value.startsWith('#') ? value : `#${value}`);
-                                input.value = '';
-                            } else {
-                                event.preventDefault();
-                                alert('5글자 까지만 입력하세요.ㅠ');
-                            }
-                        }
-                    }
-
-
-                    function addTag(value) {
-                        if (value == null || value === '') return;
-                        if (tags.includes(value)) return;
-                        if (tags.length >= 4) return;
-
-                        tags.push(value);
-                        console.log("tags : " + tags.join(','));
-
-                        const tagContainer = document.getElementById('tag-container');
-                        const tagElement = document.createElement('div');
-                        tagElement.className = 'tag-div';
-
-                        // Assign a random background color
-                        const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
-                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                        tagElement.style.backgroundColor = randomColor;
-
-                        const span = document.createElement('span');
-                        span.className = 'tag-span';
-                        span.textContent = value;
-                        tagElement.appendChild(span);
-
-                        const button = document.createElement('button');
-                        button.className = 'tag-remove';
-                        button.textContent = '×';
-                        tagElement.appendChild(button);
-
-                        tagContainer.appendChild(tagElement);
-
-                        button.addEventListener("click", () => {
-                            removeTag(value, button);
-                        });
-
-                        updateHiddenInput();
-                    }
-
-
-                    function removeTag(value, button) {
-                        const index = tags.indexOf(value);
-                        if (index > -1) {
-                            tags.splice(index, 1);
-                            button.parentElement.remove();
-                            updateHiddenInput();
-                        }
-                        console.log("tags : "+ tags.join(','));
-                    }
-
-                    function updateHiddenInput() {
-                        hiddenInputElement.value = tags.join(',');
-                    }
-
-                    function prepareFormData() {
-                        updateHiddenInput();
-                    }
-                </script>
-            </form>
-
-        </div>
-</div>
-
-</body>
+            function prepareFormData() {
+                updateHiddenInput();
+            }
+          </script>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
