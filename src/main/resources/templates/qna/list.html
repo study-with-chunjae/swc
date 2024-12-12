@@ -57,6 +57,9 @@
                 </span>
             </td>
         </tr>
+        <tr th:if="${qnaList == null or qnaList.size() == 0}">
+            <td colspan="3">해당하는 qna가 없습니다</td>
+        </tr>
         </tbody>
     </table>
 </div>

@@ -1,8 +1,10 @@
 package net.fullstack7.swc.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Qna;
 import net.fullstack7.swc.dto.QnaDTO;
+import net.fullstack7.swc.repository.AdminRepository;
 import net.fullstack7.swc.repository.QnaRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,8 +17,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class QnaServiceImpl implements QnaServiceIf {
-
     private final QnaRepository qnaRepository;
     private final JavaMailSender mailSender; // 의존성 주입 필요
 
@@ -36,7 +38,7 @@ public class QnaServiceImpl implements QnaServiceIf {
 
     @Override
     @Transactional(readOnly = true)
-    public QnaDTO viewQna(Integer qnaId, String password, boolean isAdmin) {
+    public QnaDTO viewQna(Integer qnaId, String password,boolean isAdmin) {
         Qna qna = qnaRepository.findById(qnaId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 QnA가 존재하지 않습니다."));
 
@@ -63,7 +65,7 @@ public class QnaServiceImpl implements QnaServiceIf {
                 qnaDTO.getContent(),
                 parent.getEmail(),
                 parent.getPassword(),
-                parent.getRegDete());
+                parent.getRegDate());
 
         parent.addReply(reply);
 
@@ -93,6 +95,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     @Override
     public List<QnaDTO> listQna() {
         List<Qna> rootQnaList = qnaRepository.findAllRootQna();
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@서비스에서 리스트 확인{}",rootQnaList);
 
         return rootQnaList.stream()
                 .map(this::convertToDTO)
@@ -114,7 +117,8 @@ public class QnaServiceImpl implements QnaServiceIf {
                         .title(reply.getTitle())
                         .content(reply.getContent())
                         .answered(reply.isAnswered())
-                        .parentId(qna.getQnaId())
+                        .regDate(reply.getRegDate())
+                        .parentId(reply.getParent().getQnaId())
                         .build())
                 .collect(Collectors.toList());
 
@@ -125,6 +129,7 @@ public class QnaServiceImpl implements QnaServiceIf {
                 .answered(qna.isAnswered())
                 .email(qna.getEmail())
                 .replies(replies)
+                .regDate(qna.getRegDate())
                 .build();
     }
 

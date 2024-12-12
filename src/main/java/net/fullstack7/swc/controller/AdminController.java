@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.fullstack7.swc.domain.Qna;
 import net.fullstack7.swc.dto.AdminDTO;
 import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.QnaDTO;
@@ -21,6 +22,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -90,7 +94,9 @@ public class AdminController {
 
     @GetMapping("/qnaList")
     public String qnaList(Model model) {
-        model.addAttribute("qnaList", qnaService.listQna());
+        List<QnaDTO> qnaList = qnaService.listQna();
+        log.info("*************************************qna{}",qnaList);
+        model.addAttribute("qnaList", qnaList);
         return "admin/qnaList";
     }
 
