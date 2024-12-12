@@ -28,9 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,6 +81,9 @@ public class PostController {
                 model.addAttribute("error", "조회 중 일시적인 에러가 발생했습니다.");
             }
             model.addAttribute("createdAt", createdAt);
+            model.addAttribute("month", createdAt.split("-")[1]);
+            model.addAttribute("week", getWeekOfMonth(createdAt));
+            model.addAttribute("date", createdAt.split("-")[2]);
             model.addAttribute("viewType", "today");
             model.addAttribute("postMainDTOList", postMainDTOList);
             model.addAttribute("memberDTO", memberDTO);
@@ -164,7 +170,10 @@ public class PostController {
     @CheckJwtToken
     @GetMapping("/view")
     public String view(@RequestParam(required = false, defaultValue="-1") int postId,
-                       HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
+                       @RequestParam(required = false, defaultValue = "") String queryString,
+                       HttpServletRequest req,
+                       Model model,
+                       RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "view");
         if(postId < 0){
             return errorUtil.redirectWithError("잘못된 값이 입력되었습니다.", DEFAULT_REDIRECT,redirectAttributes);
@@ -175,9 +184,11 @@ public class PostController {
         LogUtil.log("shares",postDTO.getShares());
         LogUtil.log("hashtags",postDTO.getHashtags());
         LogUtil.log("thumbUps",postDTO.getThumbUps());
-        model.addAttribute("viewType",postDTO.getMember().getMemberId().equals(memberId)?"my":"others");
+        LogUtil.log("queryString",queryString);
+        model.addAttribute("viewType",getViewType(req));
         model.addAttribute("postDTO",postDTO);
         model.addAttribute("thumbUp",thumbUpService.isExist(postId,memberId)?"1":"0");
+        model.addAttribute("queryString", URLDecoder.decode(URLDecoder.decode(queryString, StandardCharsets.UTF_8),StandardCharsets.UTF_8));
         return "todo/view";
     }
 
@@ -274,5 +285,18 @@ public class PostController {
     private void validTitle(PostRegisterDTO postRegisterDTO){
         String title = postRegisterDTO.getTitle();
 
+    }
+    private int getWeekOfMonth(String dateStr){
+        LocalDate date = LocalDate.parse(dateStr,FORMATTER);
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        return date.get(weekFields.weekOfMonth());
+    }
+    private String getViewType(HttpServletRequest req){
+        String referer = req.getHeader("referer");
+        if(referer.contains("share")){
+            return "share";
+        }else{
+            return "my";
+        }
     }
 }

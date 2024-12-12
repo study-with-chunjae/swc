@@ -118,13 +118,15 @@
         <h2>오늘의 학습</h2>
         <section class="content3" style="margin-top: 20px">
           <div class="weekday-container">
-            <input type="date" class="styled-date" />
             <button class="arrow up">▲</button>
             <ul id="weekday-list" class="weekday-list">
               <!-- Days will be dynamically injected here -->
             </ul>
             <button class="arrow down">▼</button>
-            <p id="today" style="font-size: 16px; text-align: center"></p>
+            <p id="today" style="font-size: 16px; text-align: center">
+              <b th:text="${month + '월 ' + date + '일'}"></b><br>
+              <span th:text="${'(' + month + '월,' + week +'주)'}"></span>
+            </p>
           </div>
           <div class="slider-container">
             <div class="slider-wrapper">

@@ -114,14 +114,20 @@ public class PageDTO<E> {
         if (this.searchValue == null || this.searchValue.isEmpty()) this.searchValue = EMPTY;
         if (this.searchDateBegin == null || this.searchDateBegin.isEmpty()) this.searchDateBegin = FORMATTER.format(NOW.minusDays(7));
         if (this.searchDateEnd == null || this.searchDateEnd.isEmpty()) this.searchDateEnd = FORMATTER.format(NOW);
-        this.queryString = URLEncoder.encode(
-                String.format("searchField=%s&searchValue=%s&sortField=%s&sortDirection=%s",
-                        this.searchField,
-                        this.searchValue,
-                        this.sortField,
-                        this.sortDirection
-                ),
-                StandardCharsets.UTF_8
+        this.queryString =
+                URLEncoder.encode(
+                URLEncoder.encode(
+                    String.format("pageNo=%s&pageSize=%s&searchField=%s&searchValue=%s&sortField=%s&sortDirection=%s&searchDateBegin=%s&searchDateEnd=%s",
+                            this.pageNo,
+                            this.pageSize,
+                            this.searchField,
+                            this.searchValue,
+                            this.sortField,
+                            this.sortDirection,
+                            this.searchDateBegin,
+                            this.searchDateEnd
+                    ), StandardCharsets.UTF_8
+                ), StandardCharsets.UTF_8
         );
     }
 
@@ -163,9 +169,9 @@ public class PageDTO<E> {
      *
      * @return 페이징 링크에 사용할 queryString 값
      */
-    public String getQueryString() {
-        return this.queryString != null ? URLDecoder.decode(this.queryString, StandardCharsets.UTF_8) : EMPTY;
-    }
+//    public String getQueryString() {
+//        return this.queryString != null ? URLDecoder.decode(this.queryString, StandardCharsets.UTF_8) : EMPTY;
+//    }
 
     /**
      * sortField 과 sortDirection 값에 따른 현재 페이지에 해당하는 Pageable 객체를 반환함

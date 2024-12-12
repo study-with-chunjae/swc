@@ -7,6 +7,7 @@ import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Share;
 import net.fullstack7.swc.dto.ApiResponse;
 import net.fullstack7.swc.dto.FriendShareDTO;
+import net.fullstack7.swc.dto.MemberDTO;
 import net.fullstack7.swc.dto.ShareDTO;
 import net.fullstack7.swc.service.FriendServiceIf;
 import net.fullstack7.swc.service.MemberServiceIf;
@@ -40,12 +41,22 @@ public class ShareRestController {
             }
             String memberId = cookieUtil.getMemberIdInJwt(memberService, request);
             List<FriendShareDTO> notSharedFriendsList = friendService.notSharedFriends(postId, memberId);
-            List<Member> notSharedFriendList = new ArrayList<>();
+            List<MemberDTO> notSharedFriendList = new ArrayList<>();
             notSharedFriendsList.forEach(f->{
                 if(!f.getReceiver().getMemberId().equals(memberId)){
-                    notSharedFriendList.add(f.getReceiver());
+                    notSharedFriendList.add(
+                            MemberDTO.builder()
+                                    .memberId(f.getReceiver().getMemberId())
+                                    .name(f.getReceiver().getName())
+                                    .build()
+                    );
                 }else if(!f.getRequester().getMemberId().equals(memberId)){
-                    notSharedFriendList.add(f.getRequester());
+                    notSharedFriendList.add(
+                            MemberDTO.builder()
+                                    .memberId(f.getRequester().getMemberId())
+                                    .name(f.getRequester().getName())
+                                    .build()
+                    );
                 }
             });
             return ResponseEntity.ok(ApiResponse.success("친구목록조회성공", notSharedFriendList));
