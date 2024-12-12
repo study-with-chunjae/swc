@@ -3,11 +3,14 @@ package net.fullstack7.swc.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.AlertType;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.domain.Message;
+import net.fullstack7.swc.dto.MessageDTO;
+import net.fullstack7.swc.dto.PageDTO;
 import net.fullstack7.swc.repository.MemberRepository;
 import net.fullstack7.swc.repository.MessageRepository;
 import net.fullstack7.swc.service.AlertServiceImpl;
@@ -19,7 +22,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.awt.print.Pageable;
 import java.security.Principal;
@@ -59,22 +64,49 @@ public class MessageController {
     //받은쪽지목록
     @GetMapping("/list")
     public String messageList(Model model, HttpServletRequest req,
-                              @RequestParam(value= "page", defaultValue = "0")int page,
-                              @RequestParam(value = "size", defaultValue = "5")int size) {
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              @Valid PageDTO<MessageDTO> pageDTO, BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        log.info("페이지={}, 사이즈={}", page, size);
+        if(bindingResult.hasErrors()) {
+            pageDTO = PageDTO.<MessageDTO>builder().build();
+        }
         String memberId = getMemberIdInJwt(req);
         if (memberId == null) {
             return "redirect:/sign/signIn";
         }
-        List<Message> messageList = messageService.getReceiverMessageList(memberId);
+        // 페이지 번호가 0인 경우 처리
+        if (page < 1) {
+            log.warn("유효번호: {}", page);
+            page = 1; // 기본값으로 설정
+        }
+
+        log.info("페이지={}, 사이즈={}", page, size);
+
+        pageDTO.setPageNo(page);
+        pageDTO.setPageSize(size);
+
+//        pageDTO.setSortDirection("desc");
+//        pageDTO.setSortField("regDate");
+
+        pageDTO.initialize("regDate", "desc");
+
+        int totalCount = messageService.getReceiverMessageCount(memberId);
+        log.info("메시지총개수: {}", totalCount);
+        pageDTO.setTotalCount(totalCount);
+
+        List<MessageDTO> messageList = messageService.getReceiverMessageList(memberId, pageDTO.getSortPageable());
+        log.info("리스트사이즈: {}", messageList.size());
+        pageDTO.setDtoList(messageList);
+
+        // 총 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) totalCount / pageDTO.getPageSize());
+        model.addAttribute("totalPages", pageDTO.getTotalPage());
+        model.addAttribute("currentPage", pageDTO.getPageNo() - 1); // 0-based index
+        model.addAttribute("size", pageDTO.getPageSize());
         model.addAttribute("messages", messageList);
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<Message> messagePage = messageService.getReceiverMessageList(memberId, pageable);
-//
-//        model.addAttribute("messagePage", messagePage.getContent());
-//        model.addAttribute("totalPages", messagePage.getTotalPages());
-//        model.addAttribute("currenPage", page);
-//        model.addAttribute("totlaMessages", messagePage.getTotalElements());
-//        model.addAttribute("size", size);
+        model.addAttribute("pageDTO", pageDTO);
 
         return "message/list";
     }
@@ -83,7 +115,7 @@ public class MessageController {
     @GetMapping("/regist")
     public String showRegistForm(@RequestParam(required = false) String receiverId, Model model, HttpServletRequest req) {
         String senderId = getMemberIdInJwt(req);
-        log.info("senderId" + senderId);
+//        log.info("senderId" + senderId);
         if (senderId == null) {
             return "redirect:/sign/signIn";
         }
