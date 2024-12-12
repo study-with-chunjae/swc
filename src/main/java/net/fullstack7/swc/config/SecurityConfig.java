@@ -40,7 +40,7 @@ public class SecurityConfig {
                             "/assets/**",
                             "/error",
                             "/oauth2/**",
-                            "/api/**"
+                            "/api/**",
                             "/admin/**"
                         ).permitAll()
                         .anyRequest().authenticated()
