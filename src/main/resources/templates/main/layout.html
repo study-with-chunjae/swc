@@ -16,7 +16,7 @@
         padding: 0;
         background-color: #f3cd99;
       }
-      li{
+      li {
         list-style: none;
       }
 
@@ -72,8 +72,8 @@
         background-color: #e0e0e0;
       }
 
-      .search-results .friendBtn{
-        background-color: #4CAF50;
+      .search-results .friendBtn {
+        background-color: #4caf50;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -81,7 +81,7 @@
         cursor: pointer;
       }
 
-      #alertPopup{
+      #alertPopup {
         display: none;
         position: absolute;
         top: 205px;
@@ -132,16 +132,34 @@
             </li>
           </ul>
         </nav>
-<!--        <div class="search-bar">-->
-<!--          &lt;!&ndash;          친구검색연결(수진)&ndash;&gt;-->
-          <div class="search-bar search-container" style="position: relative; width: 422px;">
-          <input type="text" id="keyword" name="keyword" placeholder="Search..."/>
-            <ul class="search-results" id="search-results" style="position: absolute; width: 410px;">
+        <!--        <div class="search-bar">-->
+        <!--          &lt;!&ndash;          친구검색연결(수진)&ndash;&gt;-->
+        <div
+          class="search-bar search-container"
+          style="position: relative; width: 422px"
+        >
+          <input
+            type="text"
+            id="keyword"
+            name="keyword"
+            placeholder="Search..."
+          />
+          <ul
+            class="search-results"
+            id="search-results"
+            style="position: absolute; width: 410px"
+          >
             <!-- 검색 결과가 동적으로 추가됨 -->
-             </ul>
-          <button type="button" id="load-more-button" class="search-results load-more-button">더보기</button>
+          </ul>
+          <button
+            type="button"
+            id="load-more-button"
+            class="search-results load-more-button"
+          >
+            더보기
+          </button>
           <!--          친구검색연결(수진)-->
-            <button>
+          <button>
             <a href="/main/main"
               ><img
                 th:src="@{/assets/public/pen.png}"
@@ -159,10 +177,14 @@
             <li><a href="/myPage/friend">친구 목록</a></li>
             <li><a href="/message/list">쪽지 목록</a></li>
           </ul>
-<!--          알림추가(수진)-->
-          <button class="alertIcon" id="alertButton" onclick="openAlertPopup()" ></button>
+          <!--          알림추가(수진)-->
+          <button
+            class="alertIcon"
+            id="alertButton"
+            onclick="openAlertPopup()"
+          ></button>
           <div id="unreadCount"></div>
-<!--          알림추가(수진)-->
+          <!--          알림추가(수진)-->
           <button class="login-btn" onclick="location.href='/sign/logout'">
             <img
               src="/assets/public/exitDoor.png"
@@ -175,18 +197,33 @@
       </header>
     </div>
 
-<!--    알림  모달-->
+    <!--    알림  모달-->
     <div id="alertPopup">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
         <h3>알림 목록</h3>
-        <button onclick="closeAlertPopup()" style="background: transparent; border: none; font-size: 16px; cursor: pointer;">&times;</button>
+        <button
+          onclick="closeAlertPopup()"
+          style="
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+          "
+        >
+          &times;
+        </button>
       </div>
       <ul id="alertList">
         <li id="noAlertMsg">알림이 없습니다</li>
       </ul>
     </div>
-<!--    알림-->
-
+    <!--    알림-->
 
     <div class="center">
       <div class="contentArea">
@@ -201,6 +238,7 @@
         src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
       ></script>
       <script>
+        const alertButton = document.getElementById("alertButton");
         let userName = "";
         let memberId = "";
         function getCookie(name) {
@@ -216,7 +254,6 @@
           userName = decodedToken.name;
           memberId = decodedToken.memberId;
 
-
           document.querySelector(".user-name").textContent = userName;
         } else {
           console.error("Access token is not available.");
@@ -226,17 +263,17 @@
         console.log(memberId);
 
         // 친구검색추가(수진)
-        const keywordInput = document.getElementById('keyword');
-        const searchResultsList = document.getElementById('search-results');
-        const loadMoreButton = document.getElementById('load-more-button');
+        const keywordInput = document.getElementById("keyword");
+        const searchResultsList = document.getElementById("search-results");
+        const loadMoreButton = document.getElementById("load-more-button");
         let debounceTimeout = null;
         let currentPage = 0;
-        let currentKeyword = '';
+        let currentKeyword = "";
 
         // 초기 "더보기" 버튼 숨기기
-        loadMoreButton.style.display = 'none';
+        loadMoreButton.style.display = "none";
 
-        keywordInput.addEventListener('input', function() {
+        keywordInput.addEventListener("input", function () {
           const keyword = this.value.trim();
           currentKeyword = keyword;
           currentPage = 0; // 새로운 검색 시 페이지 초기화
@@ -248,64 +285,71 @@
 
           debounceTimeout = setTimeout(() => {
             if (keyword.length === 0) {
-              searchResultsList.innerHTML = '';
-              loadMoreButton.style.display = 'none';
+              searchResultsList.innerHTML = "";
+              loadMoreButton.style.display = "none";
               return;
             }
 
             // 검색 초기화
-            searchResultsList.innerHTML = '';
+            searchResultsList.innerHTML = "";
             fetchFriends(keyword, currentPage);
           }, 300);
         });
 
         function fetchFriends(keyword, page) {
-          fetch(`/friend/search?keyword=${encodeURIComponent(keyword)}&limit=5&page=${page}`)
-                  .then(response => response.json())
-                  .then(data => {
-                    displaySearchResults(data);
-                    // "더보기" 버튼 표시 여부 결정
-                    if (data.length === 5) { // limit=5
-                      loadMoreButton.style.display = 'block';
-                    } else {
-                      loadMoreButton.style.display = 'none';
-                    }
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                  });
+          fetch(
+            `/friend/search?keyword=${encodeURIComponent(
+              keyword
+            )}&limit=5&page=${page}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              displaySearchResults(data);
+              // "더보기" 버튼 표시 여부 결정
+              if (data.length === 5) {
+                // limit=5
+                loadMoreButton.style.display = "block";
+              } else {
+                loadMoreButton.style.display = "none";
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
 
         function displaySearchResults(members) {
           if (currentPage === 0) {
-            searchResultsList.innerHTML = ''; // 검색 초기화
+            searchResultsList.innerHTML = ""; // 검색 초기화
           }
 
           if (members.length === 0 && currentPage === 0) {
-            const li = document.createElement('li');
-            li.textContent = '검색 결과가 없습니다.';
+            const li = document.createElement("li");
+            li.textContent = "검색 결과가 없습니다.";
             searchResultsList.appendChild(li);
-            loadMoreButton.style.display = 'none'; // 결과가 없으므로 "더보기" 숨김
+            loadMoreButton.style.display = "none"; // 결과가 없으므로 "더보기" 숨김
             return;
           }
 
           // 멤버 추가
-          members.forEach(member => {
-            const li = document.createElement('li');
+          members.forEach((member) => {
+            const li = document.createElement("li");
 
             // 링크 생성
-            const link = document.createElement('a');
-            link.href = `/post/main?memberId=${encodeURIComponent(member.memberId)}`;
+            const link = document.createElement("a");
+            link.href = `/post/main?memberId=${encodeURIComponent(
+              member.memberId
+            )}`;
             link.textContent = `${member.memberId} (${member.name})`;
-            link.classList.add('search-link');
-            link.style.textDecoration = 'none';
-            link.style.color = 'black';
-            link.style.marginRight = '10px'; // 버튼과의 간격 조정
+            link.classList.add("search-link");
+            link.style.textDecoration = "none";
+            link.style.color = "black";
+            link.style.marginRight = "10px"; // 버튼과의 간격 조정
 
             // 친구 신청 버튼 생성
-            const requestButton = document.createElement('button');
-            requestButton.textContent = '친구 신청';
-            requestButton.className = 'friendBtn';
+            const requestButton = document.createElement("button");
+            requestButton.textContent = "친구 신청";
+            requestButton.className = "friendBtn";
             requestButton.onclick = () => sendFriendRequest(member.memberId);
 
             // 링크와 버튼을 li에 추가
@@ -315,76 +359,83 @@
           });
 
           // "더보기" 버튼 재배치
-          if (members.length === 5) { // limit=5 기준
-            loadMoreButton.style.display = 'block';
+          if (members.length === 5) {
+            // limit=5 기준
+            loadMoreButton.style.display = "block";
             searchResultsList.appendChild(loadMoreButton);
           } else {
-            loadMoreButton.style.display = 'none';
+            loadMoreButton.style.display = "none";
           }
         }
 
         // "더보기" 버튼 클릭 시 다음 페이지 로드
-        loadMoreButton.addEventListener('click', function() {
+        loadMoreButton.addEventListener("click", function () {
           currentPage += 1;
           fetchFriends(currentKeyword, currentPage);
         });
 
         function handleFriendRequest(button) {
-          const receiverId = button.getAttribute('data-member-id');
+          const receiverId = button.getAttribute("data-member-id");
           sendFriendRequest(receiverId);
         }
 
         function sendFriendRequest(receiverId) {
-          fetch('/friend/request', {
-            method: 'POST',
+          fetch("/friend/request", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({ receiver: receiverId })
+            body: JSON.stringify({ receiver: receiverId }),
           })
-                  .then(function(response) {
-                    return response.json().then(function(data) {
-                      if (!response.ok) {
-                        throw new Error(data.message || '친구 요청에 실패했습니다.');
-                      }
-                      return data;
-                    });
-                  })
-                  .then(function(data) {
-                    alert(data.message);
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || '친구 요청에 실패했습니다.');
-                  });
+            .then(function (response) {
+              return response.json().then(function (data) {
+                if (!response.ok) {
+                  throw new Error(data.message || "친구 요청에 실패했습니다.");
+                }
+                return data;
+              });
+            })
+            .then(function (data) {
+              alert(data.message);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert(error.message || "친구 요청에 실패했습니다.");
+            });
         }
 
-// 알림시작
+        // 알림시작
         let unreadCountDiv = document.getElementById("unreadCount");
         document.addEventListener("DOMContentLoaded", function () {
           // 페이지 로딩 후 unreadCount 가져오기
           fetch("/alert/unreadCount?memberId=" + memberId)
-                  .then((res) => res.json())
-                  .then((count) => {
-                    unreadCountDiv.textContent = count;
-                    if (count > 0) {
-                      unreadCountDiv.classList.add("visible");
-                    } else {
-                      unreadCountDiv.classList.remove("visible");
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error fetching unread count:", error);
-                  });
+            .then((res) => res.json())
+            .then((count) => {
+              unreadCountDiv.textContent = count;
+              if (count > 0) {
+                unreadCountDiv.classList.add("visible");
+                alertButton.classList.add("alertActive");
+              } else {
+                unreadCountDiv.classList.remove("visible");
+                alertButton.classList.remove("alertActive");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching unread count:", error);
+            });
 
           // 초기 알림 목록 로드
           loadAlerts();
 
           // 외부 클릭 시 모달 닫기
-          window.addEventListener("click", function(event) {
+          window.addEventListener("click", function (event) {
             let alertPopup = document.getElementById("alertPopup");
             let alertButton = document.getElementById("alertButton");
-            if (alertPopup.style.display === "block" && !alertPopup.contains(event.target) && event.target !== alertButton) {
+            if (
+              alertPopup.style.display === "block" &&
+              !alertPopup.contains(event.target) &&
+              event.target !== alertButton
+            ) {
               closeAlertPopup();
             }
           });
@@ -392,18 +443,19 @@
 
         function openAlertPopup() {
           fetch("/alert/allRead?memberId=" + memberId, { method: "POST" })
-                  .then((res) => res.text())
-                  .then((data) => {
-                    if (data === "ok") {
-                      unreadCountDiv.textContent = "0";
-                      unreadCountDiv.classList.remove("visible");
-                      loadAlerts();
-                      document.getElementById("alertPopup").style.display = "block";
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error marking all as read:", error);
-                  });
+            .then((res) => res.text())
+            .then((data) => {
+              if (data === "ok") {
+                unreadCountDiv.textContent = "0";
+                unreadCountDiv.classList.remove("visible");
+                alertButton.classList.remove("alertActive");
+                loadAlerts();
+                document.getElementById("alertPopup").style.display = "block";
+              }
+            })
+            .catch((error) => {
+              console.error("Error marking all as read:", error);
+            });
         }
 
         function closeAlertPopup() {
@@ -412,77 +464,83 @@
 
         function loadAlerts() {
           fetch("/alert/list?memberId=" + memberId)
-                  .then((res) => res.json())
-                  .then((alerts) => {
-                    let list = document.getElementById("alertList");
-                    let noAlertMsg = document.getElementById("noAlertMsg");
+            .then((res) => res.json())
+            .then((alerts) => {
+              let list = document.getElementById("alertList");
+              let noAlertMsg = document.getElementById("noAlertMsg");
 
-                    // 기존 리스트 아이템 제거
-                    while (list.firstChild) {
-                      list.removeChild(list.firstChild);
-                    }
+              // 기존 리스트 아이템 제거
+              while (list.firstChild) {
+                list.removeChild(list.firstChild);
+              }
 
-                    if (alerts.length > 0) {
-                      alerts.forEach((alert) => {
-                        let li = document.createElement("li");
+              if (alerts.length > 0) {
+                alerts.forEach((alert) => {
+                  let li = document.createElement("li");
 
-                        // <a> 태그 생성
-                        let a = document.createElement("a");
-                        a.href = alert.url;
-                        a.textContent = alert.message;
-                        a.style.textDecoration = "none";
-                        a.style.color = "black";
-                        a.style.textDecoration = "underline";
+                  // <a> 태그 생성
+                  let a = document.createElement("a");
+                  a.href = alert.url;
+                  a.textContent = alert.message;
+                  a.style.textDecoration = "none";
+                  a.style.color = "black";
+                  a.style.textDecoration = "underline";
 
-                        li.appendChild(a);
-                        list.appendChild(li);
-                      });
-                    } else {
-                      let li = document.createElement("li");
-                      li.id = "noAlertMsg";
-                      li.textContent = "알림이 없습니다";
-                      list.appendChild(li);
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error fetching alerts:", error);
-                  });
+                  li.appendChild(a);
+                  list.appendChild(li);
+                });
+              } else {
+                let li = document.createElement("li");
+                li.id = "noAlertMsg";
+                li.textContent = "알림이 없습니다";
+                list.appendChild(li);
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching alerts:", error);
+            });
         }
 
         let socket = new SockJS("/ws-stomp");
         let stompClient = Stomp.over(socket);
 
         stompClient.connect(
-                {},
-                function () {
-                  console.log("Connected to STOMP");
+          {},
+          function () {
+            console.log("Connected to STOMP");
 
-                  stompClient.subscribe("/topic/" + memberId, function (message) {
-                    let alertData = JSON.parse(message.body);
-                    console.log("Received alert:", alertData);
+            stompClient.subscribe("/topic/" + memberId, function (message) {
+              let alertData = JSON.parse(message.body);
+              console.log("Received alert:", alertData);
 
-                    // 알림 메시지와 URL, 타입을 전달
-                    displayNotification(alertData.message, alertData.url, alertData.type);
+              // 알림 메시지와 URL, 타입을 전달
+              displayNotification(
+                alertData.message,
+                alertData.url,
+                alertData.type
+              );
 
-                    // 갯수 업데이트 가ㅓ져올거임..
-                    fetch("/alert/unreadCount?memberId=" + memberId)
-                            .then((res) => res.json())
-                            .then((count) => {
-                              unreadCountDiv.textContent = count;
-                              if (count > 0) {
-                                unreadCountDiv.classList.add("visible");
-                              } else {
-                                unreadCountDiv.classList.remove("visible");
-                              }
-                            })
-                            .catch((error) => {
-                              console.error("Error fetching unread count:", error);
-                            });
-                  });
-                },
-                function (error) {
-                  console.error("STOMP connection error:", error);
-                }
+              // 갯수 업데이트 가ㅓ져올거임..
+              fetch("/alert/unreadCount?memberId=" + memberId)
+                .then((res) => res.json())
+                .then((count) => {
+                  unreadCountDiv.textContent = count;
+                  if (count > 0) {
+                    unreadCountDiv.classList.add("visible");
+                    alertButton.classList.add("alertActive");
+                  } else {
+                    unreadCountDiv.classList.remove("visible");
+                    alertButton.classList.remove("alertActive");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching unread count:", error);
+                });
+            });
+          },
+          function (error) {
+            console.error("STOMP connection error:", error);
+          }
         );
 
         // 알림 메시지를 화면에 표시하는 함수
