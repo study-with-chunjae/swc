@@ -19,7 +19,7 @@ public class JwtTokenProvider {
   private String secretKey;
 
   private SecretKey key;
-  private final long expirationTime = 24 * 60 * 60 * 1000;
+  private final long expirationTime = 300000;
 
   @PostConstruct
   protected void init() {

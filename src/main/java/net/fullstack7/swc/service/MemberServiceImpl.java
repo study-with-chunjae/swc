@@ -440,6 +440,7 @@ public class MemberServiceImpl implements MemberServiceIf {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         member.modifyName(newName);
+        member.updateTime();
         memberRepository.save(member);
     }
 
@@ -448,6 +449,7 @@ public class MemberServiceImpl implements MemberServiceIf {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         member.modifyEmail(newEmail);
+        member.updateTime();
         memberRepository.save(member);
     }
 
@@ -456,6 +458,7 @@ public class MemberServiceImpl implements MemberServiceIf {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         member.modifyPhone(newPhone);
+        member.updateTime();
         memberRepository.save(member);
     }
 
@@ -464,6 +467,7 @@ public class MemberServiceImpl implements MemberServiceIf {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         member.modifyMyInfo(newMyInfo);
+        member.updateTime();
         memberRepository.save(member);
     }
 
@@ -473,6 +477,7 @@ public class MemberServiceImpl implements MemberServiceIf {
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
     }
 
+    // 회원 탈퇴
     @Transactional
     public void deleteMember(String memberId) {
         Member member = memberRepository.findById(memberId)
@@ -496,25 +501,20 @@ public class MemberServiceImpl implements MemberServiceIf {
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
         try {
-            // 파일 업로드
             String filePath = fileUploadUtil.uploadImageFile(file, "profile"); // "profile" 서브 경로 사용
 
-            // MemberProfile 엔티티를 통해 프로필 이미지 경로 업데이트
             MemberProfile memberProfile = member.getMemberProfile(); // MemberProfile 가져오기
             if (memberProfile == null) {
-                // MemberProfile이 없으면 새로 생성
                 memberProfile = MemberProfile.builder()
                         .fileName(file.getOriginalFilename())
                         .path(filePath)
                         .member(member)
                         .build();
             } else {
-                // 기존 MemberProfile 업데이트
                 memberProfile.modifyProfileImage(filePath);
             }
             
-            // MemberProfile 저장
-            memberProfileRepository.save(memberProfile); // memberProfileRepository는 주입되어야 함
+            memberProfileRepository.save(memberProfile);
         } catch (Exception e) {
             throw new RuntimeException("프로필 사진 업로드 실패: " + e.getMessage());
         }

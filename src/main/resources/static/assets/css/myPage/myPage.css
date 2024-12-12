@@ -61,13 +61,14 @@
 }
 
 .myInfoIntroduce {
-  width: 400px;
+  width: 500px;
 }
 
 .introduceItem {
   font-size: 20px;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .introduceItem button {
@@ -91,13 +92,13 @@
 }
 
 .timeArea {
-  margin-top: 30px;
+  margin-top: 100px;
 }
 
 #editMyInfo {
   border: 3px dashed white;
-  width: 70%;
-  height: auto;
+  width: 400px;
+  height: 200px;
   outline: none;
   resize: none;
   padding: 10px;

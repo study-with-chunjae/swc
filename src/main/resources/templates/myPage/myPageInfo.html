@@ -92,18 +92,23 @@
             </div>
             <div class="introduceItem">
               <div>
-                <div class="flex" style="justify-content: space-between">
-                  학습목표
-                  <button class="editBtn" onclick="handleEdit(this, 'myInfo')">
-                    수정
-                  </button>
+                <div>
+                  <div>학습목표</div>
+                    <button
+                      class="editBtn"
+                      onclick="handleEdit(this, 'myInfo')"
+                    >
+                      수정
+                    </button>
                 </div>
-                <span th:text="${myInfo}" class="infoText"></span>
-                <textarea
-                  id="editMyInfo"
-                  style="display: none"
-                  class="editInput"
-                ></textarea>
+                <div>
+                  <span th:text="${myInfo}" class="infoText"></span>
+                  <textarea
+                    id="editMyInfo"
+                    style="display: none"
+                    class="editInput"
+                  ></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -129,7 +134,7 @@
         const inputField = infoItem.querySelector(".editInput");
         const textArea = infoItem.querySelector("textarea");
 
-        if (button.textContent === "수정") {
+        if (button.textContent.trim() === "수정") {
           textSpan.style.display = "none";
 
           if (inputField) {
@@ -168,6 +173,10 @@
       };
 
       window.handleSave = function (field, value, infoItem) {
+        if (!validateField(field, value)) {
+          return;
+        }
+
         const data = {};
         data[field] = value;
 
@@ -213,6 +222,41 @@
             alert("저장 중 오류가 발생했습니다.");
           });
       };
+
+      function validateField(field, value) {
+        switch (field) {
+          case "name":
+            if (!/^[가-힣]{2,10}$/.test(value)) {
+              alert("이름은 한글 2~10글자로 입력해주세요.");
+              return false;
+            }
+            break;
+
+          case "email":
+            if (
+              !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(value)
+            ) {
+              alert("올바른 이메일 형식이 아닙니다.");
+              return false;
+            }
+            break;
+
+          case "phone":
+            if (!/^\d{11}$/.test(value)) {
+              alert("전화번호는 숫자 11자리로 입력해주세요.");
+              return false;
+            }
+            break;
+
+          case "myInfo":
+            if (value.length > 50) {
+              alert("학습목표는 50글자 이내로 입력해주세요.");
+              return false;
+            }
+            break;
+        }
+        return true;
+      }
 
       const handleLeave = () => {
         if (confirm("정말로 탈퇴하시겠습니까?")) {
