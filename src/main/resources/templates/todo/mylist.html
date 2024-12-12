@@ -152,8 +152,17 @@
         .sort-btn {
             padding: 5px 15px;
             border: 1px solid #007BFF;
+            background-color: #fff;
+            color: #007BFF;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .sort-btn.active {
+            padding: 5px 15px;
+            border: 1px solid #007BFF;
             background-color: #007BFF;
-            color: white;
+            color: #fff;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -188,12 +197,18 @@
                         <option value="content" th:selected="${pageDTO.searchField == 'content'}">내용</option>
                     </select>
                     <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO.searchValue}">
-                    <input class="search-btn" type="submit" value="검색">
+                    <input class="search-btn" id="btnSubmit" type="submit" value="검색">
                 </div>
 
                 <div class="button-section">
-                    <button class="sort-btn" id="sortCreatedAt">등록순</button>
-                    <button class="sort-btn" id="sortThumbUp">좋아요순</button>
+                    <th:block th:if="${pageDTO.sortField == 'createdAt'}">
+                        <button th:id="'sortCreatedAt'" class="sort-btn active" th:text="${pageDTO.sortDirection == 'desc'?'등록순↓':'등록순↑'}"></button>
+                        <button class="sort-btn" th:id="'sortThumbUp'">좋아요순</button>
+                    </th:block>
+                    <th:block th:if="${pageDTO.sortField != 'createdAt'}">
+                        <button th:id="'sortCreatedAt'" class="sort-btn">등록순</button>
+                        <button class="sort-btn active" th:id="sortThumbUp" th:text="${pageDTO.sortDirection == 'desc'?'좋아요순↓':'좋아요순↑'}">좋아요순</button>
+                    </th:block>
                     <input type="hidden" id="sortField" name="sortField" th:value="${pageDTO.sortField}" >
                     <input type = "hidden" id="sortDirection" name="sortDirection" th:value="${pageDTO.sortDirection}">
                     <input type = "hidden" id="pageNo" name="pageNo" th:value = "${pageDTO.pageNo}">
@@ -245,15 +260,69 @@
                 </div>
                 <script th:inline="javascript">
                     const formObj = document.querySelector("form");
+                    const btnSubmit = document.querySelector("#btnSubmit");
                     let pageBtn = document.querySelectorAll(".page-btn");
+
+                    function formSubmit(formElement){
+                        searchValid(formElement);
+                        formElement.submit();
+                    }
+                    function searchValid(formElement){
+                        const ALLOWED_CONST_OBJ = {
+                            ALLOWED_SEARCH_FIELD : ["title","content"],
+                            ALLOWED_SORT_FIELD : ["createdAt","thumbUps"],
+                            ALLOWED_SORT_DIRECTION : ["desc","asc"],
+                            ALLOWED_PAGE_SIZE : [5,10,30,50],
+                            DEFAULT_SEARCH_FIELD : "title",
+                            DEFAULT_SORT_FIELD : "createdAt",
+                            DEFAULT_SORT_DIRECTION : "desc",
+                            DEFAULT_PAGE_SIZE : 10
+                        };
+                        const searchField = formElement.searchField;
+                        const searchValue = formElement.searchValue;
+                        const searchDateBegin = formElement.searchDateBegin;
+                        const searchDateEnd = formElement.searchDateEnd;
+                        const sortField = formElement.sortField;
+                        const sortDirection = formElement.sortDirection;
+                        const pageSize = formElement.pageSize;
+                        const pageNo = formElement.pageNo;
+                        if(ALLOWED_CONST_OBJ.ALLOWED_SEARCH_FIELD.indexOf(searchField.value)<0){
+                            searchField.value = ALLOWED_CONST_OBJ.DEFAULT_SEARCH_FIELD;
+                        }
+                        if(ALLOWED_CONST_OBJ.ALLOWED_SORT_FIELD.indexOf(sortField.value)<0){
+                            sortField.value = ALLOWED_CONST_OBJ.DEFAULT_SORT_FIELD;
+                        }
+                        if(ALLOWED_CONST_OBJ.DEFAULT_SORT_DIRECTION.indexOf(sortDirection.value)<0){
+                            sortDirection.value = ALLOWED_CONST_OBJ.DEFAULT_SORT_DIRECTION;
+                        }
+                        if(ALLOWED_CONST_OBJ.ALLOWED_PAGE_SIZE.indexOf(pageSize.value)<0){
+                            pageSize.value = ALLOWED_CONST_OBJ.DEFAULT_PAGE_SIZE;
+                        }
+                        if(searchValue.value.length>100){
+                            searchValue.value = searchValue.value.substring(0,99);
+                        }
+                        if(searchDateBegin.value > searchDateEnd.value){
+                            const temp = searchDateEnd.value;
+                            searchDateEnd.value = searchDateBegin.value;
+                            searchDateBegin.value = temp;
+                        }
+                        if(pageNo.value < 0){
+                            pageNo.value = 1;
+                        }
+                        if(isNaN(Number(pageNo.value))){
+                            pageNo.value = 1;
+                        }
+                    }
+
                     for(let i of pageBtn){
                         i.addEventListener("click",(e)=>{
                             e.preventDefault();
                             e.stopPropagation();
                             formObj.pageNo.value = e.target.getAttribute("data-num");
-                            formObj.submit();
+                            formSubmit(formObj);
                         });
                     }
+
                     function view(postId){
                         location.href="/post/view?postId="+postId;
                     }
@@ -269,7 +338,7 @@
                             sortDirection.value = 'desc';
                        }
                        formObj.pageNo.value=1;
-                       formObj.submit();
+                       formSubmit(formObj);
                     });
                     sortThumbUp.addEventListener("click",()=>{
                         sortField.value="thumbUps";
@@ -279,7 +348,12 @@
                             sortDirection.value = 'desc';
                         }
                         formObj.pageNo.value=1;
-                        formObj.submit();
+                        formSubmit(formObj);
+                    });
+                    btnSubmit.addEventListener("click",(e)=>{
+                        e.preventDefault();
+                        e.stopPropagation();
+                        formSubmit(formObj);
                     });
                 </script>
             </div>
