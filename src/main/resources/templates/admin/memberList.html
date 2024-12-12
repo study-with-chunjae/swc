@@ -65,8 +65,8 @@
                     <option value="D" th:selected="${member.status == 'D'}">탈퇴</option>
                 </select>
                 </td>
-                <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}"></td>
-                <td th:text="${#temporals.format(member.lastLoginAt, 'yyyy-MM-dd')}"></td>
+                <td th:text="${member.createdAt != null ? #temporals.format(member.createdAt, 'yyyy-MM-dd') : '-'}" style="text-align: center;"></td>
+                <td th:text="${member.lastLoginAt != null ? #temporals.format(member.lastLoginAt, 'yyyy-MM-dd') : '-'}" style="text-align: center;"></td>
             </tr>
             <tr th:if="${memberPage.content.size() == 0}">
                 <td colspan="4">해당하는 회원이 없습니다</td>

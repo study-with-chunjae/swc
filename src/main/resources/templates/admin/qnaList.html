@@ -46,9 +46,14 @@
                     </div>
                 </td>
                 <td th:text="${qna.email}"></td>
-                <td th:text="${qna.regDate}"></td>
+                <td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd')}"></td>
             </tr>
+            <tr th:if="${qnaList == null or qnaList.size() == 0}">
+                <td colspan="3">해당하는 qna가 없습니다</td>
+            </tr>
+
             </tbody>
         </table>
     </div>
 </div>
+</html>

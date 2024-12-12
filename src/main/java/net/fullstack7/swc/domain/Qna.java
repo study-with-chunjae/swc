@@ -36,7 +36,7 @@ public class Qna {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Qna> replies = new ArrayList<>();
 
-    private LocalDateTime regDete;
+    private LocalDateTime regDate;
 
     // 일단 회원qna 생각없음
 //    @ManyToOne
@@ -45,12 +45,12 @@ public class Qna {
 //    private Member questioner;
 
 
-    public Qna(String title, String content, String email, String password, LocalDateTime regDete) {
+    public Qna(String title, String content, String email, String password, LocalDateTime regDate) {
         this.title = title;
         this.content = content;
         this.email = email;
         this.password = password;
-        this.regDete = LocalDateTime.now();
+        this.regDate = LocalDateTime.now();
         this.answered = false;
     }
 
@@ -61,7 +61,7 @@ public class Qna {
         reply.parent = this;
         this.replies.add(reply);
         this.answered = true;
-        this.regDete = LocalDateTime.now();
+        this.regDate = LocalDateTime.now();
     }
 
 }
