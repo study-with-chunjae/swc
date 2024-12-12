@@ -257,7 +257,8 @@
         </div>
     </div>
 </div>
-<script th:inline="javascript">
+<script>
+    // 기존 체크박스 함수
     function toggleSelectAll() {
         const selectAllCheckbox = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.messageCheckbox');
@@ -265,35 +266,6 @@
             checkbox.checked = selectAllCheckbox.checked;
         });
     }
-
-    // 페이지 로드 시 실행되는 함수 추가 (선택사항)
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        if (selectAllCheckbox) {
-            console.log('selectAll 체크박스 준비 완료');
-            selectAllCheckbox.addEventListener('click', toggleSelectAll);
-        }
-    });
-
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const selectAllCheckbox = document.getElementById('selectAll');
-    //     const checkboxes = document.querySelectorAll('.messageCheckbox');
-    //
-    //     console.log('선택 전체 체크박스:', selectAllCheckbox);
-    //     console.log('개별 체크박스:', checkboxes.length);
-    //
-    //     if (selectAllCheckbox && checkboxes.length > 0) {
-    //         selectAllCheckbox.addEventListener('change', function() {
-    //             console.log('전체 선택 체크박스 상태:', this.checked);
-    //             checkboxes.forEach(checkbox => {
-    //                 checkbox.checked = this.checked;
-    //                 console.log('개별 체크박스 상태:', checkbox.checked);
-    //             });
-    //         });
-    //     } else {
-    //         console.error('체크박스를 찾을 수 없습니다.');
-    //     }
-    // });
 
     function validateForm(){
         const selectMessages = document.querySelectorAll('.messageCheckbox:checked');
