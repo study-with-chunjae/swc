@@ -8,43 +8,9 @@
     <link th:href="@{/assets/css/main/main.css}" rel="stylesheet"/>
     <link th:href="@{/assets/css/main/header.css}" rel="stylesheet"/>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
-            background-image: url('/assets/public/back.png'); /* Removed trailing slash */
-            background-size: cover; /* Ensures the image covers the container */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-        }
-        .all {
-            max-width: 1280px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-        }
-
-        .content {
-            max-width: 1280px;
-            margin: auto;
-            padding: 20px;
-            background-image: url('/assets/public/mainback.png'); /* Removed trailing slash */
-            background-size: cover; /* Ensures the image covers the container */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
-
-        }
 
         .content2 {
-            max-width: 1280px;
+            min-width: 980px;
             margin: 30px;
             padding: 20px;
             background-color: rgba(255, 255, 255);
@@ -80,7 +46,7 @@
         input[type="file"],
         input[type="date"],
         textarea {
-            width: 100%;
+            width: 88%;
             padding: 8px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -98,17 +64,23 @@
             margin-right: 5px;
         }
 
-        button {
+        .button2 {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            width: 100px;
         }
 
         #btnSubmit {
             background-color: #007BFF;
             color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         #btnSubmit:hover {
@@ -119,12 +91,22 @@
             background-color: #6c757d;
             color: #fff;
             margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         #btnDelete {
             background-color: #ff0000;
             color: #fff;
             margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         #btnReset:hover {
@@ -135,6 +117,11 @@
             background-color: #28a745;
             color: #fff;
             margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         #btnBack:hover {
@@ -212,27 +199,29 @@
             display : flex;
             flex-wrap: wrap;
         }
-        .tag-div{
-            margin : 3px;
-            background-color : #999;
-            color : black;
+        .tag-div {
+            color: black;
             font-weight: bold;
-            border-radius : 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 8px;
         }
         .tag-span{
             margin : 3px;
         }
-        .tag-remove{
-            background-color : transparent;
-            width : 10px;
-            height : 10px;
+        .tag-remove {
+            background-color: transparent;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
     </style>
 </head>
 <body>
-<div class="all">
-    <div class="mainContent" style="height: 840px;" layout:fragment="mainContent">
+<div layout:fragment="mainContent" class="fontQnsvlf">
         <div class="content2">
             <form  method="post" enctype="multipart/form-data">
                 <table>
@@ -280,25 +269,41 @@
                                 <th:block th:each="tag,status:${postDTO.hashtags}">
                                     <div th:class="'tag-div'">
                                         <span th:class="'tag-span'" th:text="${tag}"></span>
-                                        <button th:class="'tag-remove'" th:text="'x'" th:data-value="${tag}" th:onclick="'remove(this);'"></button>
+                                        <button class="content2" th:class="'tag-remove'" th:text="'x'" th:data-value="${tag}" th:onclick="'remove(this);'"></button>
                                     </div>
+                                    <div><script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            // Predefined set of background colors
+                                            const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
+
+                                            // Select all .tag-div elements
+                                            const tagDivs = document.querySelectorAll(".tag-div");
+
+                                            // Assign a random background color to each .tag-div
+                                            tagDivs.forEach(tagDiv => {
+                                                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                                                tagDiv.style.backgroundColor = randomColor;
+                                            });
+                                        });
+                                    </script></div>
                                 </th:block>
                             </div>
                             <input type="hidden" id="hashtag-input" name="hashtag" th:value="${postDTO.hashtagString}">
                         </td>
                     </tr>
                     <tr>
-                        <td th:colspan="2" >
-                            <button type="submit" id="btnSubmit">수정</button>
-                            <button type="reset" id="btnReset">취소</button>
-                            <button type="button" id="btnDelete">삭제</button>
-                            <button type="button" id="btnBack">목록</button>
+                        <td th:colspan="2" style="text-align: center;padding: 30px;">
+                            <button class="button2" type="submit" id="btnSubmit">수정</button>
+                            <button class="button2" type="reset" id="btnReset">취소</button>
+                            <button class="button2" type="button" id="btnDelete">삭제</button>
+                            <button class="button2" type="button" id="btnBack">목록</button>
                         </td>
                     </tr>
                 </table>
             </form>
             <div>
                 <script th:inline="javascript">
+
                     const hashtags = [[${postDTO.hashtagString}]];
                     const tags = hashtags.split(',');
                     const inputElement = document.getElementById('tag-input');
@@ -336,28 +341,36 @@
                     }
 
                     function addTag(value) {
-                        if(value==null||value==='') return;
-                        if(tags.includes(value)) return;
-                        if(tags.length>=4) return;
+                        if (value == null || value === '') return;
+                        if (tags.includes(value)) return;
+                        if (tags.length >= 4) return;
+
                         tags.push(value);
-                        console.log("tags : "+ tags.join(','));
+                        console.log("tags : " + tags.join(','));
+
                         const tagContainer = document.getElementById('tag-container');
                         const tagElement = document.createElement('div');
                         tagElement.className = 'tag-div';
 
+                        // Assign a random background color
+                        const colors = ["#f1f1b2", "#cde8de", "#fae1ff", "#ffdab9"];
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        tagElement.style.backgroundColor = randomColor;
+
                         const span = document.createElement('span');
-                        span.className='tag-span';
+                        span.className = 'tag-span';
                         span.textContent = value;
                         tagElement.appendChild(span);
 
                         const button = document.createElement('button');
-                        button.className='tag-remove';
+                        button.className = 'tag-remove';
                         button.textContent = '×';
                         tagElement.appendChild(button);
+
                         tagContainer.appendChild(tagElement);
 
-                        button.addEventListener("click",()=>{
-                            removeTag(value,button)
+                        button.addEventListener("click", () => {
+                            removeTag(value, button);
                         });
 
                         updateHiddenInput();
@@ -387,7 +400,6 @@
                 </script>
             </div>
         </div>
-    </div>
 
 </div>
 </body>
