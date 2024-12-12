@@ -5,26 +5,80 @@
 >
 
 <div layout:fragment="admincontent">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th {
-            background-color: #f2f2f2;
-        }
+    th {
+        background-color: #f2f2f2;
+    }
 
-        .reply {
-            margin-left: 20px;
-            color: gray;
-        }
-    </style>
+    .reply {
+        margin-left: 20px;
+        color: gray;
+    }
+
+    /* 검색 폼 스타일 */
+    form {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    form select, form input[type="text"], form button {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    form button {
+        background-color: #f2f2f2;
+        color: black;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* 페이징 스타일 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #333;
+        color: white;
+    }
+
+    .pagination span {
+        border-radius: 4px;
+        color: #888;
+    }
+
+    .pagination span.disabled {
+        pointer-events: none;
+        background-color: #eee;
+    }
+</style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <h1>회원 리스트</h1>
 
@@ -74,19 +128,24 @@
             </tbody>
         </table>
 
-        <!-- 페이징 -->
-        <div>
+    <!-- 페이징 -->
+    <div th:if="${memberPage.totalPages >= 1}" class="pagination">
+        <!-- 이전 페이지 링크 -->
         <span th:if="${memberPage.hasPrevious()}">
-            <a th:href="@{/admin/memberList(page=${memberPage.number - 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}">이전</a>
+            <a th:href="@{/admin/memberList(page=${memberPage.number - 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}"> < </a>
         </span>
-            <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages -1)}">
+
+        <!-- 각 페이지 번호 링크 -->
+        <span th:each="page : ${#numbers.sequence(0, memberPage.totalPages -1)}">
             <a th:href="@{/admin/memberList(page=${page}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}"
                th:text="${page + 1}"></a>
         </span>
-            <span th:if="${memberPage.hasNext()}">
-            <a th:href="@{/admin/memberList(page=${memberPage.number + 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}">다음</a>
+
+        <!-- 다음 페이지 링크 -->
+        <span th:if="${memberPage.hasNext()}">
+            <a th:href="@{/admin/memberList(page=${memberPage.number + 1}, size=${memberPage.size}, searchType=${searchType}, keyword=${keyword})}"> > </a>
         </span>
-        </div>
+    </div>
     <script>
         $(document).ready(function() {
 

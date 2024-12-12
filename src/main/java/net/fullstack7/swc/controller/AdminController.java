@@ -4,12 +4,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack7.swc.domain.Qna;
 import net.fullstack7.swc.dto.AdminDTO;
 import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.AdminServiceIf;
-import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.MemberServiceImpl;
 import net.fullstack7.swc.service.QnaServiceIf;
 import net.fullstack7.swc.util.ErrorUtil;
@@ -17,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,9 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.Collections;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,8 +34,22 @@ public class AdminController {
     private final MemberServiceImpl memberService;
     private final ErrorUtil errorUtil;
 
+    // 세션 체크 메서드
+    private String checkLogin(HttpSession session, RedirectAttributes redirectAttributes) {
+        String admin = (session != null) ? (String) session.getAttribute("admin") : null;
+        if (admin == null) {
+            redirectAttributes.addFlashAttribute("errors", "관리자 로그인이 필요합니다.");
+            return "redirect:/admin/login";
+        }
+        return null;
+    }
+
     @GetMapping("/main")
-    public String main() {
+    public String main(HttpSession session, RedirectAttributes redirectAttributes) {
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
         return "admin/main";
     }
 
@@ -58,9 +66,10 @@ public class AdminController {
                 return "redirect:/admin/memberList";
             }
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("errors", e.getMessage());
             return "redirect:/admin/login";
         }
+        redirectAttributes.addFlashAttribute("errors", "잘못된 자격 증명입니다.");
         return "redirect:/admin/login";
     }
 
@@ -69,14 +78,22 @@ public class AdminController {
         session.invalidate();
         return "redirect:/admin/login";
     }
+
     @GetMapping("/memberList")
     public String memberList(
             @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType,
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(value = "page", defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
             @RequestParam(value = "size", defaultValue = "10") int size, // 페이지 당 항목 수
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
@@ -106,7 +123,15 @@ public class AdminController {
 
     @PostMapping("/{memberId}/status")
     public ResponseEntity<String> updateMemberStatus(@PathVariable("memberId") String memberId,
-        @RequestParam String status) {
+                                                     @RequestParam String status,
+                                                     HttpSession session,
+                                                     RedirectAttributes redirectAttributes) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("관리자 로그인이 필요합니다.");
+        }
+
         try {
             if ("D".equalsIgnoreCase(status)) {
                 memberService.deleteMember(memberId);
@@ -131,8 +156,16 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
             @RequestParam(value = "size", defaultValue = "10") int size, // 페이지 당 항목 수
             @RequestParam(value = "answered", required = false) Boolean answered, // 필터링 옵션
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
 
         Page<QnaDTO> qnaPage;
@@ -160,7 +193,16 @@ public class AdminController {
     }
 
     @GetMapping("/qnaView/{qnaId}")
-    public String qnaView(@PathVariable Integer qnaId,Model model) {
+    public String qnaView(@PathVariable Integer qnaId,
+                          HttpSession session,
+                          RedirectAttributes redirectAttributes,
+                          Model model) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
+
         QnaDTO qnaDTO = qnaService.adminViewQna(qnaId);
         model.addAttribute("qna", qnaDTO);
         return "admin/qnaView";
@@ -168,7 +210,16 @@ public class AdminController {
 
     // 답변 등록 페이지 이동
     @GetMapping("/qnaAnswer/{qnaId}")
-    public String answerQnaPage(@PathVariable Integer qnaId, Model model) {
+    public String answerQnaPage(@PathVariable Integer qnaId,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
+
         model.addAttribute("qnaId", qnaId);
         model.addAttribute("qnaDTO", new QnaDTO());
         return "admin/qnaAnswer";
@@ -180,7 +231,14 @@ public class AdminController {
                                @ModelAttribute @Valid QnaDTO qnaDTO,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
+                               HttpSession session,
                                Model model) {
+        // 세션 체크
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect != null) {
+            return redirect;
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("qnaDTO", qnaDTO);
             return errorUtil.redirectWithError("/qna/regist", redirectAttributes, bindingResult);

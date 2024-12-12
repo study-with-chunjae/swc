@@ -5,30 +5,98 @@
 >
 
 <div layout:fragment="admincontent">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th {
-            background-color: #f2f2f2;
-        }
+    th {
+        background-color: #f2f2f2;
+    }
 
-        .reply {
-            margin-left: 20px;
-            color: gray;
-        }
-    </style>
+    .reply {
+        margin-left: 20px;
+        color: gray;
+    }
+
+    /* 검색 폼 스타일 */
+    form {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    form select, form input[type="text"], form button {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    form button {
+        background-color: #f2f2f2;
+        color: black;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* 페이징 스타일 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #333;
+        color: white;
+    }
+
+    .pagination span {
+        border-radius: 4px;
+        color: #888;
+    }
+
+    .pagination span.disabled {
+        pointer-events: none;
+        background-color: #eee;
+    }
+
+    a {
+        text-decoration: none; /* 밑줄 제거 */
+        color: inherit; /* 부모 요소의 색상 상속 */
+    }
+
+    a:visited {
+        color: inherit; /* 방문한 링크의 색상 상속 */
+    }
+
+    a:hover {
+        text-decoration: none; /* 호버 시에도 밑줄 제거 */
+        color: inherit; /* 호버 시 색상 상속 */
+    }
+</style>
     <div class="container mt-4">
         <h1>QnA 리스트</h1>
 
-        <form th:action="@{/admin/qnaList}" method="get">
+        <form action="/admin/qnaList" method="get">
             <label for="answered">답변확인:</label>
             <select name="answered" id="answered">
                 <option value="" th:selected="${answered == null}">All</option>
@@ -48,7 +116,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="qna : ${qnaList}">
+            <tr th:each="qna : ${qnaPage}">
                 <!--                <td th:text="${qna.qnaId}"></td>-->
                 <td>
                     <a th:href="@{/admin/qnaView/{qnaId}(qnaId=${qna.qnaId})}" th:text="${qna.title}"></a>
@@ -59,35 +127,25 @@
                 <td th:text="${qna.email}"></td>
                 <td th:text="${#temporals.format(qna.regDate, 'yyyy-MM-dd')}"></td>
             </tr>
-            <tr th:if="${qnaList == null or qnaList.size() == 0}">
-                <td colspan="3">해당하는 qna가 없습니다</td>
-            </tr>
-
             </tbody>
         </table>
-        <div>
+        <div th:if="${qnaPage.totalPages >=1}" class="pagination">
             <ul style="list-style: none; display: flex;">
-                <!-- Previous Page 링크 -->
                 <li th:if="${qnaPage.hasPrevious()}">
-                    <a th:href="@{/admin/qnaList(page=${qnaPage.number - 1}, size=${qnaPage.size}, answered=${answered})}">Previous</a>
+                    <a th:href="@{/admin/qnaList(page=${qnaPage.number - 1}, size=${qnaPage.size}, answered=${answered})}"> < </a>
                 </li>
 
-                <!-- 페이지 번호 링크 -->
                 <li th:each="i : ${#numbers.sequence(0, qnaPage.totalPages - 1)}"
                     th:if="${i >= qnaPage.number - 5 and i <= qnaPage.number + 5}">
                     <a th:href="@{/admin/qnaList(page=${i}, size=${qnaPage.size}, answered=${answered})}"
-                       th:text="${i + 1}"
-                       th:class="${i == qnaPage.number} ? 'active' : ''"
-                       style="margin: 0 5px; text-decoration: none; color: [[${i == qnaPage.number} ? 'red' : 'blue']]">
+                       th:text="${i + 1}">
                     </a>
                 </li>
 
-                <!-- Next Page 링크 -->
                 <li th:if="${qnaPage.hasNext()}">
-                    <a th:href="@{/admin/qnaList(page=${qnaPage.number + 1}, size=${qnaPage.size}, answered=${answered})}">Next</a>
+                    <a th:href="@{/admin/qnaList(page=${qnaPage.number + 1}, size=${qnaPage.size}, answered=${answered})}"> > </a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
-</html>
