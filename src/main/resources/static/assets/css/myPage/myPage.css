@@ -61,13 +61,14 @@
 }
 
 .myInfoIntroduce {
-  width: 400px;
+  width: 500px;
 }
 
 .introduceItem {
   font-size: 20px;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .introduceItem button {

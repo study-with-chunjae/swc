@@ -24,7 +24,7 @@ public class Member {
     private String memberId;
     @Column(name = "pwd", nullable = true, length = 300) // 비밀번호
     private String pwd;
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50) // 이름
     private String name;
     @Column(name = "email", nullable = false, length = 100, unique = true) // 이메일 (고유)
     private String email;
@@ -57,30 +57,43 @@ public class Member {
     public void modifyPassword(String newPwd) {
         this.pwd = newPwd;
     }
+
     public void modifyEmail(String newEmail) {
         this.email = newEmail;
     }
+
     public void addRole(MemberRole role) {
         this.roleSet.add(role);
     }
+
     public void clearRoles(){
         this.roleSet.clear();
     }
+
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
     }
+
+    public void updateTime() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void setTemporaryPassword(Boolean isTemp) {
         this.isTemporaryPassword = isTemp;
     }
+
     public Boolean isTemporaryPassword() {
         return isTemporaryPassword != null ? isTemporaryPassword : false;
     }
+
     public void modifyName(String newName) {
         this.name = newName;
     }
+
     public void modifyPhone(String newPhone) {
         this.phone = newPhone;
     }
+
     public void modifyMyInfo(String newMyInfo) {
         this.myInfo = newMyInfo;
     }
