@@ -77,7 +77,16 @@ public class AdminController {
         return "admin/memberList";
     }
 
-    // 여기 회원 상태 변경 로직 작성
+    @PostMapping("/{memberId}/status")
+    public ResponseEntity<String> updateMemberStatus(@PathVariable("memberId") String memberId,
+        @RequestParam String status) {
+        int updatedCnt = memberService.updateStatusByMemberId(status, memberId);
+        if (updatedCnt > 0) {
+            return ResponseEntity.ok(memberId + "회원 상태 변경완료");
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 회원을 찾을 수 없습니다.");
+        }
+    }
 
     @GetMapping("/qnaList")
     public String qnaList(Model model) {
