@@ -117,37 +117,49 @@ public class MessageController {
         return "message/regist";
     }
 
-    // 쪽지 등록
+    //쪽지 등록
     @PostMapping("/regist")
     public String registMessage(@RequestParam String receiverId, @RequestParam String content, @RequestParam String title, @RequestParam LocalDateTime regDate, HttpServletRequest req, Model model) {
         String senderId = getMemberIdInJwt(req);
-//        log.info("senderId" + senderId);
         if (senderId == null) {
             return "redirect:/sign/signIn";
         }
         try {
-            messageService.sendMessage(senderId, receiverId, content, title, regDate);
-            String alertMessage = senderId + "님이 새 쪽지를 보냈습니다: " + "'"+title+"'";
-            Member member = memberRepository.findByMemberId(receiverId);
+            Member receiver = memberRepository.findByMemberId(receiverId);
+            if (receiver == null) {
+                model.addAttribute("error", "존재하지 않는 수신자입니다.");
+                return "redirect:/message/send/list";
+            }
 
+            messageService.sendMessage(senderId, receiverId, content, title, regDate);
+
+            String senderName = memberService.getMemberNameById(senderId);
+            if (senderName == null) {
+                model.addAttribute("error", "발신자 이름을 찾을 수 없습니다.");
+                return "redirect:/message/send/list";
+            }
+
+            String alertMessage = senderName + "님이 새 쪽지를 보냈습니다: '" + title + "'";
+
+            Member member = memberRepository.findByMemberId(receiverId);
             if (member == null || senderId.equals(member.getMemberId())) {
-//                log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
                 model.addAttribute("error", "존재하지 않는 회원입니다.");
                 return "redirect:/message/send/list";
             }
+
             alertService.registAlert(member, AlertType.CHAT_MESSAGE, alertMessage, "/message/list");
-//            log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
             return "redirect:/message/send/list";
         } catch (IllegalArgumentException e) {
-                model.addAttribute("errorReceiverId", true);
-                model.addAttribute("errorMessage", "잘못된 ID입니다.");
-                return "redirect:/message/send/list";
+            model.addAttribute("errorReceiverId", true);
+            model.addAttribute("errorMessage", "잘못된 ID입니다.");
+            return "redirect:/message/send/list";
         } catch (Exception e) {
             model.addAttribute("error", true);
             model.addAttribute("errorMessage", "알 수 없는 오류가 발생했습니다.");
             return "redirect:/message/send/list";
         }
     }
+
 
     //삭제
     @PostMapping("/delete")

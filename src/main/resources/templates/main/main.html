@@ -53,17 +53,18 @@
                 ✉️ 쪽지 보내기
               </button>
               <div>
-                <script>
-                  function sendMessage(button) {
-                    var receiverId = button.getAttribute("data-member-id");
-                    if (!receiverId) {
-                      alert("받는 사람의 ID가 없습니다.");
-                      return;
-                    }
-                    window.location.href =
-                      "/message/regist?receiverId=" + receiverId;
-                  }
-                </script>
+                <div th:replace="~{/message/modal.html}"></div>
+<!--                <script>-->
+<!--                  function sendMessage(button) {-->
+<!--                    var receiverId = button.getAttribute("data-member-id");-->
+<!--                    if (!receiverId) {-->
+<!--                      alert("받는 사람의 ID가 없습니다.");-->
+<!--                      return;-->
+<!--                    }-->
+<!--                    window.location.href =-->
+<!--                      "/message/regist?receiverId=" + receiverId;-->
+<!--                  }-->
+<!--                </script>-->
               </div>
               <button class="button" id="registBtn">📝 학습 등록</button>
               <div>
