@@ -49,7 +49,7 @@ async function getMainPosts(element) {
   const createdAt = element.getAttribute("data-date-format");
   console.log(createdAt);
   try {
-    const response = await fetch(`/posts/my-posts/main-posts/${createdAt}`, {
+    const response = await fetch(`/posts/main-posts/${memberId}/${createdAt}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

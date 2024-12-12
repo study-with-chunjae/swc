@@ -48,13 +48,12 @@ public class PostRestController {
     }
 
     @CheckJwtToken
-    @GetMapping("/my-posts/main-posts/{created-at}")
-    public ResponseEntity<ApiResponse<?>> getMainPost(@PathVariable(value = "created-at", required = false) String createdAt, HttpServletRequest request) {
+    @GetMapping("/main-posts/{member-id}/{created-at}")
+    public ResponseEntity<ApiResponse<?>> getMainPost(@PathVariable(value = "created-at", required = false) String createdAt, @PathVariable(value="member-id", required = false) String memberId, HttpServletRequest request) {
         try{
             if(createdAt == null) {
                 return ResponseEntity.badRequest().body(ApiResponse.error("잘못된 입력값"));
             }
-            String memberId = cookieUtil.getMemberIdInJwt(memberService,request);
             List<PostMainDTO> postMainDTOList = postService.mainPost(LocalDate.parse(createdAt,FORMATTER).atStartOfDay(),memberId,TYPE_SHARE);
             if(postMainDTOList==null || postMainDTOList.isEmpty()) {
                 return ResponseEntity.ok(ApiResponse.success("조회된 내용이 없습니다.", postMainDTOList));
