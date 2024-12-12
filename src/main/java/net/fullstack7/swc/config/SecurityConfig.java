@@ -33,6 +33,7 @@ public class SecurityConfig {
                                UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                            "/",
                             "/sign/**",
                             "/qna/**",
                             "/assets/**",
@@ -57,7 +58,7 @@ public class SecurityConfig {
                             response.setContentType("application/json;charset=UTF-8");
                             response.getWriter().write("{\"error\":\"unauthorized\"}");
                         } else {
-                            response.sendRedirect("/sign/signin");
+                            response.sendRedirect("/");
                         }
                     })
                 );

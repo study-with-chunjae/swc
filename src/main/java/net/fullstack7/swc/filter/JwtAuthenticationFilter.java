@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && !jwtTokenProvider.validateToken(token)) {
             log.info("Invalid token, redirecting to login");
-            response.sendRedirect("/sign/signin");
+            response.sendRedirect("/");
             return;
         }
 
@@ -58,17 +58,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/sign/signin") || 
-        path.startsWith("/sign/signIp") || 
-        path.startsWith("/sign/signup") || 
-        path.startsWith("/sign/signUp") || 
-        path.startsWith("/assets/**") || 
+        return path.startsWith("/sign") || 
+        path.startsWith("/assets") || 
         path.startsWith("/error") ||
-        path.startsWith("/oauth2/**") ||
+        path.startsWith("/oauth2") ||
         path.equals("/") ||
         path.startsWith("/css") ||
         path.startsWith("/js") ||
         path.startsWith("/images");
-
     }
 }
