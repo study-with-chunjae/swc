@@ -94,22 +94,20 @@
               <div>
                 <div>
                   <div>학습목표</div>
-                  <div>
                     <button
                       class="editBtn"
                       onclick="handleEdit(this, 'myInfo')"
                     >
                       수정
                     </button>
-                  </div>
                 </div>
                 <div>
-                <span th:text="${myInfo}" class="infoText"></span>
-                <textarea
-                  id="editMyInfo"
-                  style="display: none"
-                  class="editInput"
-                ></textarea>
+                  <span th:text="${myInfo}" class="infoText"></span>
+                  <textarea
+                    id="editMyInfo"
+                    style="display: none"
+                    class="editInput"
+                  ></textarea>
                 </div>
               </div>
             </div>
