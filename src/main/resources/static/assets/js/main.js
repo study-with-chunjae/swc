@@ -44,6 +44,9 @@ function initSliders() {
   const totalSlides = slides.length;
   createIndicators(indicatorsContainer, totalSlides, currentIndex, slider);
 }
+function escapeHTML(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
 
 async function getMainPosts(element) {
     const createdAt = element.getAttribute("data-date-format");
@@ -70,28 +73,39 @@ async function getMainPosts(element) {
         const postList = result.data;
         if(postList.length > 0) {
             for (let mainPost of result.data) {
+                let hashtagElements = '';
+                if(mainPost.hashtag.length > 0) {
+                    for(let tag of mainPost.hashtag) {
+                        hashtagElements += `<div class="tag-div" data-tag="${tag}" onclick="search(this);">${tag}</div>`;
+                    }
+                }
+                let shareElements = '';
+                if(mainPost.shares.length>0){
+                    for (let share of mainPost.shares) {
+                        shareElements += `<div>${share}</div>`;
+                    }
+                }
                 slider.innerHTML += `
 				<article class="learning-card">
 					<div class="thumbnail">
-						<img src="${mainPost.image==null?'/upload/images/default_image.jpg':mainPost.image}" alt="Thumbnail">
-						<p class="category">${mainPost.topics}</p>
-						<p class="category">${mainPost.hashtag}</p>
-						<div class="thumbUps">❤️ 좋아요 ${mainPost.thumbUps}</div>
+						<img src="${mainPost.image==null?'/upload/images/default_image.jpg':mainPost.image}" alt="Thumbnail"/>
+						<div class="category">
+                            <div class="tag-container">
+                                <strong>해시태그</strong><span>:</span>
+                                ${hashtagElements}
+                            </div>
+                        </div>
+						<div class="thumbUps">❤️ 좋아요 <span>${mainPost.thumbUps}</span></div>
 					</div>
 					<div class="info">
 						<h3 class="title">학습제목 : ${mainPost.title}</h3>
 						<p class="description">${mainPost.content}</p>
 						<div class="shared-by">
-            `;
-                for (let share of mainPost.shares) {
-                    slider.innerHTML += `${share}<br>`;
-                }
-                slider.innerHTML += `
+						    ${shareElements}
 						</div>
-					
 					</div>
                 </article>
-            `;
+                `;
             }
         }else{
             slider.innerHTML += `

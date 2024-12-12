@@ -22,7 +22,7 @@ public class PostMainDTO {
     private LocalDateTime displayEnd; //오늘의 학습노출시작일
     private LocalDateTime createdAt; //게시글 생성일
     private String topics; //분야
-    private String hashtag; //해시태그
+    private List<String> hashtag; //해시태그
     private String image;
     //private List<ThumbUp> thumbUps;
     private Integer thumbUps;
