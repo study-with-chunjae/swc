@@ -52,7 +52,6 @@ public class QnaPageController {
         return "redirect:/qna/list";
     }
 
-    // QnA 리스트 페이지 이동
     // QnA 리스트 페이지 이동 (페이징 지원)
     @GetMapping("/list")
     public String listQna(
