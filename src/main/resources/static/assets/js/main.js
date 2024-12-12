@@ -45,50 +45,59 @@ function initSliders() {
   createIndicators(indicatorsContainer, totalSlides, currentIndex, slider);
 }
 function escapeHTML(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 async function getMainPosts(element) {
-    const createdAt = element.getAttribute("data-date-format");
-    console.log(createdAt);
-    try {
-        const response = await fetch(`/posts/my-posts/main-posts/${createdAt}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        let slider = document.querySelector("#slider");
-        if (!response.ok) {
-            console.log("response not ok");
-            const error = await response.json();
-            console.log(error.message);
-            slider.innerHTML = '';
-            return;
+  const createdAt = element.getAttribute("data-date-format");
+  console.log(createdAt);
+  try {
+    const response = await fetch(`/posts/my-posts/main-posts/${createdAt}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    let slider = document.querySelector("#slider");
+    if (!response.ok) {
+      console.log("response not ok");
+      const error = await response.json();
+      console.log(error.message);
+      slider.innerHTML = "";
+      return;
+    }
+    console.log("response ok");
+    const result = await response.json();
+    console.log(result);
+    slider.innerHTML = ""; // 기존 내용을 초기화
+    const postList = result.data;
+    if (postList.length > 0) {
+      for (let mainPost of result.data) {
+        let hashtagElements = "";
+        if (mainPost.hashtag.length > 0) {
+          for (let tag of mainPost.hashtag) {
+            hashtagElements += `<div class="tag-div" data-tag="${tag}" onclick="search(this);">${tag}</div>`;
+          }
         }
-        console.log("response ok");
-        const result = await response.json();
-        console.log(result);
-        slider.innerHTML = ''; // 기존 내용을 초기화
-        const postList = result.data;
-        if(postList.length > 0) {
-            for (let mainPost of result.data) {
-                let hashtagElements = '';
-                if(mainPost.hashtag.length > 0) {
-                    for(let tag of mainPost.hashtag) {
-                        hashtagElements += `<div class="tag-div" data-tag="${tag}" onclick="search(this);">${tag}</div>`;
-                    }
-                }
-                let shareElements = '';
-                if(mainPost.shares.length>0){
-                    for (let share of mainPost.shares) {
-                        shareElements += `<div>${share}</div>`;
-                    }
-                }
-                slider.innerHTML += `
+        let shareElements = "";
+        if (mainPost.shares.length > 0) {
+          for (let share of mainPost.shares) {
+            shareElements += `<div>${share}</div>`;
+          }
+        }
+        slider.innerHTML += `
 				<article class="learning-card">
 					<div class="thumbnail">
-						<img src="${mainPost.image==null?'/upload/images/default_image.jpg':mainPost.image}" alt="Thumbnail"/>
+						<img src="${
+              mainPost.image == null
+                ? "/upload/images/default_image.jpg"
+                : mainPost.image
+            }" alt="Thumbnail"/>
 						<div class="category">
                             <div class="tag-container">
                                 <strong>해시태그</strong><span>:</span>
@@ -106,9 +115,9 @@ async function getMainPosts(element) {
 					</div>
                 </article>
                 `;
-            }
-        }else{
-            slider.innerHTML += `
+      }
+    } else {
+      slider.innerHTML += `
 				<article class="learning-card">
 					<div class="info">
 						<h3 class="title">등록된 오늘의학습이 없습니다.</h3>

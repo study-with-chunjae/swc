@@ -21,20 +21,6 @@
         justify-content: center; /* 수평 중앙 정렬 */
         align-items: center; /* 수직 중앙 정렬 */
       }
-<head>
-  <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
-</head>
-<div layout:fragment="mainContent" class="fontQnsvlf">
-  <div class="flex">
-    <section class="content1">
-      <div>
-        <h3 style="text-align: center; margin-top: 15px">프로필</h3>
-        <aside class="shared-learning">
-          <div class="thumbnail-group center">
-            <img th:src="${profileImage?.getPath()?:'/assets/public/human.png'}" alt="Thumbnail" />
-          </div>
-          <button class="profileImgEdit">Edit</button>
-          <div class="likes" th:text="${memberDTO.name + '님'}" style="text-align: center; margin-top: 10px">
       .modal-content {
         background-color: #fff; /* 모달 배경색 */
         padding: 20px; /* 내부 여백 */
@@ -50,7 +36,9 @@
         margin-top: 10px; /* 위쪽 여백 */
       }
     </style>
+    <link th:href="@{/assets/css/main/main.css}" rel="stylesheet" />
   </head>
+
   <div layout:fragment="mainContent" class="fontQnsvlf">
     <div class="flex">
       <section class="content1">
@@ -142,30 +130,32 @@
           <div class="slider-container">
             <div class="slider-wrapper">
               <div class="slider" id="slider">
-              <article
-                class="learning-card"
-                th:if="${!postMainDTOList.isEmpty()}"
-                th:each="post, status:${postMainDTOList}"
-              >
-                <div class="thumbnail">
-                  <img th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}" alt="Thumbnail" />
-                  <div class="category">
-                    <div class="tag-container">
-                      <strong>해시태그</strong>:
-                      <th:block th:each="tag,status:${post.hashtag}">
-                        <div class="tag-div" th:text="${tag}" th:data-tag="${tag}" th:onclick="'search(this);'"></div>
-                      </th:block>
+                <article
+                  class="learning-card"
+                  th:if="${!postMainDTOList.isEmpty()}"
+                  th:each="post, status:${postMainDTOList}"
+                >
+                  <div class="thumbnail">
+                    <img
+                      th:src="${post.image == null ? '/upload/images/default_image.jpg' : post.image}"
+                      alt="Thumbnail"
+                    />
+                    <div class="category">
+                      <div class="tag-container">
+                        <strong>해시태그</strong>:
+                        <th:block th:each="tag,status:${post.hashtag}">
+                          <div
+                            class="tag-div"
+                            th:text="${tag}"
+                            th:data-tag="${tag}"
+                            th:onclick="'search(this);'"
+                          ></div>
+                        </th:block>
+                      </div>
                     </div>
-                  </div>
-                  <div class="thumbUps">❤️ 좋아요 <span th:text="${post.thumbUps}"></span></div>
-                </div>
-                <div class="info">
-                  <h3 class="title" th:text="${post.title}"></h3>
-                  <p class="description" th:text="${post.content}"></p>
-                  <div class="shared-by">
-                    <th:block th:each="share, status:${post.shares}">
-                      <div th:text="${share}"></div>
-                    </th:block>
+                    <div class="thumbUps">
+                      ❤️ 좋아요 <span th:text="${post.thumbUps}"></span>
+                    </div>
                   </div>
                   <div class="info">
                     <h3 class="title" th:text="${post.title}"></h3>
@@ -196,100 +186,91 @@
             </div>
           </div>
         </section>
-        <div>
-          <script th:inline="javascript">
-            let baseDate = new Date([[${createdAt}]]);
-          </script>
-          <script
-            th:src="@{/assets/js/main.js}"
-            layout:fragment="mainscript"
-            th:inline="javascript"
-          ></script>
-        </div>
       </section>
-    <div>
-      <script th:inline="javascript">
-        let baseDate = new Date([[${createdAt}]]);
-        function search(element){
-          const tag = element.getAttribute("data-tag");
-          location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
+      <div>
+        <script th:inline="javascript">
+          let baseDate = new Date([[${createdAt}]]);
+          function search(element){
+            const tag = element.getAttribute("data-tag");
+            location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
+          }
+        </script>
+        <script
+          th:src="@{/assets/js/main.js}"
+          layout:fragment="mainscript"
+          th:inline="javascript"
+        ></script>
+      </div>
+      <!-- 프로필 사진 변경 모달 -->
+      <div id="profileModal">
+        <div class="modal-content">
+          <h3>프로필 사진 변경</h3>
+          <input
+            type="file"
+            id="profileFile"
+            accept="image/*"
+            onchange="previewImage(event)"
+          />
+          <img id="preview" />
+          <button onclick="saveProfileImage()">저장</button>
+          <button onclick="closeProfileModal()">취소</button>
+        </div>
+      </div>
+
+      <script>
+        function openProfileModal() {
+          document.getElementById("profileModal").style.display = "flex";
+        }
+
+        function closeProfileModal() {
+          document.getElementById("profileModal").style.display = "none";
+        }
+
+        function previewImage(event) {
+          const preview = document.getElementById("preview");
+          const file = event.target.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+
+          if (file) {
+            reader.readAsDataURL(file);
+          }
+        }
+
+        function saveProfileImage() {
+          const fileInput = document.getElementById("profileFile");
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+
+          fetch("/myPage/update-profile-image", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("서버 응답 오류");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.success) {
+                alert("프로필 사진이 변경되었습니다.");
+                closeProfileModal();
+                location.reload();
+              } else {
+                alert("프로필 사진 변경에 실패했습니다.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("변경 중 오류가 발생했습니다.");
+            });
         }
       </script>
-      <script
-        th:src="@{/assets/js/main.js}"
-        layout:fragment="mainscript"
-        th:inline="javascript"
-      ></script>
     </div>
-    <!-- 프로필 사진 변경 모달 -->
-    <div id="profileModal">
-      <div class="modal-content">
-        <h3>프로필 사진 변경</h3>
-        <input
-          type="file"
-          id="profileFile"
-          accept="image/*"
-          onchange="previewImage(event)"
-        />
-        <img id="preview" />
-        <button onclick="saveProfileImage()">저장</button>
-        <button onclick="closeProfileModal()">취소</button>
-      </div>
-    </div>
-
-    <script>
-      function openProfileModal() {
-        document.getElementById("profileModal").style.display = "flex";
-      }
-
-      function closeProfileModal() {
-        document.getElementById("profileModal").style.display = "none";
-      }
-
-      function previewImage(event) {
-        const preview = document.getElementById("preview");
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          preview.src = e.target.result;
-          preview.style.display = "block";
-        };
-
-        if (file) {
-          reader.readAsDataURL(file);
-        }
-      }
-
-      function saveProfileImage() {
-        const fileInput = document.getElementById("profileFile");
-        const formData = new FormData();
-        formData.append("file", fileInput.files[0]);
-
-        fetch("/myPage/update-profile-image", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("서버 응답 오류");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.success) {
-              alert("프로필 사진이 변경되었습니다.");
-              closeProfileModal();
-              location.reload();
-            } else {
-              alert("프로필 사진 변경에 실패했습니다.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            alert("변경 중 오류가 발생했습니다.");
-          });
-      }
-    </script>
   </div>
 </html>
