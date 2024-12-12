@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Collections;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -33,13 +36,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("Requested URI: {}", requestURI);
         log.info("Token found: {}", token != null ? "yes" : "no");
 
-        if (token != null && !jwtTokenProvider.validateToken(token)) {
-            log.info("Invalid token, redirecting to login");
-            response.sendRedirect("/");
-            return;
+        if (token != null) {
+            try {
+                if (jwtTokenProvider.validateToken(token)) {
+                    String memberId = jwtTokenProvider.getMemberId(token);
+                    UsernamePasswordAuthenticationToken authentication = 
+                        new UsernamePasswordAuthenticationToken(memberId, null, Collections.emptyList());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("Set Authentication to security context for '{}', uri: {}", memberId, requestURI);
+                }
+            } catch (Exception e) {
+                log.error("Cannot set user authentication: {}", e.getMessage());
+            }
         }
 
-        log.info("Proceeding with request");
         filterChain.doFilter(request, response);
     }
 
@@ -58,14 +68,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/sign") || 
-        path.startsWith("/assets") || 
-        path.startsWith("/error") ||
-        path.startsWith("/oauth2") ||
-        path.equals("/") ||
-        path.startsWith("/css") ||
-        path.startsWith("/js") ||
-        path.startsWith("/images") ||
-        path.startsWith("/admin");
+        return path.startsWith("/sign/signin") || 
+               path.startsWith("/sign/signup") || 
+               path.startsWith("/assets") || 
+               path.startsWith("/error") ||
+               path.startsWith("/oauth2") ||
+               path.startsWith("/css") ||
+               path.startsWith("/js") ||
+               path.startsWith("/images") ||
+               path.equals("/");
     }
 }
