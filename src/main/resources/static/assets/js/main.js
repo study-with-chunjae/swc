@@ -44,14 +44,6 @@ function initSliders() {
   const totalSlides = slides.length;
   createIndicators(indicatorsContainer, totalSlides, currentIndex, slider);
 }
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 async function getMainPosts(element) {
   const createdAt = element.getAttribute("data-date-format");

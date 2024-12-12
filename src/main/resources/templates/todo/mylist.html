@@ -262,7 +262,6 @@
                     const formObj = document.querySelector("form");
                     const btnSubmit = document.querySelector("#btnSubmit");
                     let pageBtn = document.querySelectorAll(".page-btn");
-
                     function formSubmit(formElement){
                         searchValid(formElement);
                         formElement.submit();
@@ -322,9 +321,9 @@
                             formSubmit(formObj);
                         });
                     }
-
+                    const queryString = [[@{${pageDTO.queryString}}]];
                     function view(postId){
-                        location.href="/post/view?postId="+postId;
+                        location.href="/post/view?postId="+postId + `&queryString=${queryString}`;
                     }
                     const sortCreatedAt = document.querySelector("#sortCreatedAt");
                     const sortThumbUp = document.querySelector("#sortThumbUp");

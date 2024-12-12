@@ -297,8 +297,9 @@
                         formObj.submit();
                     });
                 }
+                const queryString = [[@{${pageDTO.queryString}}]];
                 function view(postId){
-                    location.href="/post/view?postId="+postId;
+                    location.href="/post/view?postId="+postId + `&queryString=${queryString}%2526type%253D${type}`;
                 }
             </script>
             </div>
