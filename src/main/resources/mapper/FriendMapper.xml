@@ -28,7 +28,7 @@
         SELECT COUNT(DISTINCT f.friendId)
         FROM friend f
         INNER JOIN `member` m ON (f.requesterId = m.memberId OR f.receiverId = m.memberId) AND m.memberId != #{memberId}
-        INNER JOIN `member` m2 ON (f.requesterId = m2.memberId OR f.receiverId = m2.memberId) AND m2.memberId = #{memberId}
+        INNER JOIN `member` m2 ON f.receiverId = m2.memberId AND m2.memberId = #{memberId}
         WHERE (f.requesterId = #{memberId} OR f.receiverId = #{memberId}) AND f.status = 0
         <if test="pageDTO.searchValue != null">
             AND (m.memberId LIKE CONCAT('%', #{pageDTO.searchValue}, '%') OR m.`name` LIKE CONCAT('%', #{pageDTO.searchValue}, '%'))
@@ -38,7 +38,7 @@
         SELECT f.friendId as friendId, f.regDate as regDate, f.`status` as status, m.memberId as othersId, m.`name` as othersName, m2.memberId as myId, m2.`name` as myName
         FROM friend f
         INNER JOIN `member` m ON (f.requesterId = m.memberId OR f.receiverId = m.memberId) AND m.memberId != #{memberId}
-        INNER JOIN `member` m2 ON (f.requesterId = m2.memberId OR f.receiverId = m2.memberId) AND m2.memberId = #{memberId}
+        INNER JOIN `member` m2 ON f.receiverId = m2.memberId AND m2.memberId = #{memberId}
         WHERE (f.requesterId = #{memberId} OR f.receiverId = #{memberId}) AND f.status = 0
         <if test="pageDTO.searchValue != null">
             AND (m.memberId LIKE CONCAT('%', #{pageDTO.searchValue}, '%') OR m.`name` LIKE CONCAT('%', #{pageDTO.searchValue}, '%'))
