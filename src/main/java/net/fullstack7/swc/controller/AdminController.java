@@ -10,6 +10,7 @@ import net.fullstack7.swc.dto.AdminMemberDTO;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.AdminServiceIf;
 import net.fullstack7.swc.service.MemberServiceIf;
+import net.fullstack7.swc.service.MemberServiceImpl;
 import net.fullstack7.swc.service.QnaServiceIf;
 import net.fullstack7.swc.util.ErrorUtil;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class AdminController {
 
     private final AdminServiceIf adminService;
     private final QnaServiceIf qnaService;
-    private final MemberServiceIf memberService;
+    private final MemberServiceImpl memberService;
     private final ErrorUtil errorUtil;
 
     @GetMapping("/main")
@@ -106,11 +107,22 @@ public class AdminController {
     @PostMapping("/{memberId}/status")
     public ResponseEntity<String> updateMemberStatus(@PathVariable("memberId") String memberId,
         @RequestParam String status) {
-        int updatedCnt = memberService.updateStatusByMemberId(status, memberId);
-        if (updatedCnt > 0) {
-            return ResponseEntity.ok(memberId + "회원 상태 변경완료");
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 회원을 찾을 수 없습니다.");
+        try {
+            if ("D".equalsIgnoreCase(status)) {
+                memberService.deleteMember(memberId);
+                return ResponseEntity.ok(memberId + " 회원이 성공적으로 탈퇴되었습니다.");
+            } else {
+                int updatedCnt = memberService.updateStatusByMemberId(status, memberId);
+                if (updatedCnt > 0) {
+                    return ResponseEntity.ok(memberId + " 회원 상태가 변경되었습니다.");
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("해당 ID의 회원을 찾을 수 없습니다.");
+                }
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("회원 상태 변경 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
@@ -121,12 +133,10 @@ public class AdminController {
             @RequestParam(value = "answered", required = false) Boolean answered, // 필터링 옵션
             Model model
     ) {
-        // Pageable 객체 생성 (페이지 번호, 크기, 정렬 기준)
         Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
 
         Page<QnaDTO> qnaPage;
 
-        // answered 필터링이 있는 경우와 없는 경우 분기
         if (answered != null) {
             qnaPage = qnaService.listQnaByAnsweredPage(pageable, answered);
         } else {
@@ -137,7 +147,6 @@ public class AdminController {
         if (totalPages == 0) {
             totalPages = 1;
         }
-
 
         if (page >= totalPages && totalPages > 0) {
             return "redirect:/admin/qnaList?page=" + (qnaPage.getTotalPages() - 1) + "&size=" + size + (answered != null ? "&answered=" + answered : "");
