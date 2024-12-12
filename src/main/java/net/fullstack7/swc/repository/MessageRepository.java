@@ -5,6 +5,7 @@ import net.fullstack7.swc.domain.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,7 +24,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     //보낸메시지 목록 페이징
     Page<Message> findBySenderId(String senderId, Pageable pageable);
 
+//    @Query("SELECT m FROM Message m WHERE m.receiverId = ?1")
+//    Page<Message> findByReceiverId(String receiverId, Pageable pageable);
 
+    int countByReceiverId(String receiverId);
 //    void deleteAllById(List<Long> messageIds);
 
     // 아이디 전체 삭제 (한덕용 추가)
