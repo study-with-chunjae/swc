@@ -79,7 +79,7 @@ public class AdminController {
 
     @PostMapping("/{memberId}/status")
     public ResponseEntity<String> updateMemberStatus(@PathVariable("memberId") String memberId,
-                                                     @RequestParam String status) {
+        @RequestParam String status) {
         int updatedCnt = memberService.updateStatusByMemberId(status, memberId);
         if (updatedCnt > 0) {
             return ResponseEntity.ok(memberId + "회원 상태 변경완료");
