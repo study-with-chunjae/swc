@@ -18,7 +18,6 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, String> {
     // 이메일로 회원 찾기
     Optional<Member> findByEmail(String email);
-
     //친구(수진)
     @Query("SELECT m FROM Member m WHERE m.memberId LIKE %:keyword% OR m.name LIKE %:keyword%")
     List<Member> findById(String keyword, Pageable pageable);

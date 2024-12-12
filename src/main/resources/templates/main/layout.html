@@ -304,6 +304,7 @@
           )
             .then((response) => response.json())
             .then((data) => {
+              // console.log(data)
               displaySearchResults(data);
               // "더보기" 버튼 표시 여부 결정
               if (data.length === 5) {
