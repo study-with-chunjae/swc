@@ -28,6 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("Security Filter Chain 설정 시작");
         http
+                .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), 
                                UsernamePasswordAuthenticationFilter.class)
@@ -39,6 +40,7 @@ public class SecurityConfig {
                             "/assets/**",
                             "/error",
                             "/oauth2/**",
+                            "/api/**"
                             "/admin/**"
                         ).permitAll()
                         .anyRequest().authenticated()
@@ -55,6 +57,11 @@ public class SecurityConfig {
                         log.error("인증 에러 발생: {}", authException.getMessage());
                         if (request.getHeader("Accept") != null && 
                             request.getHeader("Accept").contains("application/json")) {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"unauthorized\"}");
+                        } else if (request.getContentType() != null && 
+                        request.getContentType().contains("application/json")) {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json;charset=UTF-8");
                             response.getWriter().write("{\"error\":\"unauthorized\"}");
