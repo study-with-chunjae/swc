@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link th:href="@{/assets/css/main/header.css}" rel="stylesheet" />
     <link th:href="@{/assets/css/main/layout.css}" rel="stylesheet" />
+    <link rel="icon" th:href="@{/assets/public/mascot.png}" type="image/png">
     <style>
       body {
         margin: 0;
@@ -304,6 +305,7 @@
           )
             .then((response) => response.json())
             .then((data) => {
+              // console.log(data)
               displaySearchResults(data);
               // "더보기" 버튼 표시 여부 결정
               if (data.length === 5) {

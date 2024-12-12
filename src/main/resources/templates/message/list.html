@@ -102,7 +102,9 @@
         form {
             width: 99%;
             max-width: 1000px;
-            margin-bottom: 30px;
+            /*원래는 bottom:30px이니까 잘못되면 고치고 탑 삭제*/
+            margin-bottom: 75px;
+            margin-top: -40px;
             height: 450px;
             max-height: 450px;
         }
@@ -163,6 +165,7 @@
         }
     </style>
 </head>
+<body>
 <div layout:fragment="mainContent" class="fontQnsvlf">
     <div class="flex">
         <div class="myPageLeft">
@@ -196,19 +199,19 @@
         <div class="myPageRight">
             <h1>받은 쪽지 목록</h1>
 
-            <div th:if="${#lists.isEmpty(messages)}" class="no-messages">
+            <div th:if="${#lists.isEmpty(pageDTO.dtoList)}" class="no-messages">
                 <p>받은 쪽지가 없습니다.</p>
 <!--                <button type="submit">삭제</button>-->
             </div>
 
-            <div th:unless="${#lists.isEmpty(messages)}">
+            <div th:unless="${#lists.isEmpty(pageDTO.dtoList)}">
                 <form method="post" th:action="@{/message/delete}" onsubmit="return validateForm()">
                     <button type="submit" class="delete-button">삭제</button>
                     <table>
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" />
+                                <input type="checkbox" id="selectAll"/>
                             </th>
                             <th>번호</th>
                             <th>보낸사람</th>
@@ -218,11 +221,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="message, iterStat : ${messages}">
+                        <tr th:each="message, iterStat : ${pageDTO.dtoList}">
                             <td class="checkbox-container">
                                 <input type="checkbox" name="messageIds" th:value="${message.id}" class="messageCheckbox"/>
                             </td>
-                            <td><a th:href="@{/message/view(messageId=${message.id})}" th:text="${iterStat.index + 1}"></a></td>
+                            <td><a th:href="@{/message/view(messageId=${message.id})}" th:text="${iterStat.index + pageDTO.offset + 1}"></a></td>
                             <td th:text="${message.senderId}"></td>
                             <td><a th:href="@{/message/view(messageId=${message.id})}" th:text="${message.title}"></a></td>
                             <td th:text="${#temporals.format(message.regDate, 'yyyy-MM-dd HH:mm')}"></td>
@@ -232,21 +235,6 @@
                     </table>
                 </form>
             </div>
-
-            <!--페이징-->
-            <!--<div class="pagination">-->
-            <!--    <span th:if="${currentPage > 0}">-->
-            <!--        <a th:href="@{/message/list(page=${currentPage - 1}, size=${size})}">이전</a>-->
-            <!--    </span>-->
-
-            <!--    <span th:each="i : ${#numbers.sequence(0, totlaPages - 1)}">-->
-            <!--        <a th:href="@{/message/list(page=${i}, size=${size})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'current' : ''"></a>-->
-            <!--    </span>-->
-
-            <!--    <span th:if="${currentPage < totalPages - 1}">-->
-            <!--        <a th:href="@{/message/list(page=${currentPage + 1}, size=${size})}">다음</a>-->
-            <!--    </span>-->
-            <!--</div>-->
             <!-- 네비게이션 버튼 -->
             <div class="navigation-buttons">
                 <button type="button" class="send-button" onclick="window.location.href='/message/send/list';">보낸쪽지목록</button>
@@ -254,24 +242,22 @@
             </div>
             <!-- 페이징 -->
             <div class="pagination">
-                <span th:if="${currentPage > 0}">
-                    <a th:href="@{/message/list(page=${currentPage - 1}, size=${size})}">이전</a>
+                <span th:if="${pageDTO.prev}">
+                    <a th:href="@{/message/list(page=${pageDTO.blockStart - 1}, size=${size})}">이전</a>
                 </span>
 
-                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <a th:href="@{/message/list(page=${i}, size=${size})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'current' : ''"></a>
+                <span th:each="i : ${#numbers.sequence(pageDTO.blockStart - 1, pageDTO.blockEnd - 1)}">
+                    <a th:href="@{/message/list(page=${i + 1}, size=${size})}" th:text="${i + 1}" th:classappend="${i == currentPage} ? 'current' : ''"></a>
                 </span>
 
-                <span th:if="${currentPage < totalPages - 1}">
-                    <a th:href="@{/message/list(page=${currentPage + 1}, size=${size})}">다음</a>
+                <span th:if="${pageDTO.next}">
+                    <a th:href="@{/message/list(page=${pageDTO.blockEnd + 1}, size=${size})}">다음</a>
                 </span>
             </div>
-
-
         </div>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
     function toggleSelectAll() {
         const selectAllCheckbox = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.messageCheckbox');
@@ -279,6 +265,35 @@
             checkbox.checked = selectAllCheckbox.checked;
         });
     }
+
+    // 페이지 로드 시 실행되는 함수 추가 (선택사항)
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        if (selectAllCheckbox) {
+            console.log('selectAll 체크박스 준비 완료');
+            selectAllCheckbox.addEventListener('click', toggleSelectAll);
+        }
+    });
+
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const selectAllCheckbox = document.getElementById('selectAll');
+    //     const checkboxes = document.querySelectorAll('.messageCheckbox');
+    //
+    //     console.log('선택 전체 체크박스:', selectAllCheckbox);
+    //     console.log('개별 체크박스:', checkboxes.length);
+    //
+    //     if (selectAllCheckbox && checkboxes.length > 0) {
+    //         selectAllCheckbox.addEventListener('change', function() {
+    //             console.log('전체 선택 체크박스 상태:', this.checked);
+    //             checkboxes.forEach(checkbox => {
+    //                 checkbox.checked = this.checked;
+    //                 console.log('개별 체크박스 상태:', checkbox.checked);
+    //             });
+    //         });
+    //     } else {
+    //         console.error('체크박스를 찾을 수 없습니다.');
+    //     }
+    // });
 
     function validateForm(){
         const selectMessages = document.querySelectorAll('.messageCheckbox:checked');
@@ -289,5 +304,5 @@
         return true;
     }
 </script>
-
+</body>
 </html>

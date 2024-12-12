@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Member;
 import net.fullstack7.swc.dto.FriendDTO;
+import net.fullstack7.swc.dto.MemberDTO;
 import net.fullstack7.swc.service.FriendServiceIf;
 import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.util.CookieUtil;
@@ -33,10 +34,11 @@ public class FriendRestController {
     private final MemberServiceIf memberService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<Member>> searchFriends(@RequestParam String keyword,
+    public ResponseEntity<List<MemberDTO>> searchFriends(@RequestParam String keyword,
                                                       @RequestParam(defaultValue = "5") int limit,
                                                       @RequestParam(defaultValue = "0") int page) {
-        List<Member> results = friendService.searchFriends(keyword, limit, page);
+        List<MemberDTO> results = friendService.searchFriends(keyword, limit, page);
+//        log.info("searchFriends{}", results);
         return ResponseEntity.ok(results);
     }
 
@@ -83,6 +85,7 @@ public class FriendRestController {
     public ResponseEntity<List<FriendDTO>> getFriends(HttpServletRequest request) {
         String memberId = getMemberIdInJwt(request);
         List<FriendDTO> friends = friendService.getFriends(memberId);
+//        log.info("getFriends{}",friends);
         return ResponseEntity.ok(friends);
     }
 

@@ -32,7 +32,6 @@ public class GlobalExceptionHandler {
           org.attoparser.ParseException.class,
           org.thymeleaf.exceptions.TemplateInputException.class,
           jakarta.servlet.ServletException.class,
-//          RuntimeException.class,
           org.springframework.web.servlet.resource.NoResourceFoundException.class
   })
   public String handleBadRequest(Exception e, Model model) {
