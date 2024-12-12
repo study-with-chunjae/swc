@@ -17,7 +17,7 @@
           <aside class="shared-learning">
             <div class="thumbnail-group center">
               <img
-                th:src="${profileImage.getPath() != null ? profileImage.getPath() : '/assets/public/human.png'}"
+                th:src="${profileImage?.getPath()?: '/assets/public/human.png'}"
                 alt="Thumbnail"
               />
             </div>
@@ -166,6 +166,7 @@
             const tag = element.getAttribute("data-tag");
             location.href="/post/sharelist?type=others&searchField=hashtag&searchValue="+tag.replace('#','');
           }
+          const memberId = [[${memberDTO.memberId}]];
         </script>
         <script
           th:src="@{/assets/js/main.js}"
