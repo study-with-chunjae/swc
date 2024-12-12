@@ -13,7 +13,9 @@ import net.fullstack7.swc.service.MemberServiceIf;
 import net.fullstack7.swc.service.QnaServiceIf;
 import net.fullstack7.swc.util.ErrorUtil;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,18 +68,38 @@ public class AdminController {
         session.invalidate();
         return "redirect:/admin/login";
     }
-
     @GetMapping("/memberList")
-    public String memberList(@RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType,
-                          @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-                          @PageableDefault(size = 10) Pageable pageable,
-                          Model model) {
+    public String memberList(
+            @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType,
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(value = "size", defaultValue = "10") int size, // 페이지 당 항목 수
+            Model model
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
         Page<AdminMemberDTO> memberPage = memberService.getAllMembers(searchType, keyword, pageable);
 
+        int totalPages = memberPage.getTotalPages();
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+
+        if (page >= totalPages && totalPages > 0) {
+            return "redirect:/admin/memberList?page=" + (totalPages - 1) +
+                    "&size=" + size +
+                    "&searchType=" + searchType +
+                    "&keyword=" + keyword;
+        }
 
         model.addAttribute("memberPage", memberPage);
+        model.addAttribute("currentPage", memberPage.getNumber());
+        model.addAttribute("pageSize", size);
         model.addAttribute("searchType", searchType);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("totalPages", totalPages); // 추가: 총 페이지 수
+
         return "admin/memberList";
     }
 
@@ -93,10 +115,38 @@ public class AdminController {
     }
 
     @GetMapping("/qnaList")
-    public String qnaList(Model model) {
-        List<QnaDTO> qnaList = qnaService.listQna();
-        log.info("*************************************qna{}",qnaList);
-        model.addAttribute("qnaList", qnaList);
+    public String qnaList(
+            @RequestParam(value = "page", defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(value = "size", defaultValue = "10") int size, // 페이지 당 항목 수
+            @RequestParam(value = "answered", required = false) Boolean answered, // 필터링 옵션
+            Model model
+    ) {
+        // Pageable 객체 생성 (페이지 번호, 크기, 정렬 기준)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
+
+        Page<QnaDTO> qnaPage;
+
+        // answered 필터링이 있는 경우와 없는 경우 분기
+        if (answered != null) {
+            qnaPage = qnaService.listQnaByAnsweredPage(pageable, answered);
+        } else {
+            qnaPage = qnaService.listQnaPage(pageable);
+        }
+
+        int totalPages = qnaPage.getTotalPages();
+        if (totalPages == 0) {
+            totalPages = 1;
+        }
+
+
+        if (page >= totalPages && totalPages > 0) {
+            return "redirect:/admin/qnaList?page=" + (qnaPage.getTotalPages() - 1) + "&size=" + size + (answered != null ? "&answered=" + answered : "");
+        }
+        model.addAttribute("qnaPage", qnaPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("answered", answered);
+
         return "admin/qnaList";
     }
 
