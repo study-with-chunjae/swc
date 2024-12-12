@@ -30,41 +30,41 @@ public class FriendPageController {
     private final MemberServiceIf memberService;
     private final AlertServiceIf alertService;
 
-    @GetMapping("/list")
-    public String friendList(
-            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "5") int size,
-            Model model
-    , HttpServletRequest request
-    ) {
-
-        String memberId = getMemberIdInJwt(request);
-        log.info("회원아이디{}",memberId);
-        Pageable pageable = PageRequest.of(page, size);
-        List<Member> searchResults = friendService.searchFriends(keyword, size, page); // 매개변수 순서 확인
-        model.addAttribute("searchResults", searchResults);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("page", page);
-        model.addAttribute("pageSize", size);
-
-        List<FriendDTO> friendRequests = friendService.getFriendRequests(memberId);
-        model.addAttribute("friendRequests", friendRequests);
-
-        List<FriendDTO> friends = friendService.getFriends(memberId);
-        model.addAttribute("friends", friends);
-
-        List<AlertDTO> alerts = alertService.readAlerts(memberId);
-        model.addAttribute("alerts", alerts);
-        model.addAttribute("memberId", memberId);
-
-
-        int unreadCount = alertService.unreadCount(memberId);
-        model.addAttribute("unreadCount", unreadCount);
-
-
-        return "friend/test";
-    }
+//    @GetMapping("/list")
+//    public String friendList(
+//            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+//            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+//            @RequestParam(value = "size", required = false, defaultValue = "5") int size,
+//            Model model
+//    , HttpServletRequest request
+//    ) {
+//
+//        String memberId = getMemberIdInJwt(request);
+//        log.info("회원아이디{}",memberId);
+//        Pageable pageable = PageRequest.of(page, size);
+//        List<Member> searchResults = friendService.searchFriends(keyword, size, page); // 매개변수 순서 확인
+//        model.addAttribute("searchResults", searchResults);
+//        model.addAttribute("keyword", keyword);
+//        model.addAttribute("page", page);
+//        model.addAttribute("pageSize", size);
+//
+//        List<FriendDTO> friendRequests = friendService.getFriendRequests(memberId);
+//        model.addAttribute("friendRequests", friendRequests);
+//
+//        List<FriendDTO> friends = friendService.getFriends(memberId);
+//        model.addAttribute("friends", friends);
+//
+//        List<AlertDTO> alerts = alertService.readAlerts(memberId);
+//        model.addAttribute("alerts", alerts);
+//        model.addAttribute("memberId", memberId);
+//
+//
+//        int unreadCount = alertService.unreadCount(memberId);
+//        model.addAttribute("unreadCount", unreadCount);
+//
+//
+//        return "friend/test";
+//    }
 
 
     private String getMemberIdInJwt(HttpServletRequest req){

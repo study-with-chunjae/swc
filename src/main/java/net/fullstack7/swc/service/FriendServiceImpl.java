@@ -5,10 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.AlertType;
 import net.fullstack7.swc.domain.Friend;
 import net.fullstack7.swc.domain.Member;
-import net.fullstack7.swc.dto.FriendDTO;
-import net.fullstack7.swc.dto.FriendListDTO;
-import net.fullstack7.swc.dto.FriendShareDTO;
-import net.fullstack7.swc.dto.PageDTO;
+import net.fullstack7.swc.dto.*;
 import net.fullstack7.swc.mapper.FriendMapper;
 import net.fullstack7.swc.repository.FriendRepository;
 import net.fullstack7.swc.repository.MemberRepository;
@@ -80,8 +77,9 @@ public class FriendServiceImpl implements FriendServiceIf {
 
         friend.allow();
         friendRepository.save(friend);
+        String memberName = friend.getReceiver().getName();
 
-         String message = receiverId + "님이 친구 요청을 수락했습니다.";
+         String message = memberName + "님이 친구 요청을 수락했습니다.";
         alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/myPage/friend");
     }
 
@@ -154,9 +152,9 @@ public class FriendServiceImpl implements FriendServiceIf {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Member> searchFriends(String keyword, int limit, int page) {
+    public List<MemberDTO> searchFriends(String keyword, int limit, int page) {
         Pageable pageable = PageRequest.of(page, limit);
-        return memberRepository.findById(keyword, pageable);
+        return memberRepository.findById(keyword, pageable).stream().map(member -> modelMapper.map(member, MemberDTO.class)).collect(Collectors.toList());
     }
 
     //강감찬 추가
