@@ -31,7 +31,7 @@ public class SendMessageController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String handleGetRequest() {
-        return "redirect:/message/send/list"; // 삭제 페이지로 직접 GET 요청하면 리다이렉트
+        return "redirect:/message/send/list";
     }
 
     private String getMemberIdInJwt(HttpServletRequest req) {
@@ -94,10 +94,9 @@ public String messageList(Model model, HttpServletRequest req,
     log.info("리스트사이즈: {}", messageList.size());
     pageDTO.setDtoList(messageList);
 
-    // 총 페이지 수 계산
     int totalPages = (int) Math.ceil((double) totalCount / pageDTO.getPageSize());
     model.addAttribute("totalPages", pageDTO.getTotalPage());
-    model.addAttribute("currentPage", pageDTO.getPageNo() - 1); // 0-based index
+    model.addAttribute("currentPage", pageDTO.getPageNo() - 1);
     model.addAttribute("size", pageDTO.getPageSize());
     model.addAttribute("messages", messageList);
     model.addAttribute("pageDTO", pageDTO);

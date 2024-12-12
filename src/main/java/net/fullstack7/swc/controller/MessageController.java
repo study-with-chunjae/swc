@@ -45,12 +45,11 @@ public class MessageController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public String handleGetRequest() {
-        return "redirect:/message/list"; // 삭제 페이지로 직접 GET 요청하면 리다이렉트
+        return "redirect:/message/list";
     }
 
     private String getMemberIdInJwt(HttpServletRequest req) {
         String accessToken = cookieUtil.getCookieValue(req, "accessToken");
-
         if (accessToken == null || accessToken.isEmpty()) {
             return null;
         }
@@ -68,7 +67,6 @@ public class MessageController {
                               @RequestParam(defaultValue = "10") int size,
                               @Valid PageDTO<MessageDTO> pageDTO, BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
-        log.info("페이지={}, 사이즈={}", page, size);
         if(bindingResult.hasErrors()) {
             pageDTO = PageDTO.<MessageDTO>builder().build();
         }
@@ -76,34 +74,25 @@ public class MessageController {
         if (memberId == null) {
             return "redirect:/sign/signIn";
         }
-        // 페이지 번호가 0인 경우 처리
         if (page < 1) {
-            log.warn("유효번호: {}", page);
-            page = 1; // 기본값으로 설정
+            page = 1;
         }
-
-        log.info("페이지={}, 사이즈={}", page, size);
-
         pageDTO.setPageNo(page);
         pageDTO.setPageSize(size);
-
-//        pageDTO.setSortDirection("desc");
-//        pageDTO.setSortField("regDate");
-
         pageDTO.initialize("regDate", "desc");
 
         int totalCount = messageService.getReceiverMessageCount(memberId);
-        log.info("메시지총개수: {}", totalCount);
+//        log.info("메시지총개수: {}", totalCount);
         pageDTO.setTotalCount(totalCount);
 
         List<MessageDTO> messageList = messageService.getReceiverMessageList(memberId, pageDTO.getSortPageable());
-        log.info("리스트사이즈: {}", messageList.size());
+//        log.info("리스트사이즈: {}", messageList.size());
         pageDTO.setDtoList(messageList);
 
         // 총 페이지 수 계산
         int totalPages = (int) Math.ceil((double) totalCount / pageDTO.getPageSize());
         model.addAttribute("totalPages", pageDTO.getTotalPage());
-        model.addAttribute("currentPage", pageDTO.getPageNo() - 1); // 0-based index
+        model.addAttribute("currentPage", pageDTO.getPageNo() - 1);
         model.addAttribute("size", pageDTO.getPageSize());
         model.addAttribute("messages", messageList);
         model.addAttribute("pageDTO", pageDTO);
@@ -133,13 +122,11 @@ public class MessageController {
     public String registMessage(@RequestParam String receiverId, @RequestParam String content, @RequestParam String title, @RequestParam LocalDateTime regDate, HttpServletRequest req, Model model) {
         String senderId = getMemberIdInJwt(req);
 //        log.info("senderId" + senderId);
-
         if (senderId == null) {
             return "redirect:/sign/signIn";
         }
         try {
             messageService.sendMessage(senderId, receiverId, content, title, regDate);
-            //알림
             String alertMessage = senderId + "님이 새 쪽지를 보냈습니다: " + "'"+title+"'";
             Member member = memberRepository.findByMemberId(receiverId);
 
@@ -180,17 +167,12 @@ public class MessageController {
     @PostMapping("/markAsUnRead")
     @Transactional
     public String markAsUnRead(@RequestParam Long messageId){
-        log.info("messageId: "+messageId);
         Message message = messageService.getMessageById(messageId);
         if(message.isRead()){
             message.setRead(false);
             messageRepository.save(message);
-            log.info("Message marked as unread: messageId = " + messageId);
         }
         Message updatedMessage = messageRepository.findById(messageId).orElseThrow(() -> new IllegalArgumentException("Message not found"));
-        log.info("Current message read status: "+message.isRead());
-
-//        return "redirect:/message/view?messageId="+messageId;
         return "redirect:/message/list";
     }
 

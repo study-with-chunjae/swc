@@ -20,21 +20,6 @@ public class MessageService implements MessageServiceIf {
     private final AlertServiceImpl alertService;
     private final MemberRepository memberRepository;
 
-    // 쪽지 보내기
-//    public void sendMessage(String senderId, String receiverId, String content){
-//        boolean receiverExists = memberRepository.existsById(receiverId);
-//        if(!receiverExists){
-//            throw new IllegalArgumentException("사용자가 존재하지 않음.");
-//        }
-//
-//        Message message = new Message();
-//        message.setSenderId(senderId);
-//        message.setReceiverId(receiverId);
-//        message.setContent(content);
-//        messageRepository.save(message);
-//    }
-
-
     // 쪽지 목록 조회(receiverId)
     @Override
     public List<Message> getReceiverMessageList(String memberId) {
@@ -45,9 +30,6 @@ public class MessageService implements MessageServiceIf {
     public List<Message> getSenderMessageList(String memberId) {
         return messageRepository.findBySenderId(memberId);
     }
-
-
-
 
     // 메시지 인덱스로 조회
     @Override

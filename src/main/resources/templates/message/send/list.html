@@ -425,15 +425,14 @@
                 return true;
             }
 
-            // 모달 관련 JavaScript
-            console.log("모달시작");
+            // 모달
             const modal = document.getElementById('messageModal');
             const openModalBtn = document.getElementById('openMessageModal');
             const closeModalBtn = document.querySelector('.modal-close');
             const cancelBtn = document.getElementById('closeMessageModal');
 
             // 오류 메시지 처리
-            const errorMessage = /*[[${errorMessage}]]*/ null;  // Thymeleaf에서 errorMessage를 받아옴
+            const errorMessage = /*[[${errorMessage}]]*/ null;
 
             if (errorMessage) {
                 // 오류 메시지가 있으면 모달을 열고 메시지를 표시

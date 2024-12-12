@@ -24,9 +24,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     //보낸메시지 목록 페이징
     Page<Message> findBySenderId(String senderId, Pageable pageable);
 
-//    @Query("SELECT m FROM Message m WHERE m.receiverId = ?1")
-//    Page<Message> findByReceiverId(String receiverId, Pageable pageable);
-
     int countByReceiverId(String receiverId);
 //    void deleteAllById(List<Long> messageIds);
 
