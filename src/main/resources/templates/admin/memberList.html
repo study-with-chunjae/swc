@@ -69,7 +69,7 @@
                 <td th:text="${member.lastLoginAt != null ? #temporals.format(member.lastLoginAt, 'yyyy-MM-dd') : '-'}" style="text-align: center;"></td>
             </tr>
             <tr th:if="${memberPage.content.size() == 0}">
-                <td colspan="4">해당하는 회원이 없습니다</td>
+                <td colspan="6">해당하는 회원이 없습니다</td>
             </tr>
             </tbody>
         </table>
@@ -90,11 +90,13 @@
     <script>
         $(document).ready(function() {
             $('.status-dropdown').change(function() {
-                var memberId = $(this).data('member-id');
-                var newStatus = $(this).val();
+                let memberId = $(this).data('member-id');
+                let newStatus = $(this).val();
 
                 $.ajax({
                     url: '/admin/' + memberId + '/status',
+
+
                     type: 'POST',
                     data: { status: newStatus },
                     success: function(response) {

@@ -6,6 +6,8 @@ import net.fullstack7.swc.domain.Qna;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.repository.AdminRepository;
 import net.fullstack7.swc.repository.QnaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -140,5 +142,22 @@ public class QnaServiceImpl implements QnaServiceIf {
         message.setSubject("SWC QnA 답변 : " + subject);
         message.setText("답변 내용:\n" + answerContent);
         mailSender.send(message);
+    }
+
+    //페이징
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QnaDTO> listQnaPage(Pageable pageable) {
+        Page<Qna> qnaPage = qnaRepository.findAllBy(pageable);
+        log.info("서비스에서 리스트 확인: {}", qnaPage.getContent());
+        return qnaPage.map(this::convertToDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QnaDTO> listQnaByAnsweredPage(Pageable pageable, boolean answered) {
+        Page<Qna> qnaPage = qnaRepository.findByAnswered(pageable, answered);
+        log.info("서비스에서 리스트 확인 (answered={}): {}", answered, qnaPage.getContent());
+        return qnaPage.map(this::convertToDTO);
     }
 }
