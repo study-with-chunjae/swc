@@ -19,16 +19,16 @@ public class Message {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;  // 메시지 ID
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 50)
         private String senderId;  // 발신자 ID
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 50)
         private String receiverId;  // 수신자 ID
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 50)
         private String title;  // 쪽지 제목
 
-        @Column(nullable = false, length = 500)
+        @Column(nullable = false, length = 1000)
         private String content;  // 메시지 내용
 
         private boolean isRead;  // 읽음 여부 (기본값은 false)

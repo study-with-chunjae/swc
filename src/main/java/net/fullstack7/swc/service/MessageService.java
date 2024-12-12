@@ -101,6 +101,11 @@ public class MessageService implements MessageServiceIf {
     }
 
     @Override
+    public int getSenderMessageCount(String memberId) {
+        return messageRepository.countBySenderId(memberId);
+    }
+
+    @Override
     public List<MessageDTO> getReceiverMessageList(String memberId, java.awt.print.Pageable pageable) {
         return List.of();
     }
@@ -108,6 +113,12 @@ public class MessageService implements MessageServiceIf {
     // 수신 메시지 목록 페이징 조회
     public List<MessageDTO> getReceiverMessageList(String memberId, Pageable pageable) {
         Page<Message> messagePage = messageRepository.findByReceiverId(memberId, pageable);
+        return messagePage.map(this::convertToDTO).getContent(); // Message를 MessageDTO로 변환
+    }
+
+    // 발신 메시지 목록 페이징 조회
+    public List<MessageDTO> getSenderMessageList(String memberId, Pageable pageable) {
+        Page<Message> messagePage = messageRepository.findBySenderId(memberId, pageable);
         return messagePage.map(this::convertToDTO).getContent(); // Message를 MessageDTO로 변환
     }
 
