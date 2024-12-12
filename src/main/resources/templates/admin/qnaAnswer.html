@@ -70,16 +70,18 @@
 </style>
     <h1>답변 등록</h1>
     <div class="container mt-4">
-        <div th:if="${errors != null}" class="error-message" th:text="${errors}"></div>
+        <div th:if="${errors}">
+            <p th:text="${errors}" class="error-message"></p>
+        </div>
         <form th:action="@{'/admin/' + ${qnaId} + '/regist'}" method="post">
         <div class="mb-3">
             <label for="title" class="form-label">답변 제목:</label>
-            <input type="text" class="form-control" id="title" name="title" th:value="${qnaDTO.title}" required>
+            <input type="text" class="form-control" id="title" name="title" th:value="${qnaDTO.title}" maxlength="100" required>
         </div>
 
         <div class="mb-3">
             <label for="content" class="form-label">답변 내용:</label>
-            <textarea class="form-control" id="content" name="content" rows="5" th:text="${qnaDTO.content}" required></textarea>
+            <textarea class="form-control" id="content" name="content" rows="5" th:text="${qnaDTO.content}" required maxlength="1000"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">답변 등록</button>

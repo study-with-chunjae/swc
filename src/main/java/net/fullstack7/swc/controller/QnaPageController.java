@@ -6,6 +6,10 @@ import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.QnaServiceIf;
 import net.fullstack7.swc.util.ErrorUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -49,9 +53,29 @@ public class QnaPageController {
     }
 
     // QnA 리스트 페이지 이동
+    // QnA 리스트 페이지 이동 (페이징 지원)
     @GetMapping("/list")
-    public String listQna(Model model) {
-        model.addAttribute("qnaList", qnaService.listQna());
+    public String listQna(
+            @RequestParam(value = "page", defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(value = "size", defaultValue = "10") int size, // 페이지 당 항목 수
+            @RequestParam(value = "answered", required = false) Boolean answered, // 필터링 옵션 (선택 사항)
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
+
+        Page<QnaDTO> qnaPage;
+
+        if (answered != null) {
+            qnaPage = qnaService.listQnaByAnsweredPage(pageable, answered);
+        } else {
+            qnaPage = qnaService.listQnaPage(pageable);
+        }
+
+        model.addAttribute("qnaPage", qnaPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("answered", answered);
+
         return "qna/list";
     }
 
@@ -81,34 +105,34 @@ public class QnaPageController {
         return "qna/view";
     }
 
-    // 답변 등록 페이지 이동
-    @GetMapping("/answer/{qnaId}")
-    public String answerQnaPage(@PathVariable Integer qnaId, Model model) {
-        model.addAttribute("qnaId", qnaId);
-        model.addAttribute("qnaDTO", new QnaDTO());
-        return "qna/answer";
-    }
-
-    // **답변 등록 처리 메서드 추가**
-    @PostMapping("/{qnaId}/regist")
-    public String submitAnswer(@PathVariable Integer qnaId,
-                               @ModelAttribute QnaDTO qnaDTO,
-                               Model model) {
-        qnaDTO.setParentId(qnaId); // 부모 QnA ID 설정
-        qnaService.addReply(qnaDTO, true);
-        return "redirect:/qna/view/" + qnaId;
-    }
-
-    @PostMapping("/delete/{qnaId}")
-    public String deleteQna(@PathVariable Integer qnaId,
-                            @RequestParam(required = false) String password,
-                            @RequestParam(defaultValue = "false") boolean isAdmin,
-                            Model model) {
-        try {
-            qnaService.deleteQna(qnaId, password, isAdmin);
-            return "redirect:/qna/list";
-        } catch (IllegalArgumentException e) {
-            return "redirect:/qna/list?error=delete";
-        }
-    }
+//    // 답변 등록 페이지 이동
+//    @GetMapping("/answer/{qnaId}")
+//    public String answerQnaPage(@PathVariable Integer qnaId, Model model) {
+//        model.addAttribute("qnaId", qnaId);
+//        model.addAttribute("qnaDTO", new QnaDTO());
+//        return "qna/answer";
+//    }
+//
+//    // **답변 등록 처리 메서드 추가**
+//    @PostMapping("/{qnaId}/regist")
+//    public String submitAnswer(@PathVariable Integer qnaId,
+//                               @ModelAttribute QnaDTO qnaDTO,
+//                               Model model) {
+//        qnaDTO.setParentId(qnaId); // 부모 QnA ID 설정
+//        qnaService.addReply(qnaDTO, true);
+//        return "redirect:/qna/view/" + qnaId;
+//    }
+//
+//    @PostMapping("/delete/{qnaId}")
+//    public String deleteQna(@PathVariable Integer qnaId,
+//                            @RequestParam(required = false) String password,
+//                            @RequestParam(defaultValue = "false") boolean isAdmin,
+//                            Model model) {
+//        try {
+//            qnaService.deleteQna(qnaId, password, isAdmin);
+//            return "redirect:/qna/list";
+//        } catch (IllegalArgumentException e) {
+//            return "redirect:/qna/list?error=delete";
+//        }
+//    }
 }

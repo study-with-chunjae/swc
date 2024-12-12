@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.dto.AdminDTO;
 import net.fullstack7.swc.dto.AdminMemberDTO;
+import net.fullstack7.swc.dto.AdminQnaDTO;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.service.AdminServiceIf;
 import net.fullstack7.swc.service.MemberServiceImpl;
@@ -54,7 +55,11 @@ public class AdminController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpSession session, RedirectAttributes redirectAttributes) {
+        String redirect = checkLogin(session, redirectAttributes);
+        if (redirect == null) {
+            return "redirect:/admin/memberList";
+        }
         return "admin/login";
     }
 
@@ -228,7 +233,7 @@ public class AdminController {
     // **답변 등록 처리 메서드 추가**
     @PostMapping("/{qnaId}/regist")
     public String registAnswer(@PathVariable Integer qnaId,
-                               @ModelAttribute @Valid QnaDTO qnaDTO,
+                               @ModelAttribute @Valid AdminQnaDTO adminQnaDTO,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
                                HttpSession session,
@@ -240,11 +245,11 @@ public class AdminController {
         }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("qnaDTO", qnaDTO);
-            return errorUtil.redirectWithError("/qna/regist", redirectAttributes, bindingResult);
+            model.addAttribute("qnaDTO", adminQnaDTO);
+            return errorUtil.redirectWithError("/admin/qnaAnswer/" + qnaId, redirectAttributes, bindingResult);
         }
-        qnaDTO.setParentId(qnaId);
-        qnaService.addReply(qnaDTO, true);
+        adminQnaDTO.setParentId(qnaId);
+        qnaService.addReply(adminQnaDTO, true);
         return "redirect:/admin/qnaList";
     }
 }
