@@ -146,17 +146,19 @@ public class MessageController {
             if (member == null || senderId.equals(member.getMemberId())) {
 //                log.warn("회원이 존재하지 않습니다. ID: {}", receiverId);
                 model.addAttribute("error", "존재하지 않는 회원입니다.");
-                return "message/regist";
+                return "redirect:/message/send/list";
             }
             alertService.registAlert(member, AlertType.CHAT_MESSAGE, alertMessage, "/message/list");
 //            log.info("알림을 보내는 사람: {}, 알림 메시지: {}", senderId, alertMessage);
             return "redirect:/message/send/list";
         } catch (IllegalArgumentException e) {
                 model.addAttribute("errorReceiverId", true);
-                return "message/regist";
+                model.addAttribute("errorMessage", "잘못된 ID입니다.");
+                return "redirect:/message/send/list";
         } catch (Exception e) {
             model.addAttribute("error", true);
-            return "message/regist";
+            model.addAttribute("errorMessage", "알 수 없는 오류가 발생했습니다.");
+            return "redirect:/message/send/list";
         }
     }
 
@@ -215,4 +217,5 @@ public class MessageController {
         model.addAttribute("message", message);
         return "message/view";
     }
+
 }
