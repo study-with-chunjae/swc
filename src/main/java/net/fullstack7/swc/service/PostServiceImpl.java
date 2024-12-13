@@ -387,7 +387,7 @@ public class PostServiceImpl implements PostServiceIf {
             ).stream()
                     .peek(postDTO -> {
                         if (postDTO.getTitle() != null && postDTO.getTitle().length() > 15) {
-                            postDTO.setTitle(postDTO.getTitle().substring(0, 15));
+                            postDTO.setTitle(postDTO.getTitle().substring(0, 15)+"...");
                         }
                     }).toList();
             pageDTO.setDtoList(dtoList);
@@ -417,7 +417,7 @@ public class PostServiceImpl implements PostServiceIf {
             List<PostDTO> dtoList = postMapper.getSharedList(pageDTO,memberId,type).stream()
                     .peek(postDTO -> {
                         if (postDTO.getTitle() != null && postDTO.getTitle().length() > 15) {
-                            postDTO.setTitle(postDTO.getTitle().substring(0, 15));
+                            postDTO.setTitle(postDTO.getTitle().substring(0, 15)+"...");
                         }
                     }).toList();
             pageDTO.setDtoList(dtoList);
