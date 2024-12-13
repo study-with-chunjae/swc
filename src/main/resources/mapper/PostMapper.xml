@@ -53,10 +53,10 @@
                 </choose>
             </if>
             <if test="searchDateBegin != null">
-                AND createdAt &gt;= #{searchDateBegin}
+                AND p.createdAt &gt;= #{searchDateBegin}
             </if>
             <if test="searchDateEnd != null">
-                AND createdAt &lt;= #{searchDateEnd}
+                AND p.createdAt &lt;= #{searchDateEnd}
             </if>
             AND p.userId = #{memberId}
         </where>
@@ -70,5 +70,80 @@
             </otherwise>
         </choose>
         LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="sharedTotalCount">
+        SELECT COUNT(DISTINCT p.postId)
+        FROM post p
+        INNER JOIN share s ON p.postId = s.postId
+        <where>
+            <if test="pageDTO.searchField != null and pageDTO.searchValue != null">
+                <choose>
+                    <when test="pageDTO.searchField == 'title'">
+                        p.title LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                    <when test="pageDTO.searchField == 'content'">
+                        p.content LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                    <when test="pageDTO.searchField == 'hashtag'">
+                        p.hashtag LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                </choose>
+            </if>
+            <if test="pageDTO.searchDateBegin != null">
+                AND p.createdAt &gt;= #{pageDTO.searchDateBegin}
+            </if>
+            <if test="pageDTO.searchDateEnd != null">
+                AND p.createdAt &lt;= #{pageDTO.searchDateEnd}
+            </if>
+            <if test="type == 'my'">
+                AND p.memberId = #{memberId}
+            </if>
+            <if test="type == 'others'">
+                AND s.memberId = #{memberId}
+            </if>
+        </where>
+    </select>
+    <select id="getSharedList">
+        SELECT p.*, t.*, COUNT(t.postId) as thumbUpCount, s.*
+        FROM post p
+        INNER JOIN share s ON p.postId = s.postId
+        LEFT JOIN thumbUp t ON p.postId = t.postId
+        <where>
+            <if test="pageDTO.searchField != null and pageDTO.searchValue != null">
+                <choose>
+                    <when test="pageDTO.searchField == 'title'">
+                        p.title LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                    <when test="pageDTO.searchField == 'content'">
+                        p.content LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                    <when test="pageDTO.searchField == 'hashtag'">
+                        p.hashtag LIKE CONCAT('%', #{pageDTO.searchValue}, '%')
+                    </when>
+                </choose>
+            </if>
+            <if test="pageDTO.searchDateBegin != null">
+                AND p.createdAt &gt;= #{pageDTO.searchDateBegin}
+            </if>
+            <if test="pageDTO.searchDateEnd != null">
+                AND p.createdAt &lt;= #{pageDTO.searchDateEnd}
+            </if>
+            <if test="type == 'my'">
+                AND p.memberId = #{memberId}
+            </if>
+            <if test="type == 'others'">
+                AND s.memberId = #{memberId}
+            </if>
+        </where>
+        GROUP BY p.postId
+        <choose>
+            <when test="pageDTO.sortField == 'thumbUps'">
+                ORDER BY thumbUpCount ${pageDTO.sortDirection}, p.createdAt DESC
+            </when>
+            <otherwise>
+                ORDER BY p.createdAt ${pageDTO.sortDirection}
+            </otherwise>
+        </choose>
+        LIMIT #{pageDTO.offset}, #{pageDTO.pageSize}
     </select>
 </mapper>

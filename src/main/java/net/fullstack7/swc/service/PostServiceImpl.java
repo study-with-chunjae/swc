@@ -220,49 +220,54 @@ public class PostServiceImpl implements PostServiceIf {
         }
     }
 
-    @Override
-    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
-        LogUtil.logLine("PostService -> sortAndSearchShare");
-        try{
-            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
-            Page<Post> pagePost = postRepository.searchAndSortShare(validatedPageDTO.getPageable(),
-                    validatedPageDTO.getSearchField(),
-                    validatedPageDTO.getSearchValue(),
-                    validatedPageDTO.getSortField(),
-                    validatedPageDTO.getSortDirection(),
-                    validatedPageDTO.getSearchDateBegin(),
-                    validatedPageDTO.getSearchDateEnd(),
-                    memberId,
-                    type);
-            if(pagePost==null){
-                LogUtil.logLine("pagePost is null");
-                throw new NotFoundException("pagePost is null");
-            }
-            if(pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
-                LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
-                validatedPageDTO.setPageNo(pagePost.getTotalPages());
-                pagePost = getPagePost(validatedPageDTO, memberId);
-                if (pagePost == null) throw new NotFoundException("pagePost is null");
-            }
-            validatedPageDTO.setTotalCount((int)pagePost.getTotalElements());
-            LogUtil.log("setTotalCount : ",
-                    validatedPageDTO.getTotalCount() +"//"+
-                            validatedPageDTO.getPageNo()+"//"+
-                            validatedPageDTO.getPageSize());
-            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> {
-                PostDTO postDTO = modelMapper.map(post, PostDTO.class);
-                if(postDTO.getTitle().length()>15){
-                    postDTO.setTitle(postDTO.getTitle().substring(0,15)+"...");
-                }
-                return postDTO;
-            }).toList();
-            validatedPageDTO.setDtoList(pageDTOList);
-            return validatedPageDTO;
-        }catch(Exception e){
-            LogUtil.log("[[sortAndSearch error : {}]]", e.getMessage());
-            return null;
-        }
-    }
+
+
+//    @Override
+//    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+//        LogUtil.logLine("PostService -> sortAndSearchShare");
+//        try{
+//            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+//            Page<Post> pagePost = postRepository.searchAndSortShare(validatedPageDTO.getPageable(),
+//                    validatedPageDTO.getSearchField(),
+//                    validatedPageDTO.getSearchValue(),
+//                    validatedPageDTO.getSortField(),
+//                    validatedPageDTO.getSortDirection(),
+//                    validatedPageDTO.getSearchDateBegin(),
+//                    validatedPageDTO.getSearchDateEnd(),
+//                    memberId,
+//                    type);
+//            LogUtil.log("beforePostList",pagePost.getContent());
+//            if(pagePost==null){
+//                LogUtil.logLine("pagePost is null");
+//                throw new NotFoundException("pagePost is null");
+//            }
+//            if(pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
+//                LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
+//                validatedPageDTO.setPageNo(pagePost.getTotalPages());
+//                pagePost = getPagePost(validatedPageDTO, memberId);
+//                if (pagePost == null) throw new NotFoundException("pagePost is null");
+//            }
+//            validatedPageDTO.setTotalCount((int)pagePost.getTotalElements());
+//            LogUtil.log("setTotalCount : ",
+//                    validatedPageDTO.getTotalCount() +"//"+
+//                            validatedPageDTO.getPageNo()+"//"+
+//                            validatedPageDTO.getPageSize());
+//            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> {
+//                PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+//                if(postDTO.getTitle().length()>15){
+//                    postDTO.setTitle(postDTO.getTitle().substring(0,15)+"...");
+//                }
+//                LogUtil.log("post",postDTO);
+//                return postDTO;
+//            }).toList();
+//            LogUtil.log("list",pageDTOList);
+//            validatedPageDTO.setDtoList(pageDTOList);
+//            return validatedPageDTO;
+//        }catch(Exception e){
+//            LogUtil.log("[[sortAndSearch error : {}]]", e.getMessage());
+//            return null;
+//        }
+//    }
 
     @Override
     public Post modifyPost(PostRegisterDTO postModifyDTO, String memberId) {
@@ -385,11 +390,40 @@ public class PostServiceImpl implements PostServiceIf {
                             postDTO.setTitle(postDTO.getTitle().substring(0, 15));
                         }
                     }).toList();
-
             pageDTO.setDtoList(dtoList);
             return pageDTO;
         }catch(Exception e){
             log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public int shareTotalCount(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+        LogUtil.logLine("PostService -> shareTotalCount");
+        try{
+            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+            return postMapper.sharedTotalCount(pageDTO,memberId,type);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+        LogUtil.logLine("PostService -> sortAndSearchShare");
+        try {
+            List<PostDTO> dtoList = postMapper.getSharedList(pageDTO,memberId,type).stream()
+                    .peek(postDTO -> {
+                        if (postDTO.getTitle() != null && postDTO.getTitle().length() > 15) {
+                            postDTO.setTitle(postDTO.getTitle().substring(0, 15));
+                        }
+                    }).toList();
+            pageDTO.setDtoList(dtoList);
+            return pageDTO;
+        }catch(Exception e){
+            log.error("[[[getPagePost error : {}]]]",e.getMessage());
             return null;
         }
     }

@@ -131,7 +131,15 @@ public class PostController {
         type = validShareListType(type);
         String memberId = getMemberIdInJwt(req);
         pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
+        LogUtil.log("totalCount",postService.shareTotalCount(pageDTO,memberId,type));
+        pageDTO.setTotalCount(postService.shareTotalCount(pageDTO,memberId,type));
         pageDTO = postService.sortAndSearchShare(pageDTO,memberId,type);
+        LogUtil.log("searchDateBegin",pageDTO.getSearchDateBegin());
+        LogUtil.log("searchDateEnd",pageDTO.getSearchDateEnd());
+        LogUtil.log("offset",pageDTO.getOffset());
+        LogUtil.log("pageSize",pageDTO.getPageSize());
+        LogUtil.log("totalCount",pageDTO.getTotalCount());
+        LogUtil.log("totalPage",pageDTO.getTotalPage());
         model.addAttribute("pageDTO",pageDTO);
         model.addAttribute("type",type);
         model.addAttribute("viewType","share");

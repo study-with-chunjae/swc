@@ -267,7 +267,7 @@
                         <td th:text="${post.postId}"></td>
                         <td th:text="${post.title}"></td>
                         <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
-                        <td th:text="${post.thumbUps.size()}"></td>
+                        <td th:text="${post.thumbUpCount}"></td>
                         <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
                         <td th:text="${#temporals.format(post.displayAt,'yyyy-MM-dd') + ' ~ ' + #temporals.format(post.displayEnd,'yyyy-MM-dd')}"></td>
                     </tr>
