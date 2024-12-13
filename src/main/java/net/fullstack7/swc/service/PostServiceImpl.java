@@ -49,7 +49,9 @@ public class PostServiceImpl implements PostServiceIf {
     @Override
     public Post registerPost(PostRegisterDTO postRegisterDTO, String memberId){
         try {
-            if(postRegisterDTO.getImage()!=null) {
+            if(postRegisterDTO.getImage()!=null&&!postRegisterDTO.getImage().isEmpty()) {
+                LogUtil.logLine("파일등록");
+                LogUtil.log("file",postRegisterDTO.getImage());
                 String imageFilePath = fileUploadUtil.uploadImageFile(postRegisterDTO.getImage(), "images");
                 postRegisterDTO.setNewImagePath(imageFilePath);
             }
@@ -143,8 +145,8 @@ public class PostServiceImpl implements PostServiceIf {
             LogUtil.log("list", postList);
             return postList.stream().map(post -> PostMainDTO.builder()
                     .postId(post.getPostId())
-                    .title(post.getTitle())
-                    .content(post.getContent())
+                    .title(post.getTitle().length()>13?post.getTitle().substring(0,12)+"...":post.getTitle())
+                    .content(post.getContent().length()>400?post.getContent().substring(0,400)+"...":post.getContent())
                     .todayType(post.getTodayType())
                     .displayAt(post.getDisplayAt())
                     .displayEnd(post.getDisplayEnd())
@@ -152,7 +154,7 @@ public class PostServiceImpl implements PostServiceIf {
                     .hashtag(post.getHashtag()!=null?Arrays.asList(post.getHashtag().split(",")):List.of())
                     .image(post.getImage())
                     .shares(
-                            post.getShares().stream().map(s -> s.getMember().getMemberId()).toList()
+                            post.getShares().stream().limit(5).map(s -> s.getMember().getMemberId()).toList()
                     )
                     .thumbUps(post.getThumbUps().size())
                     .build()).toList();
@@ -203,7 +205,13 @@ public class PostServiceImpl implements PostServiceIf {
                     validatedPageDTO.getTotalCount() +"//"+
                           validatedPageDTO.getPageNo()+"//"+
                           validatedPageDTO.getPageSize());
-            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
+            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> {
+                PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+                if(postDTO.getTitle().length()>15){
+                    postDTO.setTitle(postDTO.getTitle().substring(0,15)+"...");
+                }
+                return postDTO;
+            }).toList();
             validatedPageDTO.setDtoList(pageDTOList);
             return validatedPageDTO;
         }catch(Exception e){
@@ -212,43 +220,54 @@ public class PostServiceImpl implements PostServiceIf {
         }
     }
 
-    @Override
-    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
-        LogUtil.logLine("PostService -> sortAndSearchShare");
-        try{
-            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
-            Page<Post> pagePost = postRepository.searchAndSortShare(validatedPageDTO.getPageable(),
-                    validatedPageDTO.getSearchField(),
-                    validatedPageDTO.getSearchValue(),
-                    validatedPageDTO.getSortField(),
-                    validatedPageDTO.getSortDirection(),
-                    validatedPageDTO.getSearchDateBegin(),
-                    validatedPageDTO.getSearchDateEnd(),
-                    memberId,
-                    type);
-            if(pagePost==null){
-                LogUtil.logLine("pagePost is null");
-                throw new NotFoundException("pagePost is null");
-            }
-            if(pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
-                LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
-                validatedPageDTO.setPageNo(pagePost.getTotalPages());
-                pagePost = getPagePost(validatedPageDTO, memberId);
-                if (pagePost == null) throw new NotFoundException("pagePost is null");
-            }
-            validatedPageDTO.setTotalCount((int)pagePost.getTotalElements());
-            LogUtil.log("setTotalCount : ",
-                    validatedPageDTO.getTotalCount() +"//"+
-                            validatedPageDTO.getPageNo()+"//"+
-                            validatedPageDTO.getPageSize());
-            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
-            validatedPageDTO.setDtoList(pageDTOList);
-            return validatedPageDTO;
-        }catch(Exception e){
-            LogUtil.log("[[sortAndSearch error : {}]]", e.getMessage());
-            return null;
-        }
-    }
+
+
+//    @Override
+//    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+//        LogUtil.logLine("PostService -> sortAndSearchShare");
+//        try{
+//            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+//            Page<Post> pagePost = postRepository.searchAndSortShare(validatedPageDTO.getPageable(),
+//                    validatedPageDTO.getSearchField(),
+//                    validatedPageDTO.getSearchValue(),
+//                    validatedPageDTO.getSortField(),
+//                    validatedPageDTO.getSortDirection(),
+//                    validatedPageDTO.getSearchDateBegin(),
+//                    validatedPageDTO.getSearchDateEnd(),
+//                    memberId,
+//                    type);
+//            LogUtil.log("beforePostList",pagePost.getContent());
+//            if(pagePost==null){
+//                LogUtil.logLine("pagePost is null");
+//                throw new NotFoundException("pagePost is null");
+//            }
+//            if(pagePost.getTotalPages()!=0 && validatedPageDTO.getPageNo() > pagePost.getTotalPages()) {
+//                LogUtil.log("pageNo > totalPage",validatedPageDTO.getPageNo() +"//"+pagePost.getTotalPages());
+//                validatedPageDTO.setPageNo(pagePost.getTotalPages());
+//                pagePost = getPagePost(validatedPageDTO, memberId);
+//                if (pagePost == null) throw new NotFoundException("pagePost is null");
+//            }
+//            validatedPageDTO.setTotalCount((int)pagePost.getTotalElements());
+//            LogUtil.log("setTotalCount : ",
+//                    validatedPageDTO.getTotalCount() +"//"+
+//                            validatedPageDTO.getPageNo()+"//"+
+//                            validatedPageDTO.getPageSize());
+//            List<PostDTO> pageDTOList = pagePost.getContent().stream().map(post -> {
+//                PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+//                if(postDTO.getTitle().length()>15){
+//                    postDTO.setTitle(postDTO.getTitle().substring(0,15)+"...");
+//                }
+//                LogUtil.log("post",postDTO);
+//                return postDTO;
+//            }).toList();
+//            LogUtil.log("list",pageDTOList);
+//            validatedPageDTO.setDtoList(pageDTOList);
+//            return validatedPageDTO;
+//        }catch(Exception e){
+//            LogUtil.log("[[sortAndSearch error : {}]]", e.getMessage());
+//            return null;
+//        }
+//    }
 
     @Override
     public Post modifyPost(PostRegisterDTO postModifyDTO, String memberId) {
@@ -365,11 +384,46 @@ public class PostServiceImpl implements PostServiceIf {
                             "offset",validatedPageDTO.getOffset(),
                             "pageSize", validatedPageDTO.getPageSize()
                     )
-            );
+            ).stream()
+                    .peek(postDTO -> {
+                        if (postDTO.getTitle() != null && postDTO.getTitle().length() > 15) {
+                            postDTO.setTitle(postDTO.getTitle().substring(0, 15)+"...");
+                        }
+                    }).toList();
             pageDTO.setDtoList(dtoList);
             return pageDTO;
         }catch(Exception e){
             log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public int shareTotalCount(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+        LogUtil.logLine("PostService -> shareTotalCount");
+        try{
+            PageDTO<PostDTO> validatedPageDTO = pageValid(pageDTO);
+            return postMapper.sharedTotalCount(pageDTO,memberId,type);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public PageDTO<PostDTO> sortAndSearchShare(PageDTO<PostDTO> pageDTO, String memberId, String type) {
+        LogUtil.logLine("PostService -> sortAndSearchShare");
+        try {
+            List<PostDTO> dtoList = postMapper.getSharedList(pageDTO,memberId,type).stream()
+                    .peek(postDTO -> {
+                        if (postDTO.getTitle() != null && postDTO.getTitle().length() > 15) {
+                            postDTO.setTitle(postDTO.getTitle().substring(0, 15)+"...");
+                        }
+                    }).toList();
+            pageDTO.setDtoList(dtoList);
+            return pageDTO;
+        }catch(Exception e){
+            log.error("[[[getPagePost error : {}]]]",e.getMessage());
             return null;
         }
     }

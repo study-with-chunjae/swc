@@ -226,6 +226,7 @@
                         <option value="">검색조건</option>
                         <option value="title" th:selected="${pageDTO.searchField == 'title'}">제목</option>
                         <option value="content" th:selected="${pageDTO.searchField == 'content'}">내용</option>
+                        <option th:if="${type == 'others'}" value="hashtag" th:selected="${pageDTO.searchField == 'hashtag'}">해쉬태그</option>
                     </select>
                     <input type="text" class="search-input" th:maxlength="100" name="searchValue" id="searchValue" th:value="${pageDTO.searchValue}">
                     <input class="search-btn" type="submit" value="검색">
@@ -266,9 +267,9 @@
                         <td th:text="${post.postId}"></td>
                         <td th:text="${post.title}"></td>
                         <td th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd')}"></td>
-                        <td th:text="${post.thumbUps.size()}"></td>
+                        <td th:text="${post.thumbUpCount}"></td>
                         <td th:text="${post.todayType == 1 ? 'Y' : 'N'}"></td>
-                        <td th:text="${post.displayAt + ' ~ ' + post.displayEnd}"></td>
+                        <td th:text="${#temporals.format(post.displayAt,'yyyy-MM-dd') + ' ~ ' + #temporals.format(post.displayEnd,'yyyy-MM-dd')}"></td>
                     </tr>
                     <!-- Additional rows as needed -->
                     </tbody>

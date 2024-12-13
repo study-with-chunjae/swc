@@ -106,8 +106,8 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                 LocalDate.parse(searchDateEnd, FORMATTER).atStartOfDay().plusDays(1))
         );
         bb.and(qPost.member.memberId.eq(memberId));
-        log.info("searchField : {}, searchValue : {}, sortField : {}, sortDirection : {}, searchDateBegin : {}, searchDateEnd : {}"
-                ,searchField, searchValue,sortField,sortDirection,searchDateBegin,searchDateEnd);
+        log.info("searchField : {}, searchValue : {}, sortField : {}, sortDirection : {}, searchDateBegin : {}, searchDateEnd : {}, pageSize : {}"
+                ,searchField, searchValue,sortField,sortDirection,searchDateBegin,searchDateEnd, pageable.getPageSize());
         query.where(bb);
         //정렬
         if(sortField!=null) {
@@ -122,9 +122,15 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
             }
         }
         //페이징
+        LogUtil.log("query",query);
         log.info("fetchCount before pagination : {}",query.fetchCount());
+        log.info("pageable : {}", pageable);
         Objects.requireNonNull(this.getQuerydsl()).applyPagination(pageable, query);
+        log.info("Query Metadata - Offset: {}, Limit: {}", query.getMetadata().getModifiers().getOffset(), query.getMetadata().getModifiers().getLimit());
+        LogUtil.log("query",query);
+        LogUtil.log("getQuerydsl()",this.getQuerydsl());
         List<Post> posts = query.fetch();
+        LogUtil.log("pageSearchImpl : posts",posts);
         int total = (int) query.fetchCount();
         log.info("fetchCount after pagination : {}",query.fetchCount());
         return new PageImpl<>(posts, pageable, total);
@@ -147,6 +153,7 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
                 case "content" : bb.and(qPost.content.like("%"+searchValue+"%"));
                     break;
                 case "hashtag" : bb.and(qPost.hashtag.like("%"+searchValue+"%"));
+                    break;
                 default : break;
             }
         }
@@ -171,9 +178,15 @@ public class PostSearchImpl extends QuerydslRepositorySupport implements PostSea
             }
         }
         //페이징
+        LogUtil.log("query",query);
+        log.info("fetchCount before pagination : {}",query.fetchCount());
+        log.info("pageable : {}", pageable);
         log.info("fetchCount before pagination : {}",query.fetchCount());
         Objects.requireNonNull(this.getQuerydsl()).applyPagination(pageable, query);
+        LogUtil.log("query",query);
+        LogUtil.log("getQuerydsl()",this.getQuerydsl());
         List<Post> posts = query.fetch();
+        LogUtil.log("pageSearchImpl : posts",posts);
         int total = (int) query.fetchCount();
         log.info("fetchCount after pagination : {}",query.fetchCount());
         return new PageImpl<>(posts, pageable, total);

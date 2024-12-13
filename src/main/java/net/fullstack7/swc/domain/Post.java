@@ -32,7 +32,7 @@ public class Post {
     private String image; //이미지 파일 경로
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "memberId")
     @ToString.Exclude
     private Member member;
 

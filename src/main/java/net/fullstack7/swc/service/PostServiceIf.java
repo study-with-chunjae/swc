@@ -20,4 +20,5 @@ public interface PostServiceIf {
     public boolean deletePost(int postId, String memberId);
     int totalCount(PageDTO<PostDTO> pageDTO, String memberId);
     public PageDTO<PostDTO> postList(PageDTO<PostDTO> pageDTO, String memberId);
+    int shareTotalCount(PageDTO<PostDTO> pageDTO, String memberId, String type);
 }

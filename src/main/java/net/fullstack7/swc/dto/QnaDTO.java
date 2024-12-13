@@ -33,6 +33,7 @@ public class QnaDTO {
     private String password; // 비회원용
     private boolean answered;
     private Integer parentId;
+    @Builder.Default
     private List<QnaDTO> replies = new ArrayList<>();
     private LocalDateTime regDate;
 }

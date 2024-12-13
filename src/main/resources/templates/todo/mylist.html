@@ -291,7 +291,7 @@
                         if(ALLOWED_CONST_OBJ.ALLOWED_SORT_FIELD.indexOf(sortField.value)<0){
                             sortField.value = ALLOWED_CONST_OBJ.DEFAULT_SORT_FIELD;
                         }
-                        if(ALLOWED_CONST_OBJ.DEFAULT_SORT_DIRECTION.indexOf(sortDirection.value)<0){
+                        if(ALLOWED_CONST_OBJ.ALLOWED_SORT_DIRECTION.indexOf(sortDirection.value)<0){
                             sortDirection.value = ALLOWED_CONST_OBJ.DEFAULT_SORT_DIRECTION;
                         }
                         if(ALLOWED_CONST_OBJ.ALLOWED_PAGE_SIZE.indexOf(pageSize.value)<0){
@@ -329,7 +329,9 @@
                     const sortThumbUp = document.querySelector("#sortThumbUp");
                     const sortField = document.querySelector("#sortField");
                     const sortDirection = document.querySelector("#sortDirection");
-                    sortCreatedAt.addEventListener("click",()=>{
+                    sortCreatedAt.addEventListener("click",(e)=>{
+                        e.stopPropagation();
+                        e.preventDefault();
                        sortField.value="createdAt";
                        if(sortDirection.value==='desc'){
                            sortDirection.value = 'asc';
@@ -339,7 +341,9 @@
                        formObj.pageNo.value=1;
                        formSubmit(formObj);
                     });
-                    sortThumbUp.addEventListener("click",()=>{
+                    sortThumbUp.addEventListener("click",(e)=>{
+                        e.stopPropagation();
+                        e.preventDefault();
                         sortField.value="thumbUps";
                         if(sortDirection.value==='desc'){
                             sortDirection.value = 'asc';

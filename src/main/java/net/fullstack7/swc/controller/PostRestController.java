@@ -49,7 +49,9 @@ public class PostRestController {
 
     @CheckJwtToken
     @GetMapping("/main-posts/{member-id}/{created-at}")
-    public ResponseEntity<ApiResponse<?>> getMainPost(@PathVariable(value = "created-at", required = false) String createdAt, @PathVariable(value="member-id", required = false) String memberId, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<?>> getMainPost(@PathVariable(value = "created-at", required = false) String createdAt,
+                                                      @PathVariable(value="member-id", required = false) String memberId,
+                                                      HttpServletRequest request) {
         try{
             if(createdAt == null) {
                 return ResponseEntity.badRequest().body(ApiResponse.error("잘못된 입력값"));

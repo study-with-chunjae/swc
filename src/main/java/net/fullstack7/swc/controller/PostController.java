@@ -63,7 +63,7 @@ public class PostController {
                            HttpServletRequest req, Model model, RedirectAttributes redirectAttributes) {
         LogUtil.logLine(CONTROLLER_NAME + "main");
         if(memberId.isEmpty()){
-            memberId = getMemberIdInJwt(req);
+            memberId = cookieUtil.getMemberIdInJwt(memberService, req);
         }
         if(createdAt.isEmpty()){
             createdAt = NOW_STRING;
@@ -94,25 +94,6 @@ public class PostController {
             return errorUtil.redirectWithError(e.getMessage(),"/",redirectAttributes);
         }
     }
-
-//    @CheckJwtToken
-//    @GetMapping("/list")
-//    public String list(@Valid PageDTO<PostDTO> pageDTO,
-//                       BindingResult bindingResult,
-//                       Model model,
-//                       RedirectAttributes redirectAttributes,
-//                       HttpServletRequest req) {
-//        LogUtil.logLine(CONTROLLER_NAME + "list");
-//        if(bindingResult.hasErrors()){
-//            pageDTO = PageDTO.<PostDTO>builder().build();
-//        }
-//        pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
-//        String memberId = getMemberIdInJwt(req);
-//        pageDTO = postService.sortAndSearch(pageDTO,memberId);
-//        model.addAttribute("pageDTO",pageDTO);
-//        model.addAttribute("viewType","my");
-//        return "todo/mylist";
-//    }
 
     @CheckJwtToken
     @GetMapping("/list")
@@ -150,7 +131,15 @@ public class PostController {
         type = validShareListType(type);
         String memberId = getMemberIdInJwt(req);
         pageDTO.initialize(PostPageConstants.DEFAULT_SORT_FIELD, PostPageConstants.DEFAULT_SORT_ORDER);
+        LogUtil.log("totalCount",postService.shareTotalCount(pageDTO,memberId,type));
+        pageDTO.setTotalCount(postService.shareTotalCount(pageDTO,memberId,type));
         pageDTO = postService.sortAndSearchShare(pageDTO,memberId,type);
+        LogUtil.log("searchDateBegin",pageDTO.getSearchDateBegin());
+        LogUtil.log("searchDateEnd",pageDTO.getSearchDateEnd());
+        LogUtil.log("offset",pageDTO.getOffset());
+        LogUtil.log("pageSize",pageDTO.getPageSize());
+        LogUtil.log("totalCount",pageDTO.getTotalCount());
+        LogUtil.log("totalPage",pageDTO.getTotalPage());
         model.addAttribute("pageDTO",pageDTO);
         model.addAttribute("type",type);
         model.addAttribute("viewType","share");

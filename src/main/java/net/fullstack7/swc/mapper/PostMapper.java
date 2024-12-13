@@ -21,4 +21,7 @@ public interface PostMapper {
                    @Param("memberId") String memberId
                    );
     List<PostDTO> postList(Map<String,Object> map);
+    int sharedTotalCount(@Param("pageDTO")PageDTO<PostDTO> pageDTO, @Param("memberId")String memberId, @Param("type")String type);
+    List<PostDTO> getSharedList(@Param("pageDTO")PageDTO<PostDTO> pageDTO, @Param("memberId")String memberId, @Param("type")String type);
+
 }
