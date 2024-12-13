@@ -20,7 +20,7 @@ header {
   cursor: pointer;
   padding: 5px 10px;
   text-align: center;
-  width: 78px;
+  width: 78px !important;
   border: 1px solid #ddd;
 }
 
@@ -43,7 +43,7 @@ header {
   border: none;
   cursor: pointer;
   border-radius: 4px;
-  background-color: #F3CD99;
+  background-color: #f3cd99;
   position: relative;
 }
 
@@ -214,15 +214,15 @@ header {
 }
 
 .center {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .layoutHeader {
-    width: 1150px;
-    height: 152px;
-    background-image: url("/assets/public/mainHeaderArea.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+  width: 1150px;
+  height: 152px;
+  background-image: url("/assets/public/mainHeaderArea.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
