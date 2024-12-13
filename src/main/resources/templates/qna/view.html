@@ -110,11 +110,31 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-    </style>
+
+        /* 이전 링크 버튼 스타일 */
+        .btn-link {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #6c757d;
+            color: #fff;
+            text-align: center;
+        }
+
+        .btn-link:hover {
+            background-color: #5a6268;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-4">
+
     <h1>QnA 상세보기</h1>
     <div>
         <h2 th:text="'제목 : '+${qna.title}"></h2>
@@ -125,7 +145,8 @@
         <div th:if="${qna.replies.size() > 0}">
             <h3>답변:</h3>
             <div th:each="reply : ${qna.replies}" class="reply">
-                <p th:text="'ㄴ ' + ${reply.title}"></p>
+                <p th:text="'제목 :' + ${reply.title}"></p>
+                <p th:text="'내용 : ' + ${reply.content}"></p>
             </div>
         </div>
 
@@ -137,6 +158,8 @@
             </form>
         </div>
     </div>
+    <a href="/qna/list" class="btn-link">이전</a>
+
 </div>
 </body>
 </html>
