@@ -183,8 +183,8 @@ async function verifyEmail() {
 
       emailInput.readOnly = true;
       emailInput.style.backgroundColor = "#f0f0f0";
-      document.getElementById("sendEmailBtn").disabled = true;
-      document.getElementById("verifyEmailBtn").disabled = true;
+      document.getElementById("sendCodeBtn").disabled = true;
+      document.getElementById("checkCodeBtn").disabled = true;
       document.getElementById("verificationCode").readOnly = true;
     } else {
       messageEl.style.color = "#FFCC00";
@@ -195,6 +195,7 @@ async function verifyEmail() {
     messageEl.style.color = "#FFCC00";
     messageEl.textContent = "인증 확인 중 오류가 발생했습니다.";
     isEmailVerified = false;
+    console.log(error);
   }
 }
 
