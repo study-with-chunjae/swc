@@ -1,14 +1,15 @@
 document.getElementById("signupForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  if (!isEmailVerified) {
-    alert("이메일 인증이 필요합니다.");
+  const idInput = document.getElementById("signupId");
+  if (!idInput.readOnly) {
+    alert("아이디 중복 확인이 필요합니다.");
     return;
   }
 
-  const messageEl = document.getElementById("idCheckMessage");
-  if (!messageEl.textContent || messageEl.style.color === "#FFCC00") {
-    alert("아이디 중복 확인이 필요합니다.");
+  const emailInput = document.getElementById("signupEmail");
+  if (!emailInput.readOnly) {
+    alert("이메일 인증이 필요합니다.");
     return;
   }
 
@@ -27,10 +28,10 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        memberId: document.getElementById("signupId").value,
+        memberId: idInput.value,
         pwd: document.getElementById("signupPwd").value,
         name: document.getElementById("signupName").value,
-        email: document.getElementById("signupEmail").value,
+        email: emailInput.value,
         phone: document.getElementById("signupPhone").value,
         social: "N",
       }),
@@ -42,7 +43,7 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
       throw new Error("회원가입 실패");
     }
   } catch (error) {
-    alert(error.message)
+    alert(error.message);
   }
 });
 
@@ -65,6 +66,7 @@ function validateId(input) {
 async function checkMemberId() {
   const memberId = document.getElementById("signupId").value;
   const messageEl = document.getElementById("idCheckMessage");
+  const idInput = document.getElementById("signupId");
 
   if (!validateId({ value: memberId })) {
     return;
@@ -76,6 +78,11 @@ async function checkMemberId() {
 
     messageEl.style.color = data.duplicate ? "#FFCC00" : "white";
     messageEl.textContent = data.message;
+
+    if (!data.duplicate) {
+      idInput.readOnly = true;
+      idInput.style.backgroundColor = "#f0f0f0";
+    }
   } catch (error) {
     messageEl.style.color = "#FFCC00";
     messageEl.textContent = error.message;
@@ -154,6 +161,7 @@ async function verifyEmail() {
   const code = document.getElementById("verificationCode").value;
   const email = document.getElementById("signupEmail").value;
   const messageEl = document.getElementById("emailVerificationMessage");
+  const emailInput = document.getElementById("signupEmail");
 
   try {
     const response = await fetch("/sign/verify-email", {
@@ -172,6 +180,12 @@ async function verifyEmail() {
       messageEl.textContent = "이메일 인증이 완료되었습니다.";
       isEmailVerified = true;
       clearInterval(timerInterval);
+
+      emailInput.readOnly = true;
+      emailInput.style.backgroundColor = "#f0f0f0";
+      document.getElementById("sendEmailBtn").disabled = true;
+      document.getElementById("verifyEmailBtn").disabled = true;
+      document.getElementById("verificationCode").readOnly = true;
     } else {
       messageEl.style.color = "#FFCC00";
       messageEl.textContent = "인증번호가 일치하지 않습니다.";

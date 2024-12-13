@@ -55,14 +55,41 @@ input.custom-input {
   height: 50px;
   border: none;
   border-bottom: 1px solid white;
-  background-color: transparent;
+  background-color: transparent !important;
   padding: 10px 10px 0 10px;
   color: white;
   font-size: 20px;
   font-family: "HakgyoansimBunpilR";
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 크롬 자동완성 스타일 덮어쓰기 */
+input.custom-input:-webkit-autofill,
+input.custom-input:-webkit-autofill:hover,
+input.custom-input:-webkit-autofill:focus,
+input.custom-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+  background-clip: content-box !important;
+}
+
+input.custom-input:read-only {
+  background-color: transparent !important;
+  color: white !important;
+  border-bottom: 1px solid white;
+  -webkit-text-fill-color: white;
+  opacity: 1;
 }
 
 input.custom-input:focus {
+  outline: none;
+  border-color: white;
+}
+
+input.custom-input:read-only:focus {
   outline: none;
   border-color: white;
 }
@@ -83,7 +110,6 @@ input::placeholder {
 .signUpContent {
   margin-top: 50px;
   margin-left: 80px;
-
 }
 
 .inputArea {

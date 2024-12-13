@@ -36,10 +36,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        // 사용자 정보 가져오기
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
-        String memberId = oAuth2User.getAttribute("id");
         String path = oAuth2User.getAttribute("picture");
         log.info("==========================================================================================");
         log.info("OAuth user email : " + email);
@@ -67,7 +65,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
                     // MemberProfile 생성 및 저장 (builder 사용)
                     MemberProfile memberProfile = MemberProfile.builder()
-                            .member(newMember) // Member와 연결
+                            .member(newMember)
                             .path(path) // 프로필 사진 경로 설정
                             .build();
 
