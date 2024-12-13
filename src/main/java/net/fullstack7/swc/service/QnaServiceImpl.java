@@ -3,6 +3,7 @@ package net.fullstack7.swc.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack7.swc.domain.Qna;
+import net.fullstack7.swc.dto.AdminQnaDTO;
 import net.fullstack7.swc.dto.QnaDTO;
 import net.fullstack7.swc.repository.AdminRepository;
 import net.fullstack7.swc.repository.QnaRepository;
@@ -54,17 +55,17 @@ public class QnaServiceImpl implements QnaServiceIf {
     }
 
     @Override
-    public void addReply(QnaDTO qnaDTO, boolean isAdmin) {
+    public void addReply(AdminQnaDTO adminQnaDTO, boolean isAdmin) {
         if (!isAdmin) {
             throw new SecurityException("관리자만 답변할 수 있습니다.");
         }
 
-        Qna parent = qnaRepository.findById(qnaDTO.getParentId())
+        Qna parent = qnaRepository.findById(adminQnaDTO.getParentId())
                 .orElseThrow(() -> new IllegalArgumentException("원글이 존재하지 않습니다."));
 
         Qna reply = new Qna(
-                qnaDTO.getTitle(),
-                qnaDTO.getContent(),
+                adminQnaDTO.getTitle(),
+                adminQnaDTO.getContent(),
                 parent.getEmail(),
                 parent.getPassword(),
                 parent.getRegDate());
@@ -97,7 +98,6 @@ public class QnaServiceImpl implements QnaServiceIf {
     @Override
     public List<QnaDTO> listQna() {
         List<Qna> rootQnaList = qnaRepository.findAllRootQna();
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@서비스에서 리스트 확인{}",rootQnaList);
 
         return rootQnaList.stream()
                 .map(this::convertToDTO)
@@ -148,7 +148,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     @Override
     @Transactional(readOnly = true)
     public Page<QnaDTO> listQnaPage(Pageable pageable) {
-        Page<Qna> qnaPage = qnaRepository.findAllBy(pageable);
+        Page<Qna> qnaPage = qnaRepository.findByParentIsNull(pageable);
         log.info("서비스에서 리스트 확인: {}", qnaPage.getContent());
         return qnaPage.map(this::convertToDTO);
     }

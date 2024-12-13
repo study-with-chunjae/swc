@@ -97,7 +97,8 @@
             <div th:if="${qna.replies.size() > 0}">
                 <h3>답변:</h3>
                 <div th:each="reply : ${qna.replies}" class="reply">
-                    <p th:text="'ㄴ ' + ${reply.title}"></p>
+                    <p th:text="'제목 :' + ${reply.title}"></p>
+                    <p th:text="'내용 : ' + ${reply.content}"></p>
                 </div>
             </div>
 

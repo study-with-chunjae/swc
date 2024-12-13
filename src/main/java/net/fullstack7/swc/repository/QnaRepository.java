@@ -13,6 +13,6 @@ public interface QnaRepository extends JpaRepository<Qna, Integer> {
     List<Qna> findAllRootQna();
     List<Qna> findByParent(Qna parent);
 
-    Page<Qna> findAllBy(Pageable pageable);
+    Page<Qna> findByParentIsNull(Pageable pageable);
     Page<Qna> findByAnswered(Pageable pageable, boolean answered);
 }

@@ -67,3 +67,9 @@ document.getElementById("signinForm").addEventListener("submit", async (e) => {
 //     alert(error.message);
 //   }
 // }
+// 모든 input 태그 선택
+const inputs = document.querySelectorAll('input');
+// 각 input 태그에 autocomplete="off" 추가
+inputs.forEach(input => {
+  input.setAttribute('autocomplete', 'off');
+});
