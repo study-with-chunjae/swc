@@ -37,7 +37,7 @@ public class AdminController {
 
     // 세션 체크 메서드
     private String checkLogin(HttpSession session, RedirectAttributes redirectAttributes) {
-        String admin = (session != null) ? (String) session.getAttribute("admin") : null;
+        String admin = (String) session.getAttribute("admin") !=null ? (String) session.getAttribute("admin") : null;
         if (admin == null) {
             redirectAttributes.addFlashAttribute("errors", "관리자 로그인이 필요합니다.");
             return "redirect:/admin/login";

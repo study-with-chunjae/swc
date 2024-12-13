@@ -231,7 +231,7 @@
                     </tr>
                     <tr>
                         <td><label for="content">내용</label></td>
-                        <td><textarea name="content" id="content" th:maxlength="2000" th:text="${postDTO.content}"
+                        <td><textarea name="content" id="content" th:maxlength="2000" th:utext="${postDTO.content}"
                         ></textarea></td>
                     </tr>
                     <tr>
@@ -294,9 +294,9 @@
                     <tr>
                         <td th:colspan="2" style="text-align: center;padding: 30px;">
                             <button class="button2" type="submit" id="btnSubmit">수정</button>
-                            <button class="button2" type="reset" id="btnReset">취소</button>
-                            <button class="button2" type="button" id="btnDelete">삭제</button>
-                            <button class="button2" type="button" id="btnBack">목록</button>
+                            <button class="button2" type="reset" id="btnReset">초기화</button>
+                            <button class="button2" type="button" id="btnDelete" th:onclick="'deletePost('+${postDTO.postId}+')'">삭제</button>
+                            <button class="button2" type="button" id="btnBack" >뒤로가기</button>
                         </td>
                     </tr>
                 </table>
@@ -308,7 +308,38 @@
                     const tags = hashtags.split(',');
                     const inputElement = document.getElementById('tag-input');
                     const hiddenInputElement = document.getElementById('hashtag-input');
+                    const idx = [[${postDTO.postId}]];
 
+                    const btnBack = document.getElementById("btnBack");
+                    btnBack.addEventListener("click", () =>{
+                        location.href='/post/view?postId='+ idx;
+                    });
+
+                    async function deletePost(postId){
+                        try{
+                            const response = await fetch(`/posts/my-posts/${postId}`, {
+                                method : 'DELETE',
+                                headers : {
+                                    'Content-Type' : 'application/json'
+                                },
+                            });
+                            if(!response.ok){
+                                console.log("response not ok");
+                                const error = await response.json();
+                                console.log(error.message);
+                                alert(error.message);
+                                return;
+                            }
+                            console.log("response ok");
+                            const result = await response.json();
+                            console.log(result);
+                            alert(result.message);
+                            location.href='/post/list';
+                        }catch (error){
+                            console.error('학습내용 삭제 실패 :',error);
+                            alert('학습내용 삭제를 실패했습니다.' || error.message);
+                        }
+                    }
                     inputElement.addEventListener('keydown', (event) => {
                         handleInput(event);
                     });

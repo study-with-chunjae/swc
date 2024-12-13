@@ -242,6 +242,7 @@ public class PostController {
         if(!postDTO.getMember().getMemberId().equals(memberId)){
             return errorUtil.redirectWithError("권한이 없습니다",DEFAULT_REDIRECT,redirectAttributes);
         }
+        postDTO.setContent(postDTO.getContent().replace("<br>","\\n"));
         LogUtil.log("postDTO",postDTO);
         LogUtil.log("shares",postDTO.getShares());
         LogUtil.log("hashtags",postDTO.getHashtags());

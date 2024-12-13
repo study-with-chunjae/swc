@@ -92,7 +92,7 @@ public class PostServiceImpl implements PostServiceIf {
             return PostViewDTO.builder()
                     .postId(post.getPostId())
                     .title(post.getTitle())
-                    .content(post.getContent())
+                    .content(post.getContent().replaceAll("\\r\\n?|\\n","<br>"))
                     .todayType(post.getTodayType())
                     .createdAt(post.getCreatedAt())
                     .displayAt(post.getDisplayAt())
@@ -139,14 +139,17 @@ public class PostServiceImpl implements PostServiceIf {
                     , todayType
                     , createdAt
                     , createdAt.plusDays(1)
-                    , START_OF_TODAY
-                    , END_OF_TODAY
+                    , START_OF_TODAY.plusDays(1)
+                    , END_OF_TODAY.minusDays(1)
             );
             LogUtil.log("list", postList);
             return postList.stream().map(post -> PostMainDTO.builder()
                     .postId(post.getPostId())
                     .title(post.getTitle().length()>13?post.getTitle().substring(0,12)+"...":post.getTitle())
-                    .content(post.getContent().length()>400?post.getContent().substring(0,400)+"...":post.getContent())
+                    .content(post.getContent().length()>400?
+                            post.getContent().substring(0,400).concat("...").replaceAll("\\r\\n?|\\n","<br>") :
+                            post.getContent().replaceAll("\\r\\n?|\\n","<br>")
+                    )
                     .todayType(post.getTodayType())
                     .displayAt(post.getDisplayAt())
                     .displayEnd(post.getDisplayEnd())
