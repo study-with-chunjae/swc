@@ -24,6 +24,8 @@
             margin-left: 20px;
             color: gray;
         }
+
+
     </style>
 </head>
 <body>
@@ -40,11 +42,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="qna : ${qnaList}">
+        <tr th:each="qna : ${qnaPage}">
             <td th:text="${qna.qnaId}"></td>
             <td>
                 <!-- 비밀번호 입력 모달을 여는 링크로 변경 -->
-                <a href="#" th:attr="data-qna-id=${qna.qnaId}" class="open-password-modal" th:text="${qna.title}"></a>
+                <a href="#"
+                   th:attr="data-qna-id=${qna.qnaId}"
+                   class="open-password-modal"
+                   th:text="${qna.title}"
+                   style="text-decoration: none; color: inherit; cursor: pointer;">
+                </a>
                 <div th:if="${qna.replies.size() > 0}" class="reply">
                     <span th:each="reply : ${qna.replies}" th:text="'ㄴ ' + ${reply.title} "></span>
                 </div>
@@ -57,11 +64,37 @@
                 </span>
             </td>
         </tr>
-        <tr th:if="${qnaList == null or qnaList.size() == 0}">
+        <tr th:if="${qnaPage == null}">
             <td colspan="3">해당하는 qna가 없습니다</td>
         </tr>
         </tbody>
     </table>
+</div>
+<!-- 페이징 네비게이션 -->
+<nav th:if="${qnaPage.totalPages >= 1}" aria-label="QnA 리스트 페이지 네비게이션">
+    <ul class="pagination justify-content-center">
+        <!-- 이전 페이지 링크 -->
+        <li class="page-item" th:classappend="${qnaPage.first} ? 'disabled'">
+            <a class="page-link" th:href="@{/qna/list(page=${qnaPage.number - 1}, size=${qnaPage.size}, answered=${answered})}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        <!-- 페이지 번호 링크 -->
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, qnaPage.totalPages - 1)}"
+            th:classappend="${i == qnaPage.number} ? 'active'">
+            <a class="page-link" th:href="@{/qna/list(page=${i}, size=${qnaPage.size}, answered=${answered})}"
+               th:text="${i + 1}">페이지 번호</a>
+        </li>
+
+        <!-- 다음 페이지 링크 -->
+        <li class="page-item" th:classappend="${qnaPage.last} ? 'disabled'">
+            <a class="page-link" th:href="@{/qna/list(page=${qnaPage.number + 1}, size=${qnaPage.size}, answered=${answered})}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
 </div>
 
 <!-- 비밀번호 입력 모달 -->

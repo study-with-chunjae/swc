@@ -18,8 +18,8 @@
       <nav class="navbar">
          <div class="navbar-brand">SWC ADMIN</div>
          <div class="navbar-links">
-            <a href="/admin/login">Login</a>
-            <a href="/admin/logout">Logout</a>
+            <a th:if="${session.admin == null}" href="/admin/login">Login</a>
+            <a th:if="${session.admin != null}" href="/admin/logout">Logout</a>
          </div>
       </nav>
    </header>

@@ -6,11 +6,10 @@
 >
   <head>
     <meta charset="UTF-8" />
-    <title>StudyWithChunjae</title>
+    <title>layout</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link th:href="@{/assets/css/main/header.css}" rel="stylesheet" />
     <link th:href="@{/assets/css/main/layout.css}" rel="stylesheet" />
-    <link rel="icon" th:href="@{/assets/public/mascot.png}" type="image/png">
     <style>
       body {
         margin: 0;
@@ -137,12 +136,8 @@
         <!--          &lt;!&ndash;          친구검색연결(수진)&ndash;&gt;-->
         <div
           class="search-bar search-container"
-          style="position: relative; width: 422px"
+          style="position: relative; width: 400px"
         >
-          <img
-                  th:src="@{/assets/public/pen.png}"
-                  alt="serach 로고"
-                  style="width: 20px"/>
           <input
             type="text"
             id="keyword"
@@ -164,8 +159,14 @@
             더보기
           </button>
           <!--          친구검색연결(수진)-->
-
-
+          <button>
+            <a href="/main/main"
+              ><img
+                th:src="@{/assets/public/pen.png}"
+                alt="serach 로고"
+                style="width: 20px"
+            /></a>
+          </button>
         </div>
 
         <div class="user-info">
@@ -237,6 +238,13 @@
         src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
       ></script>
       <script>
+        // 모든 input 태그 선택
+        const inputs = document.querySelectorAll('input');
+        // 각 input 태그에 autocomplete="off" 추가
+        inputs.forEach(input => {
+          input.setAttribute('autocomplete', 'off');
+        });
+
         const alertButton = document.getElementById("alertButton");
         let userName = "";
         let memberId = "";

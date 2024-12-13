@@ -519,5 +519,14 @@ public class MemberServiceImpl implements MemberServiceIf {
             throw new RuntimeException("프로필 사진 업로드 실패: " + e.getMessage());
         }
     }
+
+    //id로 이름 가져오기(원희)
+    public String getMemberNameById(String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if (member != null) {
+            return member.getName();
+        }
+        return null;
+    }
 }
 

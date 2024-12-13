@@ -26,8 +26,7 @@ public class AlertServiceImpl implements AlertServiceIf {
     /*
     String message = receiverId + "님이 친구 요청을 수락했습니다.";
     alertService.registAlert(friend.getRequester(), AlertType.FRIEND_ACCEPTED, message, "/friend/test");
-    이런식으로 메세지 쓰고 호출해서 알림받을 사람 아이디, 타입, msg, 이동할 링크 넣으셈
-    아직 링크 이동은 귀찮아서 안해놓았지만 추후에 해보겠음
+    이런식으로 메세지 쓰고 호출해서 알림받을 사람 아이디, 타입, msg, 이동할 링크 넣기
     */
     @Override
     @Transactional

@@ -211,7 +211,7 @@
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" id="selectAll"/>
+                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()"/>
                             </th>
                             <th>번호</th>
                             <th>보낸사람</th>
@@ -255,26 +255,26 @@
                 </span>
             </div>
         </div>
+            <script>
+                // 기존 체크박스 함수
+                function toggleSelectAll() {
+                    const selectAllCheckbox = document.getElementById('selectAll');
+                    const checkboxes = document.querySelectorAll('.messageCheckbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                }
+
+                function validateForm(){
+                    const selectMessages = document.querySelectorAll('.messageCheckbox:checked');
+                    if(selectMessages.length === 0){
+                        alert('삭제할 쪽지를 선택해주세요.');
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
     </div>
 </div>
-<script>
-    // 기존 체크박스 함수
-    function toggleSelectAll() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.messageCheckbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = selectAllCheckbox.checked;
-        });
-    }
-
-    function validateForm(){
-        const selectMessages = document.querySelectorAll('.messageCheckbox:checked');
-        if(selectMessages.length === 0){
-            alert('삭제할 쪽지를 선택해주세요.');
-            return false;
-        }
-        return true;
-    }
-</script>
 </body>
 </html>

@@ -76,6 +76,9 @@
 <div class="container">
 <h1>QnA 작성</h1>
 <div th:if="${errors != null}" class="error-message" th:text="${errors}"></div>
+    <p>* 실제 오류가 난 아이디와 해당 아이디로 가입할때 입력하셨던 이메일을 적어주셔야 빠른확인이 가능합니다<br>
+        QNA 답변이 작성될 경우 이메일로도 확인이 가능합니다.<br>
+    </p>
 <form th:action="@{/qna/regist}" method="post" th:object="${qnaDTO}">
     <label for="title">제목:</label>
     <input type="text" id="title" name="title" th:field="*{title}" required maxlength="100"><br><br>
