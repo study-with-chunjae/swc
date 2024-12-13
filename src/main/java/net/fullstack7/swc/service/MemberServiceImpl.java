@@ -417,14 +417,14 @@ public class MemberServiceImpl implements MemberServiceIf {
     @Override
     @Transactional
     public int updateMemberStatus(){
-        LocalDateTime cutoffDate = LocalDateTime.now().minus(6, ChronoUnit.MONTHS);
+        LocalDateTime cutoffDate = LocalDateTime.now().minusMonths(6);
         return memberRepository.updateStatusForMembers(cutoffDate);
     }
     // 테스트
 //    @Override
 //    @Transactional
 //    public int updateMemberStatus(){
-//        LocalDateTime cutoffDate = LocalDateTime.now().minus(1, ChronoUnit.MINUTES);
+//        LocalDateTime cutoffDate = LocalDateTime.now().minusMinutes(1);
 //        return memberRepository.updateStatusForMembers(cutoffDate);
 //    }
 
