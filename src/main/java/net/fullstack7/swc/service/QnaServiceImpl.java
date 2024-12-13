@@ -98,7 +98,6 @@ public class QnaServiceImpl implements QnaServiceIf {
     @Override
     public List<QnaDTO> listQna() {
         List<Qna> rootQnaList = qnaRepository.findAllRootQna();
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@서비스에서 리스트 확인{}",rootQnaList);
 
         return rootQnaList.stream()
                 .map(this::convertToDTO)
@@ -149,7 +148,7 @@ public class QnaServiceImpl implements QnaServiceIf {
     @Override
     @Transactional(readOnly = true)
     public Page<QnaDTO> listQnaPage(Pageable pageable) {
-        Page<Qna> qnaPage = qnaRepository.findAllBy(pageable);
+        Page<Qna> qnaPage = qnaRepository.findByParentIsNull(pageable);
         log.info("서비스에서 리스트 확인: {}", qnaPage.getContent());
         return qnaPage.map(this::convertToDTO);
     }

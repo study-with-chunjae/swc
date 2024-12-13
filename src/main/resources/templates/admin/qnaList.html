@@ -116,7 +116,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="qna : ${qnaPage}">
+            <tr th:each="qna : ${qnaPage}" >
                 <!--                <td th:text="${qna.qnaId}"></td>-->
                 <td>
                     <a th:href="@{/admin/qnaView/{qnaId}(qnaId=${qna.qnaId})}" th:text="${qna.title}"></a>

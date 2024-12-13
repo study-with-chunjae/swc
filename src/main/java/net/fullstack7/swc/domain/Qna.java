@@ -2,6 +2,7 @@ package net.fullstack7.swc.domain;
 
 import jakarta.persistence.*;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
