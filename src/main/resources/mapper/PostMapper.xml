@@ -104,10 +104,10 @@
         </where>
     </select>
     <select id="getSharedList">
-        SELECT p.*, t.*, COUNT(t.postId) as thumbUpCount, s.*
+        SELECT p.*, t.*, COUNT(distinct t.thumbUpId) as thumbUpCount, s.*
         FROM post p
-        INNER JOIN share s ON p.postId = s.postId
         LEFT JOIN thumbUp t ON p.postId = t.postId
+        INNER JOIN share s ON p.postId = s.postId
         <where>
             <if test="pageDTO.searchField != null and pageDTO.searchValue != null">
                 <choose>

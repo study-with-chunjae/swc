@@ -178,7 +178,7 @@
                     </tr>
                     <tr>
                         <th>좋아요</th>
-                        <td th:text="${postDTO.thumbUps.size()}"></td>
+                        <td th:text="${postDTO.thumbUps.size()}"  class="like-count"></td>
                         <th>오늘의 학습 노출 기간</th>
                         <td th:text="${#temporals.format(postDTO.displayAt,'yyyy-MM-dd') + ' ~ ' + #temporals.format(postDTO.displayEnd,'yyyy-MM-dd')}"></td>
                     </tr>
@@ -189,7 +189,7 @@
                         <img th:if="${postDTO.image!=null}" th:src="${postDTO.image}" onerror="this.onerror=null;this.src='/upload/images/default_image.jpg'" alt="Thumbnail" >
                         <img th:if="${postDTO.image==null}" th:src="@{/upload/images/default_image.jpg}" alt="thumbnail">
                     </div>
-                    <div class="text-section" th:text="${postDTO.content}">
+                    <div class="text-section" th:utext="${postDTO.content}">
                     </div>
                 </div>
 
@@ -325,9 +325,11 @@
                         console.log("response ok");
                         const result = await response.json();
                         const count = result.data;
-                        const countElement = document.querySelector("#thumbUpCount");
-                        countElement.innerHTML = '';
-                        countElement.innerHTML += count;
+                        const countElements = document.querySelectorAll(".like-count");
+                        for(let countElement of countElements){
+                            countElement.innerHTML = '';
+                            countElement.innerHTML += count;
+                        }
                     }catch(error){
                         console.error("좋아요 수 불러오기 실패" || error);
                         console.error(error);
