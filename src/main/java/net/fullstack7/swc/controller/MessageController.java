@@ -125,6 +125,11 @@ public class MessageController {
             return "redirect:/sign/signIn";
         }
         try {
+            if (senderId.equals(receiverId)) {
+                redirectAttributes.addFlashAttribute("error", "자기 자신에게 메시지를 보낼 수 없습니다.");
+                return "redirect:/post/main";
+            }
+
             Member receiver = memberRepository.findByMemberId(receiverId);
             if (receiver == null) {
                 redirectAttributes.addFlashAttribute("error", "존재하지 않는 수신자입니다.");
