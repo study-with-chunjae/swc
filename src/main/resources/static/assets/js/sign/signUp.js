@@ -50,12 +50,12 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
 // 아이디 유효성 검사 함수
 function validateId(input) {
   const messageEl = document.getElementById("idCheckMessage");
-  const idRegex = /^(?=.*[a-z])(?=.*\d)[a-z0-9]{6,}$/;
+  const idRegex = /^(?=.*[a-z])(?=.*\d)[a-z0-9]{6,15}$/;
 
   if (!idRegex.test(input.value)) {
     messageEl.style.color = "#FFCC00";
     messageEl.textContent =
-      "아이디는 영어 소문자와 숫자를 포함한 6자리 이상이어야 합니다.";
+      "아이디는 영어 소문자와 숫자를 포함한 6~15자리여야 합니다.";
     return false;
   }
   messageEl.textContent = "";
@@ -100,7 +100,7 @@ function validateEmail(input) {
     messageEl.style.display = "block";
     return false;
   } else {
-    messageEl.style.color = "white";
+    messageEl.style.color = "#FFCC00";
     messageEl.textContent = "이메일 인증을 계속해주세요.";
     return true;
   }
@@ -152,6 +152,7 @@ function startTimer(duration) {
 
     if (--timer < 0) {
       clearInterval(timerInterval);
+      timerDisplay.style.color = "#FFCC00";
       timerDisplay.textContent = "시간 만료";
     }
   }, 1000);
@@ -208,6 +209,8 @@ document
 
     if (pwd !== pwdConfirm) {
       messageEl.style.display = "block";
+      messageEl.style.color = "#FFCC00";
+      messageEl.textContent = "비밀번호가 일치하지 않습니다.";
     } else {
       messageEl.style.color = "white";
       messageEl.textContent = "완료";
@@ -222,6 +225,9 @@ function validatePassword(input) {
     )
   ) {
     messageEl.style.display = "block";
+    messageEl.style.color = "#FFCC00";
+    messageEl.textContent =
+      "비밀번호는 영어, 숫자, 특수문자를 포함한 10자리 이상이어야 합니다.";
   } else {
     messageEl.style.color = "white";
     messageEl.textContent = "완료";
@@ -234,6 +240,7 @@ function validateName(input) {
 
   if (!nameRegex.test(input.value)) {
     messageEl.style.display = "block";
+    messageEl.style.color = "#FFCC00";
     messageEl.textContent = "이름을 정확히 입력해주세요.";
     return false;
   } else {
@@ -247,6 +254,8 @@ function validatePhone(input) {
   const messageEl = document.getElementById("phoneValidMessage");
   if (!input.value.match(/^\d{11}$/)) {
     messageEl.style.display = "block";
+    messageEl.style.color = "#FFCC00";
+    messageEl.textContent = "전화번호는 11자리 숫자여야 합니다.";
   } else {
     messageEl.style.color = "white";
     messageEl.textContent = "완료";
