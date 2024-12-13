@@ -28,7 +28,7 @@
             <if test="searchDateEnd != null">
                 AND createdAt &lt;= #{searchDateEnd}
             </if>
-            AND userId = #{memberId}
+            AND memberId = #{memberId}
         </where>
     </select>
     <select id="postList">
@@ -58,7 +58,7 @@
             <if test="searchDateEnd != null">
                 AND p.createdAt &lt;= #{searchDateEnd}
             </if>
-            AND p.userId = #{memberId}
+            AND p.memberId = #{memberId}
         </where>
         GROUP BY p.postId
         <choose>
