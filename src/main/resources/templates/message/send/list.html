@@ -398,7 +398,7 @@
                         </form>
                     </div>
                     <div id="error-message" class="error-message" style="color: red; display: none;">
-                        <p th:text="${errorMessage}">에러 메시지</p>
+                        <p th:text="${error}">에러 메시지</p>
                     </div>
                 </div>
             </div>
@@ -432,14 +432,22 @@
             const cancelBtn = document.getElementById('closeMessageModal');
 
             // 오류 메시지 처리
-            const errorMessage = /*[[${errorMessage}]]*/ null;
+            // const errorMessage = /*[[${errorMessage}]]*/ null;
+            //
+            // if (errorMessage) {
+            //     // 오류 메시지가 있으면 모달을 열고 메시지를 표시
+            //     modal.style.display = 'block';
+            //     const errorMessageElement = document.getElementById('error-message');
+            //     errorMessageElement.style.display = 'block';
+            //     errorMessageElement.querySelector('p').textContent = errorMessage;
+            // }
+            var error = /*[[${error}]]*/ 'null';
+            var errorMessage = /*[[${errorMessage}]]*/ 'null';
 
-            if (errorMessage) {
-                // 오류 메시지가 있으면 모달을 열고 메시지를 표시
-                modal.style.display = 'block';
-                const errorMessageElement = document.getElementById('error-message');
-                errorMessageElement.style.display = 'block';
-                errorMessageElement.querySelector('p').textContent = errorMessage;
+            if (error !== 'null') {
+                alert(error);
+            } else if (errorMessage !== 'null') {
+                alert(errorMessage);
             }
 
             // 모달 열기
